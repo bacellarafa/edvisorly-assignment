@@ -166,12 +166,15 @@
 
     const logo = document.getElementById('nv-modal-logo');
     if (brand.logoUrl) {
-      const filter = brand.logoFilter ? ` style="filter:${brand.logoFilter}"` : '';
-      logo.innerHTML = `<img src="${brand.logoUrl}" alt="${esc(brand.name)} logo"${filter}>`;
+      const filter = brand.logoFilter ? `filter:${brand.logoFilter};` : '';
+      logo.classList.add('nv-img-skel');
+      logo.classList.remove('is-loaded');
+      logo.innerHTML = `<img src="${brand.logoUrl}" alt="${esc(brand.name)} logo" decoding="async" style="opacity:0;transition:opacity .25s ease;${filter}" onload="this.style.opacity=1;this.parentNode&&this.parentNode.classList.add('is-loaded')" onerror="this.parentNode&&this.parentNode.classList.add('is-loaded')">`;
       logo.style.background = 'transparent';
       logo.style.padding = '0';
       logo.style.boxShadow = 'none';
     } else {
+      logo.classList.remove('nv-img-skel','is-loaded');
       logo.textContent = brand.abbr || (brand.short || brand.name || '').slice(0, 2).toUpperCase();
       logo.style.background = brand.secondary || brand.primary;
     }
