@@ -388,7 +388,22 @@
     const totalCr  = st.draft.reduce((s, r) => s + (Number(r.cr) || 0), 0);
     const TERMS = termOptions();
 
-    const rowsHtml = st.draft.map((r, i) => `
+    const fieldHtml = (r, i, f) => {
+      const err = validateField(r, f);
+      const showErr = !!err && r._t && r._t[f];
+      const errId = `nv-mf-err-${i}-${f}`;
+      const aria = `aria-invalid="${showErr ? 'true' : 'false'}" aria-describedby="${errId}"`;
+      const cls = `nv-inp${showErr ? ' nv-inp-error' : ''}`;
+      return { errHtml: `<div class="nv-field-err-msg" id="${errId}"${showErr ? ' style="display:block"' : ''}>${showErr ? err : ''}</div>`, cls, aria };
+    };
+
+    const rowsHtml = st.draft.map((r, i) => {
+      const term = fieldHtml(r, i, 'term');
+      const code = fieldHtml(r, i, 'code');
+      const title = fieldHtml(r, i, 'title');
+      const cr = fieldHtml(r, i, 'cr');
+      const grade = fieldHtml(r, i, 'grade');
+      return `
       <div class="nv-manual-row" data-row="${i}">
         ${mode === 'bulk' ? `<div class="nv-manual-row-head">
           <span class="nv-manual-row-num">Course ${i + 1}</span>
@@ -397,31 +412,39 @@
         <div class="nv-manual-grid">
           <div class="nv-input-wrap nv-mf-term">
             <label class="nv-input-label" for="nv-mf-term-${i}">Term</label>
-            <select class="nv-inp" id="nv-mf-term-${i}" data-row="${i}" data-field="term">
+            <select class="${term.cls}" id="nv-mf-term-${i}" data-row="${i}" data-field="term" ${term.aria}>
               ${TERMS.map(t => `<option value="${esc(t)}"${r.term===t?' selected':''}>${t}</option>`).join('')}
             </select>
+            ${term.errHtml}
           </div>
           <div class="nv-input-wrap nv-mf-code">
             <label class="nv-input-label" for="nv-mf-code-${i}">Course code</label>
-            <input class="nv-inp" id="nv-mf-code-${i}" data-row="${i}" data-field="code" placeholder="ENG 101" value="${esc(r.code)}" autocomplete="off">
+            <input class="${code.cls}" id="nv-mf-code-${i}" data-row="${i}" data-field="code" placeholder="ENG 101" value="${esc(r.code)}" maxlength="32" autocomplete="off" ${code.aria}>
+            ${code.errHtml}
           </div>
           <div class="nv-input-wrap nv-mf-title">
             <label class="nv-input-label" for="nv-mf-title-${i}">Course title</label>
-            <input class="nv-inp" id="nv-mf-title-${i}" data-row="${i}" data-field="title" placeholder="English Composition I" value="${esc(r.title)}" autocomplete="off">
+            <input class="${title.cls}" id="nv-mf-title-${i}" data-row="${i}" data-field="title" placeholder="English Composition I" value="${esc(r.title)}" maxlength="120" autocomplete="off" ${title.aria}>
+            ${title.errHtml}
           </div>
           <div class="nv-input-wrap nv-mf-cr">
             <label class="nv-input-label" for="nv-mf-cr-${i}">Credits</label>
-            <input class="nv-inp" id="nv-mf-cr-${i}" type="number" inputmode="decimal" min="0" max="6" step="0.5" data-row="${i}" data-field="cr" placeholder="3" value="${r.cr}">
+            <input class="${cr.cls}" id="nv-mf-cr-${i}" type="number" inputmode="decimal" min="0" max="6" step="0.5" data-row="${i}" data-field="cr" placeholder="3" value="${r.cr}" ${cr.aria}>
+            ${cr.errHtml}
           </div>
           <div class="nv-input-wrap nv-mf-grade">
             <label class="nv-input-label" for="nv-mf-grade-${i}">Grade</label>
-            <select class="nv-inp" id="nv-mf-grade-${i}" data-row="${i}" data-field="grade">
+            <select class="${grade.cls}" id="nv-mf-grade-${i}" data-row="${i}" data-field="grade" ${grade.aria}>
               <option value="">—</option>
               ${GRADES.map(g => `<option value="${g}"${r.grade===g?' selected':''}>${g}</option>`).join('')}
             </select>
+            ${grade.errHtml}
           </div>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
+
+    const anyTouchedInvalid = st.draft.some(r => FIELDS.some(f => r._t && r._t[f] && validateField(r, f)));
 
     return `
       <div><button class="nv-back-btn" data-act="manual-cancel">${ic('arrow-left')} Back</button>
@@ -434,8 +457,19 @@
       ${mode === 'bulk'
         ? `<button class="nv-add-course-btn" data-act="manual-add-row">${ic('plus')} Add another course</button>`
         : ''}
-      <button class="nv-btn nv-btn-primary" data-act="manual-save" ${allValid ? '' : 'disabled'}>${ctas[mode]}${mode==='bulk' ? ' ' + ic('arrow-right') : ''}</button>
+      <button class="nv-btn nv-btn-primary" data-act="manual-save" ${allValid ? '' : 'disabled'} aria-disabled="${allValid ? 'false' : 'true'}">${ctas[mode]}${mode==='bulk' ? ' ' + ic('arrow-right') : ''}</button>
+      <div class="nv-manual-hint" id="nv-manual-hint"${(!allValid && anyTouchedInvalid) ? '' : ' hidden'}>Fix the highlighted fields to continue.</div>
       <button class="nv-text-link" data-act="manual-cancel">Cancel</button>`;
+  }
+
+  function updateFieldError(i, f) {
+    const r = st.draft[i]; if (!r) return;
+    const inp = document.getElementById(`nv-mf-${f}-${i}`);
+    const errEl = document.getElementById(`nv-mf-err-${i}-${f}`);
+    const err = validateField(r, f);
+    const show = !!err && r._t && r._t[f];
+    if (inp) { inp.classList.toggle('nv-inp-error', show); inp.setAttribute('aria-invalid', show ? 'true' : 'false'); }
+    if (errEl) { errEl.textContent = show ? err : ''; errEl.style.display = show ? 'block' : 'none'; }
   }
 
   function updateManualState() {
@@ -443,11 +477,16 @@
     if (!slide) return;
     const allValid = st.draft.length > 0 && st.draft.every(isValidRow);
     const btn = slide.querySelector('[data-act="manual-save"]');
-    if (btn) btn.disabled = !allValid;
+    if (btn) { btn.disabled = !allValid; btn.setAttribute('aria-disabled', allValid ? 'false' : 'true'); }
     const sum = document.getElementById('nv-manual-summary');
     if (sum && st.manualMode === 'bulk') {
       const totalCr = st.draft.reduce((s, r) => s + (Number(r.cr) || 0), 0);
       sum.textContent = `${st.draft.length} ${st.draft.length===1?'course':'courses'} · ${totalCr} ${totalCr===1?'credit':'credits'}`;
+    }
+    const hint = document.getElementById('nv-manual-hint');
+    if (hint) {
+      const anyTouchedInvalid = st.draft.some(r => FIELDS.some(f => r._t && r._t[f] && validateField(r, f)));
+      hint.hidden = !(!allValid && anyTouchedInvalid);
     }
   }
 
