@@ -1,60 +1,74 @@
 
 ## Goal
 
-Replace the current single re-themed template with 4 separate, high-fidelity reproductions of the real admissions pages — Tufts, Boston University, Northeastern, and UMass Amherst — each embedding the same "Check my credit transfer" modal flow, themed with that school's colors, logo, and typography. Pages are visual mockups only (links don't need to work). The modal behavior stays identical; only its skin changes per host site.
+Refresh the credit-transfer modal to match the attached reference: a soft, light, neumorphic-ish surface with rounded pill controls, generous whitespace, and a single bold dark/brand accent for primary actions. Scale up on tablet/desktop, swap every emoji for an icon-library glyph, and rename the footer to "EdVisorly".
 
-## Approach
+## 1. Visual redesign of the modal (`public/navigate-modal/modal.css`)
 
-1. **Reference capture.** Take a full-page screenshot of each of the 4 admissions URLs and pull brand assets (logo SVG/PNG, primary/secondary colors, fonts, hero imagery). Store logos under `public/brands/<school>/`.
+Move from the current bright-bordered card to a calmer aesthetic inspired by the reference:
 
-2. **Extract the modal into a shared module.** Move the existing modal HTML/CSS/JS from `public/navigateembedded.html` into:
-   - `public/navigate-modal/modal.css`
-   - `public/navigate-modal/modal.js` (exports `mountNavigateModal({ brand })`)
-   - `public/navigate-modal/modal.html` (markup snippet injected by the JS)
-   The brand object carries `{ name, short, abbr, primary, secondary, accent, light, logoUrl, headingFont, bodyFont }`. The modal reads from CSS custom properties so each host page just sets `--brand-*` and passes its logo.
+- Surface: off-white/cream background (`#f4f1ec` range), subtle inset + soft outer shadow, larger radius (~24px).
+- Cards inside (course cards, school items, value/dest boxes, file picker, summary cards): white with very soft shadow, rounded ~18px, no hard borders — same family as the reference's pill cards.
+- Stage pills + progress: pill chips with soft shadow, active pill filled with brand color; thinner progress track.
+- Primary button: full-width pill, solid `--nv-brand` (each university's primary), white text, soft shadow. Secondary/ghost: white pill with soft shadow, dark text.
+- Inputs: pill-shaped, no harsh border, inset shadow on focus using brand color.
+- Typography: slightly larger headings, tighter tracking, neutral gray body text.
 
-3. **One static HTML page per school**, each a faithful visual reproduction of the real admissions page (header, top utility bar, main nav, hero with real-style imagery, content blocks, footer). Pages are non-interactive — nav links are `href="#"`. Each page includes the shared modal module and a prominent **"Check my credit transfer"** CTA (placed in the hero and in a sidebar card on the admissions content area) that opens the modal.
-   - `public/schools/tufts.html` — navy `#3E8EDE`/`#002E6D`, Tufts wordmark, serif headings
-   - `public/schools/bu.html` — BU scarlet `#CC0000`, Terrier shield, BU wordmark
-   - `public/schools/northeastern.html` — NU red `#C8102E` on black, "N" mark
-   - `public/schools/umass.html` — maroon `#881C1C`, UMass seal/wordmark
+## 2. Sizing per breakpoint
 
-4. **Demo switcher.** A thin top strip (only on the preview, not part of the school chrome) lets you jump between the 4 pages. Implemented as a small fixed-position bar in each page that links to the other 3 HTML files. Active school is highlighted.
+In `modal.css`:
 
-5. **Routing.** Update `src/routes/index.tsx` to iframe `public/schools/tufts.html` by default, and add lightweight TanStack routes `/tufts`, `/bu`, `/northeastern`, `/umass` that iframe the matching school page. Each route sets its own `head()` title/description.
+- Mobile (current): keep as-is — user is happy.
+- Tablet (`min-width: 700px`): modal width ~640px, padding bumped, font sizes +1–2px.
+- Desktop (`min-width: 1024px`): near full-screen feel — width `min(1100px, 92vw)`, height `min(880px, 92vh)`, two-column inner layout where it helps (e.g. School stage: search list left, "Evaluating transfer to" panel right; Review stage: summary cards as a sticky right rail beside the term list). Header becomes a taller brand bar with the university logo prominently on the left.
 
-6. **QA.** Open each route in the preview, open the modal, walk through all stages (school → upload → parsing → review → email → confirm), and confirm the modal picks up that school's brand colors, logo, and progress-bar accent.
+The internal stage components stay single-source; the two-column treatment is a CSS grid that collapses back to one column under 1024px, so no JS branching is needed.
 
-## File layout after the change
+## 3. Header / logo treatment
 
-```text
-public/
-  navigate-modal/
-    modal.css
-    modal.js
-    modal.html
-  brands/
-    tufts/logo.svg
-    bu/logo.svg
-    northeastern/logo.svg
-    umass/logo.svg
-  schools/
-    tufts.html
-    bu.html
-    northeastern.html
-    umass.html
-src/routes/
-  index.tsx        -> iframes /schools/tufts.html
-  tufts.tsx
-  bu.tsx
-  northeastern.tsx
-  umass.tsx
-```
+- Taller brand bar on desktop (~72px), logo container `max-width: 160px`, with a thin divider under it.
+- White logo plate with soft shadow on all brand colors so wordmarks (Tufts, UMass SVG, BU, Northeastern) sit cleanly.
+- "Secure · Encrypted" line uses a lock icon (Lucide) instead of inline SVG string, smaller, muted.
 
-The existing `public/navigateembedded.html` is removed once the four pages are wired up.
+## 4. Remove all emojis, adopt an icon library
 
-## Open questions before I start
+Replace every emoji currently in `modal.js` and in the four school HTML files with **Lucide icons** (clean, thin-stroke, matches the soft aesthetic of the reference).
 
-1. Reference fidelity — should I capture screenshots of the live admissions pages and reproduce them visually (closest match, slightly slower), or work from the brand colors/logos alone and use a generic university layout per school (faster, less faithful)?
-2. Where should the "Check my credit transfer" CTA live on each page — hero + sidebar card (current Tufts mock), only the hero, or a floating button bottom-right? Same placement across all four, or per-school?
-3. Should the demo switcher strip be visible in the final preview, or only during development (hidden behind `?demo=1`)?
+Delivery: include Lucide via CDN once per page (`<script src="https://unpkg.com/lucide@latest"></script>` then `lucide.createIcons()` after render). Use `<i data-lucide="...">` placeholders.
+
+Mapping (modal):
+- 🔒 lock notice / secure → `lock`
+- 📄 upload icon → `file-text`
+- ✅ uploaded / confirm → `check-circle-2`
+- ⚠️ file error → `alert-triangle`
+- ℹ️ manual-entry banner → `info`
+- 🎯 "Evaluating transfer to" → `target`
+- 📊 evaluation ready → `bar-chart-3`
+- 📧 email chip → `mail`
+- 😕 parse failed → `frown` (or drop the face entirely, use `file-x`)
+- ✓ stepper check → `check`
+- × close button → `x`
+- ← back arrow → `arrow-left`
+- + add course → `plus`
+
+School pages: audit `tufts.html`, `bu.html`, `northeastern.html`, `umass.html` and swap any emoji in nav, CTAs, feature lists, footers for Lucide equivalents.
+
+## 5. Footer rebrand
+
+In `modal.js` (`ensureMarkup`): change `Powered by <strong>EdVisorly Navigate</strong>` → `Powered by <strong>EdVisorly</strong>`. Replace the inline lock SVG with a Lucide `shield-check` or `lock` icon for consistency.
+
+## 6. QA pass
+
+For each of the 4 schools, at mobile / tablet / desktop:
+- Open modal, confirm new sizing and that brand color drives only the primary button + active pill + focus accents (everything else stays neutral).
+- Walk school → upload → parsing → review → email → confirm; verify no emoji remains and Lucide icons render.
+- Confirm logos sit cleanly in the new header plate.
+- Confirm footer reads "Powered by EdVisorly".
+
+## Files touched
+
+- `public/navigate-modal/modal.css` — full restyle + responsive breakpoints + grid layout for desktop stages.
+- `public/navigate-modal/modal.js` — emoji → `<i data-lucide>` swaps, call `lucide.createIcons()` after each `render()`, footer text change.
+- `public/schools/tufts.html`, `bu.html`, `northeastern.html`, `umass.html` — add Lucide CDN script, remove emojis from page chrome, initial `lucide.createIcons()` call.
+
+No route, asset, or branding-token changes — the per-university `primary` / `secondary` / `logoUrl` passed to `NavigateModal.mount` keep working unchanged.
