@@ -96,7 +96,7 @@
     <div class="nv-modal-main">
       <div class="nv-stages" id="nv-sc"></div>
       <div class="nv-modal-footer">
-        ${ic('shield-check')} Powered by <strong>EdVisorly</strong>
+        ${ic('shield-check')} Powered by <a href="https://www.edvisorly.com/" target="_blank" rel="noopener noreferrer" class="nv-edvisorly-link"><strong>EdVisorly</strong></a>
       </div>
     </div>
   </div>
