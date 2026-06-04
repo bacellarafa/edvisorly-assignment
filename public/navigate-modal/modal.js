@@ -138,11 +138,13 @@
     document.getElementById('nv-modal-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
     render('fwd');
+    updateDemoHelp();
   }
   function closeModal() {
     const o = document.getElementById('nv-modal-overlay');
     if (o) o.classList.remove('open');
     document.body.style.overflow = '';
+    updateDemoHelp();
   }
   function next() { st.idx = Math.min(st.idx + 1, STAGES.length - 1); render('fwd'); }
   function back() { st.idx = Math.max(st.idx - 1, 0); render('back'); }
@@ -175,6 +177,7 @@
     sc.appendChild(div);
     if (s === 'parsing') scheduleParsing();
     renderIcons();
+    updateDemoHelp();
   }
 
   // ── Stage builders ──
@@ -494,7 +497,15 @@
     const wrap = document.createElement('div');
     wrap.className = 'nv-demo-fab';
     wrap.innerHTML = `
-      <div class="nv-demo-fab-menu" role="menu">${items}</div>
+      <div class="nv-demo-fab-menu" role="menu">
+        <div class="nv-demo-fab-blurb">
+          <strong>Demo navigator</strong>
+          Switch between mock university pages to see the EdVisorly Navigate
+          experience embedded in different brands. Click "Check my credit
+          transfer" on any page to open the credit-transfer modal.
+        </div>
+        ${items}
+      </div>
       <button class="nv-demo-fab-toggle" aria-label="Switch demo school" aria-expanded="false">
         Demo ${ic('chevron-up')}
       </button>`;
@@ -511,7 +522,34 @@
         toggle.setAttribute('aria-expanded', 'false');
       }
     });
+
+    // Desktop-only "Demo files" cheat-sheet shown during the upload stage.
+    if (!document.querySelector('.nv-demo-help')) {
+      const help = document.createElement('aside');
+      help.className = 'nv-demo-help';
+      help.innerHTML = `
+        <div class="nv-demo-help-title">Demo files — upload each to trigger a scenario:</div>
+        <ul class="nv-demo-help-list">
+          <li><span class="nv-demo-help-emoji">✅</span><code>transcript-jordan-SUCCESS.pdf</code> <span class="nv-demo-help-arrow">→</span> Happy path</li>
+          <li><span class="nv-demo-help-emoji">❌</span><code>transcript-jordan-WRONG-FORMAT.txt</code> <span class="nv-demo-help-arrow">→</span> Wrong file type</li>
+          <li><span class="nv-demo-help-emoji">⚠️</span><code>transcript-jordan-TOO-LARGE.pdf</code> <span class="nv-demo-help-arrow">→</span> File too large</li>
+          <li><span class="nv-demo-help-emoji">🐞</span><code>transcript-jordan-PARSE-ERROR.pdf</code> <span class="nv-demo-help-arrow">→</span> Parsing failure</li>
+          <li><span class="nv-demo-help-emoji">🔍</span><code>transcript-jordan-SCHOOL-NOT-FOUND.pdf</code> <span class="nv-demo-help-arrow">→</span> Unknown school</li>
+        </ul>`;
+      document.body.appendChild(help);
+    }
+
     renderIcons();
+    updateDemoHelp();
+  }
+
+  function updateDemoHelp() {
+    const help = document.querySelector('.nv-demo-help');
+    if (!help) return;
+    const overlay = document.getElementById('nv-modal-overlay');
+    const modalOpen = !!(overlay && overlay.classList.contains('open'));
+    const onUpload = !!(st && STAGES[st.idx] === 'upload');
+    help.classList.toggle('visible', modalOpen && onUpload);
   }
 
   window.NavigateModal = {
