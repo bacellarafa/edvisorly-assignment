@@ -92,6 +92,26 @@
     }
   }
 
+  function showToast(msg) {
+    const host = document.getElementById('nv-root') || document.body;
+    let t = document.getElementById('nv-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'nv-toast';
+      t.className = 'nv-toast';
+      t.setAttribute('role', 'status');
+      t.setAttribute('aria-live', 'polite');
+      host.appendChild(t);
+    }
+    t.innerHTML = `<span class="nv-toast-icon">${ic('check-circle-2')}</span><span>${msg}</span>`;
+    renderIcons();
+    t.classList.remove('nv-toast-show');
+    void t.offsetWidth;
+    t.classList.add('nv-toast-show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => t.classList.remove('nv-toast-show'), 3200);
+  }
+
   function ensureMarkup() {
     if (document.getElementById('nv-modal-overlay')) return;
     const wrap = document.createElement('div');
