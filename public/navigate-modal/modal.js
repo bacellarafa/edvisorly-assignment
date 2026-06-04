@@ -361,8 +361,16 @@
       else if (a === 'restart') restart();
       else if (a === 'retry') { st.parseFailed = false; st.file = null; st.scenario = 'success'; st.idx = STAGES.indexOf('upload'); render('back'); }
       else if (a === 'manual') { st.parseFailed = false; st.manualEntry = true; st.idx = STAGES.indexOf('review'); render('fwd'); }
+      else if (a === 'skip-review') { st.parseFailed = false; st.idx = STAGES.indexOf('review'); render('fwd'); }
       else if (a === 'skip') { st.parseFailed = false; st.idx = STAGES.indexOf('email'); render('fwd'); }
-      else if (a === 'request-school') { e.preventDefault(); }
+      else if (a === 'request-school') {
+        e.preventDefault();
+        const banner = document.getElementById('nv-review-banner');
+        if (banner) {
+          banner.innerHTML = `<span>${ic('check-circle-2')}</span><span>Request submitted! We'll notify you when this school is added.</span>`;
+          renderIcons();
+        }
+      }
       return;
     }
     const pick = e.target.closest('[data-pick]');
