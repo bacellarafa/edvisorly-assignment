@@ -193,7 +193,7 @@
         <div class="nv-upload-icon-wrap">${hasFile?ic('file-check-2'):ic('file-text')}</div>
         <span class="nv-upload-title">${hasFile?st.file:'Tap to upload your transcript'}</span>
         <span class="nv-upload-hint">${hasFile?'Tap to change':'PDF, JPG, or PNG · Max 10 MB'}</span>
-        <input type="file" id="nv-file-inp" accept=".pdf,.jpg,.jpeg,.png" style="display:none">
+        <input type="file" id="nv-file-inp" style="display:none">
       </label>
       <div id="nv-file-error" class="nv-notice nv-notice-red">${ic('alert-triangle')} <span id="nv-file-err-msg"></span></div>
       <label class="nv-consent-row"><input type="checkbox" id="nv-consent-chk" ${st.consent?'checked':''}>
