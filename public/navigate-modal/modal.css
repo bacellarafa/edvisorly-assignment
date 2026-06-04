@@ -30,14 +30,14 @@
 }
 .nv-modal-brand{display:flex;align-items:center;gap:12px;min-width:0}
 .nv-modal-logo{
-  height:42px;min-width:42px;max-width:148px;
+  height:42px;min-width:42px;max-width:160px;
   border-radius:12px;display:flex;align-items:center;justify-content:center;
   font-size:13px;font-weight:700;color:#fff;flex-shrink:0;
   background:var(--nv-brand-secondary);overflow:hidden;padding:6px 10px;
   box-shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.06);
 }
 .nv-modal-logo img{height:100%;width:auto;max-width:100%;object-fit:contain;display:block}
-.nv-modal-logo:has(img){background:#fff;padding:6px 12px}
+.nv-modal-logo:has(img){background:transparent;padding:0;box-shadow:none}
 
 .nv-modal-school{font-size:14px;font-weight:700;color:#1a1a1a;line-height:1.2;letter-spacing:-.005em}
 .nv-modal-secure{display:flex;align-items:center;gap:5px;font-size:11px;color:#8a857d;margin-top:3px;font-weight:500}
