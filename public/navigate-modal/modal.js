@@ -671,16 +671,6 @@
       syncEmailBtn();
     }
   }, true);
-  document.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-continue-unknown]');
-    if (!t) return;
-    st.school = t.dataset.continueUnknown;
-    const inp = document.getElementById('nv-school-inp'); if (inp) inp.value = st.school;
-    const list = document.getElementById('nv-school-list');
-    if (list) list.innerHTML = `<div class="nv-list-header">Continuing with</div><div class="nv-school-item sel">${st.school}<span class="nv-chk">${ic('check')}</span></div>`;
-    const btn = document.querySelector('#nv-sc .nv-btn-primary'); if (btn) btn.disabled = false;
-    renderIcons();
-  });
 
   function syncUploadBtn() { const b = document.getElementById('nv-upload-btn'); if (b) b.disabled = !(st.file && st.consent); }
   function syncEmailBtn() {
