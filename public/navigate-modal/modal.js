@@ -640,7 +640,12 @@
     if (st.manualMode && t && t.dataset && t.dataset.row !== undefined && t.dataset.field) {
       const i = Number(t.dataset.row);
       const f = t.dataset.field;
-      if (st.draft[i]) { st.draft[i][f] = t.value; updateManualState(); }
+      if (st.draft[i]) {
+        st.draft[i][f] = t.value;
+        // Live-clear errors as the user fixes the field, but don't surface new ones before blur.
+        if (st.draft[i]._t && st.draft[i]._t[f]) updateFieldError(i, f);
+        updateManualState();
+      }
     }
   });
   document.addEventListener('change', (e) => {
@@ -650,7 +655,13 @@
     if (st.manualMode && t && t.dataset && t.dataset.row !== undefined && t.dataset.field) {
       const i = Number(t.dataset.row);
       const f = t.dataset.field;
-      if (st.draft[i]) { st.draft[i][f] = t.value; updateManualState(); }
+      if (st.draft[i]) {
+        st.draft[i][f] = t.value;
+        // <select> change implies the user committed a choice — treat as touched so errors surface.
+        if (st.draft[i]._t) st.draft[i]._t[f] = true;
+        updateFieldError(i, f);
+        updateManualState();
+      }
     }
   });
   document.addEventListener('blur', (e) => {
