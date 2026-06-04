@@ -346,13 +346,15 @@
   .nv-parsing-wrap{min-height:420px}
 }
 
-/* Desktop step pill numbering helper (set via JS) */
-.nv-stage-pill[data-n="0"]::before{content:"1"}
-.nv-stage-pill[data-n="1"]::before{content:"2"}
-.nv-stage-pill[data-n="2"]::before{content:"3"}
-.nv-stage-pill[data-n="3"]::before{content:"4"}
-.nv-stage-pill[data-n="4"]::before{content:"5"}
-.nv-stage-pill.done::before{content:""}
+/* Desktop step pill numbering (only inside desktop layout) */
+@media(min-width:1024px){
+  .nv-stage-pill[data-n="0"]::before{content:"1"}
+  .nv-stage-pill[data-n="1"]::before{content:"2"}
+  .nv-stage-pill[data-n="2"]::before{content:"3"}
+  .nv-stage-pill[data-n="3"]::before{content:"4"}
+  .nv-stage-pill[data-n="4"]::before{content:"5"}
+  .nv-stage-pill.done::before{content:""}
+}
 
 /* ── Demo switcher ─────────────────────────────────────────── */
 .nv-demo-switcher{position:fixed;bottom:14px;right:14px;background:rgba(20,20,30,.92);backdrop-filter:blur(8px);padding:8px 10px;border-radius:30px;display:flex;gap:6px;align-items:center;z-index:500;box-shadow:0 8px 32px rgba(0,0,0,.3);font-family:'Inter',system-ui,sans-serif}
