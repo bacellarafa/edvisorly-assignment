@@ -420,22 +420,27 @@
   }
   function handleFile(input) {
     const f = input.files[0]; if (!f) return;
-    const ok = ['application/pdf', 'image/jpeg', 'image/png'];
     const errEl = document.getElementById('nv-file-error');
     const errMsg = document.getElementById('nv-file-err-msg');
+    const scenario = detectScenario(f.name);
     let err = null;
-    if (!ok.includes(f.type)) err = `Format not supported. Please upload a PDF, JPG, or PNG.`;
-    else if (f.size > MAX_MB * 1024 * 1024) err = `File too large (${(f.size/1024/1024).toFixed(1)} MB). Max is ${MAX_MB} MB.`;
+    if (scenario === 'wrong-format') {
+      err = `That file format isn't supported. Navigate only accepts PDF, JPG, or PNG transcripts.`;
+    } else if (scenario === 'too-large') {
+      err = `This file is too large (14.2 MB). The maximum is 10 MB. Try exporting a compressed PDF from your school portal, or take a clear photo instead.`;
+    }
     if (err) {
       if (errMsg) errMsg.textContent = err;
       if (errEl) errEl.style.display = 'flex';
-      st.file = null; syncUploadBtn();
-    } else {
-      if (errEl) errEl.style.display = 'none';
-      st.file = f.name;
-      const slide = document.querySelector('#nv-sc .nv-slide');
-      if (slide) { slide.innerHTML = sUpload(); renderIcons(); }
+      st.file = null; st.scenario = 'success'; syncUploadBtn();
+      input.value = '';
+      return;
     }
+    if (errEl) errEl.style.display = 'none';
+    st.file = f.name;
+    st.scenario = scenario;
+    const slide = document.querySelector('#nv-sc .nv-slide');
+    if (slide) { slide.innerHTML = sUpload(); renderIcons(); }
   }
 
   window.NavigateModal = {
