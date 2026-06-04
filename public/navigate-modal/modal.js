@@ -266,7 +266,11 @@
     const terms = {};
     COURSES.forEach(c => { (terms[c.term] = terms[c.term] || []).push(c); });
     const total = COURSES.reduce((s, c) => s + c.cr, 0);
-    const banner = st.manualEntry ? `<div class="nv-notice nv-notice-blue">${ic('info')} We couldn't parse your transcript automatically. Fill in your actual courses before continuing.</div>` : '';
+    const banner = st.manualEntry
+      ? `<div class="nv-notice nv-notice-blue">${ic('info')} We couldn't parse your transcript automatically. Fill in your actual courses before continuing.</div>`
+      : (st.scenario === 'school-not-found'
+        ? `<div class="nv-notice nv-notice-amber"><span>${ic('alert-triangle')}</span><span><strong>${st.school || 'This school'}</strong> isn't in our transfer database yet. We've parsed your courses, but credit mapping may be estimated. <a href="#" class="nv-banner-link" data-act="request-school">Request it be added →</a></span></div>`
+        : '');
     return `
       <div><button class="nv-back-btn" data-act="back">${ic('arrow-left')} Back</button>
       <p class="nv-h1">Does this look right?</p>
