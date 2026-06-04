@@ -100,7 +100,8 @@
 
     const logo = document.getElementById('nv-modal-logo');
     if (brand.logoUrl) {
-      logo.innerHTML = `<img src="${brand.logoUrl}" alt="${esc(brand.name)} logo">`;
+      const filter = brand.logoFilter ? ` style="filter:${brand.logoFilter}"` : '';
+      logo.innerHTML = `<img src="${brand.logoUrl}" alt="${esc(brand.name)} logo"${filter}>`;
       logo.style.background = 'transparent';
       logo.style.padding = '0';
       logo.style.boxShadow = 'none';
