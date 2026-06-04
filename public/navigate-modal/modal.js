@@ -138,11 +138,13 @@
     document.getElementById('nv-modal-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
     render('fwd');
+    updateDemoHelp();
   }
   function closeModal() {
     const o = document.getElementById('nv-modal-overlay');
     if (o) o.classList.remove('open');
     document.body.style.overflow = '';
+    updateDemoHelp();
   }
   function next() { st.idx = Math.min(st.idx + 1, STAGES.length - 1); render('fwd'); }
   function back() { st.idx = Math.max(st.idx - 1, 0); render('back'); }
@@ -175,6 +177,7 @@
     sc.appendChild(div);
     if (s === 'parsing') scheduleParsing();
     renderIcons();
+    updateDemoHelp();
   }
 
   // ── Stage builders ──
