@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transfer Admissions — Tufts University</title>
+<style>
+/* ── Reset ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'proxima-nova',system-ui,-apple-system,sans-serif;background:#fff;color:#222}
+
+/* ══════════════════════════════════════
+   UNIVERSITY PAGE (host site simulation)
+═══════════════════════════════════════ */
+.univ-topbar{background:#002E6D;color:#fff;padding:8px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;letter-spacing:0.04em}
+.univ-topbar a{color:#C1CD23;text-decoration:none;font-weight:600}
+.univ-nav{background:#fff;border-bottom:2px solid #002E6D;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:68px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,46,109,0.08)}
+.univ-logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.univ-logo-mark{width:44px;height:44px;background:#002E6D;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;letter-spacing:0.05em}
+.univ-logo-text{font-size:18px;font-weight:700;color:#002E6D;font-family:'ff-meta-serif-web-pro',Georgia,serif}
+.univ-nav-links{display:flex;gap:28px}
+.univ-nav-links a{font-size:13px;font-weight:600;color:#333;text-decoration:none;letter-spacing:0.03em;padding:4px 0;border-bottom:2px solid transparent}
+.univ-nav-links a:hover{color:#002E6D;border-bottom-color:#C1CD23}
+.univ-nav-links a.active{color:#002E6D;border-bottom-color:#002E6D}
+
+.univ-hero{background:#002E6D;background-image:linear-gradient(135deg,#002E6D 0%,#1E407C 50%,#3172AE 100%);color:#fff;padding:64px 24px 56px;text-align:center}
+.univ-hero-tag{font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#C1CD23;margin-bottom:12px}
+.univ-hero h1{font-family:'ff-meta-serif-web-pro',Georgia,serif;font-size:clamp(28px,5vw,48px);font-weight:700;line-height:1.2;max-width:700px;margin:0 auto 16px}
+.univ-hero p{font-size:16px;color:rgba(255,255,255,0.8);max-width:580px;margin:0 auto 32px;line-height:1.6}
+.univ-hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-navy{background:#fff;color:#002E6D;padding:14px 28px;border-radius:4px;font-size:14px;font-weight:700;border:none;cursor:pointer;text-decoration:none;display:inline-block;transition:all 0.15s}
+.btn-navy:hover{background:#EBF3FB}
+.btn-outline-white{background:transparent;color:#fff;padding:14px 28px;border-radius:4px;font-size:14px;font-weight:700;border:2px solid rgba(255,255,255,0.6);cursor:pointer;text-decoration:none;display:inline-block;transition:all 0.15s}
+.btn-outline-white:hover{border-color:#fff;background:rgba(255,255,255,0.1)}
+
+.univ-breadcrumb{background:#EBF3FB;padding:10px 24px;font-size:12px;color:#3172AE}
+.univ-breadcrumb span{color:#888;margin:0 6px}
+
+.univ-content{max-width:1100px;margin:0 auto;padding:48px 24px;display:grid;grid-template-columns:1fr 340px;gap:48px}
+@media(max-width:760px){.univ-content{grid-template-columns:1fr;gap:32px}.univ-nav-links{display:none}}
+.univ-main h2{font-family:'ff-meta-serif-web-pro',Georgia,serif;font-size:28px;color:#002E6D;margin-bottom:16px}
+.univ-main p{font-size:15px;line-height:1.7;color:#444;margin-bottom:16px}
+.univ-main ul{margin:0 0 20px 20px;font-size:15px;color:#444;line-height:1.8}
+
+/* ── NAVIGATE CTA CARD (on university page) ── */
+.navigate-cta-card{background:#fff;border:2px solid #002E6D;border-radius:8px;overflow:hidden;box-shadow:0 4px 24px rgba(0,46,109,0.12)}
+.navigate-cta-header{background:#002E6D;padding:18px 20px}
+.navigate-cta-header h3{color:#fff;font-family:'ff-meta-serif-web-pro',Georgia,serif;font-size:17px;font-weight:700;line-height:1.3}
+.navigate-cta-header p{color:rgba(255,255,255,0.75);font-size:13px;margin-top:5px;line-height:1.45}
+.navigate-cta-body{padding:20px}
+.navigate-cta-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.cta-step{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#555;line-height:1.45}
+.cta-step-num{width:22px;height:22px;border-radius:50%;background:#002E6D;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.btn-navigate{width:100%;padding:14px;background:#002E6D;color:#fff;border:none;border-radius:6px;font-size:15px;font-weight:700;cursor:pointer;transition:background 0.15s;letter-spacing:0.02em}
+.btn-navigate:hover{background:#1E407C}
+.navigate-cta-footer{padding:10px 20px;background:#F7FAFD;border-top:1px solid #EBF3FB;text-align:center;font-size:11px;color:#999;display:flex;align-items:center;justify-content:center;gap:5px}
+.navigate-cta-footer strong{color:#3172AE}
+
+/* Demo switcher for other universities */
+.demo-switcher{background:#1a1a2e;padding:10px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.demo-switcher-label{font-size:11px;color:#888;font-weight:600;letter-spacing:0.08em;text-transform:uppercase}
+.demo-univ-btn{padding:6px 14px;border-radius:20px;border:1.5px solid #333;background:transparent;color:#ccc;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.demo-univ-btn:hover,.demo-univ-btn.active{border-color:#fff;color:#fff;background:rgba(255,255,255,0.1)}
+.demo-univ-btn.active{border-color:#4fc3f7;color:#4fc3f7;background:rgba(79,195,247,0.1)}
+
+/* ══════════════════════════════════════
+   MODAL OVERLAY
+═══════════════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+
+/* Modal shell — constrained to phone-like width */
+.modal{background:#fff;border-radius:16px;width:100%;max-width:400px;height:min(90vh,760px);display:flex;flex-direction:column;overflow:hidden;transform:translateY(32px) scale(0.97);transition:transform 0.35s cubic-bezier(.4,0,.2,1);box-shadow:0 24px 80px rgba(0,0,0,0.35)}
+.modal-overlay.open .modal{transform:translateY(0) scale(1)}
+
+/* Modal top bar — uses university brand */
+.modal-topbar{padding:13px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.15)}
+.modal-brand{display:flex;align-items:center;gap:9px}
+.modal-logo{width:30px;height:30px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.modal-school{font-size:13px;font-weight:700;color:#fff}
+.modal-close{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;line-height:1;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:background 0.15s}
+.modal-close:hover{background:rgba(255,255,255,0.3)}
+.modal-secure{display:flex;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,0.7)}
+
+/* Modal progress */
+.modal-prog-wrap{flex-shrink:0}
+.modal-prog-track{height:3px;background:rgba(255,255,255,0.2)}
+.modal-prog-bar{height:3px;transition:width 0.5s cubic-bezier(.4,0,.2,1)}
+.modal-stage-names{display:flex;padding:8px 14px 0}
+.stage-pill{flex:1;text-align:center;font-size:10px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:0.03em;transition:color 0.3s;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;padding:0 2px}
+.stage-pill.active{color:rgba(255,255,255,0.95)}
+.stage-pill.done{color:rgba(255,255,255,0.6)}
+
+/* Stage area */
+.modal-stages{flex:1;overflow:hidden;background:#fff;position:relative}
+.slide{display:none;flex-direction:column;gap:16px;padding:18px 16px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;height:100%;animation:fadeSlide 0.25s ease}
+.slide.active{display:flex}
+@keyframes fadeSlide{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeSlideBack{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+.slide.back-anim{animation:fadeSlideBack 0.25s ease}
+
+/* Modal footer */
+.modal-footer{padding:10px 16px;text-align:center;font-size:11px;color:#bbb;border-top:1px solid #f5f5f5;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:5px}
+.modal-footer strong{color:#3172AE}
+
+/* ══════════════════════════════════════
+   NAVIGATE STAGE COMPONENTS
+═══════════════════════════════════════ */
+.h1{font-size:18px;font-weight:700;color:#111;line-height:1.3}
+.sub{font-size:13px;color:#555;line-height:1.6;margin-top:5px}
+strong{font-weight:700}
+
+.btn{width:100%;padding:14px 16px;border-radius:10px;font-size:14px;font-weight:700;border:none;cursor:pointer;transition:opacity 0.15s,transform 0.1s;-webkit-tap-highlight-color:transparent;min-height:50px;display:flex;align-items:center;justify-content:center;gap:8px;line-height:1}
+.btn:active{transform:scale(0.98)}
+.btn:disabled{opacity:0.35;cursor:default;transform:none}
+.btn-primary{color:#fff}
+.btn-secondary{background:transparent;border:2px solid;font-size:14px}
+.btn-ghost{background:#f5f5f5;color:#333;border:none}
+
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#888;background:none;border:none;cursor:pointer;padding:8px 0;min-height:44px;-webkit-tap-highlight-color:transparent}
+.back-btn svg{width:15px;height:15px}
+
+.input-wrap{display:flex;flex-direction:column;gap:6px}
+.input-label{font-size:13px;font-weight:600;color:#333}
+.inp{width:100%;padding:12px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:15px;background:#fff;color:#111;outline:none;-webkit-appearance:none;transition:border-color 0.15s}
+.inp:focus{box-shadow:0 0 0 3px var(--brand-shadow)}
+.inp.inp-error{border-color:#dc2626}
+.field-hint{font-size:11px;color:#999;margin-top:3px}
+.field-err-msg{font-size:11px;color:#dc2626;margin-top:3px;display:none}
+
+.school-list{border:1.5px solid #e0e0e0;border-radius:10px;overflow:hidden}
+.list-header{padding:7px 14px;font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;background:#fafafa;border-bottom:1px solid #f0f0f0}
+.school-item{padding:13px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid #f5f5f5;color:#222;background:#fff;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:space-between;min-height:48px}
+.school-item:last-child{border-bottom:none}
+.school-item.sel,.school-item:active{background:#fafafa}
+.chk{font-size:13px}
+
+.dest-box{display:flex;align-items:center;gap:11px;border-radius:10px;padding:12px 14px}
+.dest-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;opacity:0.7}
+.dest-val{font-size:13px;font-weight:700;margin-top:2px}
+
+.notice{border-radius:10px;padding:11px 14px;display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.5}
+.notice-amber{background:#fffbf5;border:1.5px solid #f5e6cc;color:#7a5c2e}
+.notice-red{background:#fef2f2;border:1.5px solid #fecaca;color:#dc2626;display:none}
+.notice-blue{background:#f0f7ff;border:1.5px solid #bfdbfe;color:#1d4ed8}
+
+.upload-box{border:2px dashed #ddd;border-radius:14px;padding:28px 14px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:pointer;transition:all 0.15s;width:100%}
+.upload-box.has-file{background:#fafafa;border-style:solid}
+.upload-box:active{background:#fafafa}
+.upload-icon-wrap{width:50px;height:50px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center}
+.upload-icon{font-size:22px}
+.upload-title{font-size:14px;font-weight:600;color:#222;text-align:center}
+.upload-hint{font-size:12px;color:#999;text-align:center}
+.consent-row{display:flex;gap:11px;align-items:flex-start;font-size:13px;color:#444;line-height:1.55;padding:3px 0}
+.consent-row input{margin-top:2px;flex-shrink:0;width:17px;height:17px;cursor:pointer}
+
+.parsing-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;flex:1;padding:32px 20px;text-align:center;min-height:340px}
+.spinner{width:46px;height:46px;border:3px solid #eee;border-radius:50%;animation:spin 0.9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.parsing-steps{display:flex;flex-direction:column;gap:9px;width:100%;max-width:260px}
+.ps{display:flex;align-items:center;gap:9px;font-size:13px;color:#bbb;transition:color 0.4s}
+.ps.done{color:#0a6e4a}
+.ps.active{color:#222;font-weight:600}
+.ps-icon{width:21px;height:21px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;transition:all 0.3s}
+.ps.done .ps-icon{background:#d1fae5;color:#0a6e4a}
+.ps.active .ps-icon{color:#fff}
+
+.summary-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.summary-card{background:#fafafa;border-radius:10px;padding:12px;text-align:center}
+.summary-num{font-size:22px;font-weight:700;color:#222}
+.summary-sub{font-size:11px;color:#888;margin-top:2px;font-weight:500}
+.term-label{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.course-card{border:1px solid #f0f0f0;border-radius:10px;padding:11px 13px;background:#fff;margin-bottom:6px}
+.course-top{font-size:13px;font-weight:600;color:#222;display:flex;justify-content:space-between;align-items:flex-start;gap:6px;line-height:1.35}
+.edit-btn{font-size:11px;color:#ccc;text-decoration:underline;cursor:pointer;flex-shrink:0;background:none;border:none;padding:6px 0 6px 10px;min-height:44px;display:flex;align-items:center}
+.course-meta{font-size:11px;color:#999;margin-top:4px;display:flex;gap:5px;flex-wrap:wrap}
+.grade-good{color:#0a6e4a;font-weight:600}
+.add-course-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:12px;background:#fafafa;border:1.5px dashed #ddd;border-radius:10px;font-size:13px;color:#666;cursor:pointer;min-height:48px;font-weight:500}
+
+.value-box{border-radius:10px;padding:12px 14px;display:flex;gap:11px;align-items:flex-start}
+.value-icon{font-size:18px;flex-shrink:0}
+.value-title{font-size:13px;font-weight:600}
+.value-sub{font-size:11px;color:#888;margin-top:2px;line-height:1.4}
+
+.confirm-icon-wrap{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:4px auto;font-size:32px}
+.next-steps{background:#fafafa;border-radius:12px;padding:14px}
+.next-title{font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px}
+.next-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;font-size:13px;color:#333;line-height:1.4}
+.next-item:last-child{margin-bottom:0}
+.next-num{width:20px;height:20px;border-radius:50%;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.resend-btn{font-size:13px;text-decoration:underline;cursor:pointer;background:none;border:none;text-align:center;width:100%;padding:8px 0;min-height:44px}
+.email-chip{display:inline-flex;align-items:center;gap:5px;background:#f5f5f5;border-radius:20px;padding:5px 11px;font-size:12px;color:#555;font-weight:500;max-width:100%;overflow:hidden}
+.email-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.parse-tips{background:#fafafa;border-radius:10px;padding:13px;width:100%}
+.parse-tips-title{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+.tip-item{display:flex;gap:9px;align-items:flex-start;margin-bottom:7px;font-size:12px;color:#444;line-height:1.4}
+.tip-item:last-child{margin-bottom:0}
+.tip-dot{width:5px;height:5px;border-radius:50%;background:#ccc;flex-shrink:0;margin-top:5px}
+
+.school-notfound{padding:14px}
+.notfound-title{font-size:14px;font-weight:600;color:#333;margin-bottom:6px}
+.notfound-sub{font-size:12px;color:#666;margin-bottom:12px;line-height:1.5}
+
+.divider{display:flex;align-items:center;gap:8px;color:#ccc;font-size:11px;margin:2px 0}
+.divider::before,.divider::after{content:'';flex:1;border-top:1px solid #eee}
+</style>
+</head>
+<body>
+
+<!-- University page simulation -->
+
+<!-- Demo switcher -->
+<div class="demo-switcher">
+  <span class="demo-switcher-label">🎓 Demo university:</span>
+  <button class="demo-univ-btn active" onclick="switchUniv('tufts')">Tufts University</button>
+  <button class="demo-univ-btn" onclick="switchUniv('bu')">Boston University</button>
+  <button class="demo-univ-btn" onclick="switchUniv('northeastern')">Northeastern</button>
+  <button class="demo-univ-btn" onclick="switchUniv('umass')">UMass Amherst</button>
+</div>
+
+<!-- Top bar -->
+<div class="univ-topbar" id="topbar">
+  <span id="topbar-name">Tufts University</span>
+  <a href="#" id="topbar-apply">Apply Now →</a>
+</div>
+
+<!-- Navigation -->
+<nav class="univ-nav">
+  <a href="#" class="univ-logo">
+    <div class="univ-logo-mark" id="nav-logo">TU</div>
+    <span class="univ-logo-text" id="nav-name">Tufts University</span>
+  </a>
+  <div class="univ-nav-links">
+    <a href="#">Academics</a>
+    <a href="#">Research</a>
+    <a href="#" class="active">Admissions</a>
+    <a href="#">Campus Life</a>
+    <a href="#">About</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="univ-hero" id="hero">
+  <div class="univ-hero-tag" id="hero-tag">Transfer Admissions</div>
+  <h1 id="hero-h1">Your credits have a place here.<br>Let's make sure they count.</h1>
+  <p id="hero-p">Find out exactly how your coursework transfers to <span id="hero-univ-name">Tufts</span> — before you apply. No guesswork, no surprises.</p>
+  <div class="univ-hero-btns">
+    <button class="btn-navy" onclick="openModal()">Check my credit transfer</button>
+    <a href="#" class="btn-outline-white">Explore transfer requirements</a>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="univ-breadcrumb">
+  <a href="#" style="color:inherit">Home</a><span>›</span>
+  <a href="#" style="color:inherit">Admissions</a><span>›</span>
+  Transfer Students
+</div>
+
+<!-- Content area -->
+<div class="univ-content">
+  <div class="univ-main">
+    <h2>Transferring to <span id="content-univ-name">Tufts</span></h2>
+    <p>We welcome transfer students from community colleges and four-year institutions. Our transfer admission process is designed to recognize the work you've already done and help you build on it here.</p>
+    <p>Before you apply, use our credit transfer tool to get a clear picture of where you stand. Upload your transcript and we'll show you which courses are likely to transfer — so you can plan your degree from day one.</p>
+    <h2 style="margin-top:32px">What transfers?</h2>
+    <p>Most lower-division coursework from regionally accredited institutions is eligible for transfer credit. Common transfers include:</p>
+    <ul>
+      <li>General education requirements (writing, math, sciences)</li>
+      <li>Introductory major coursework</li>
+      <li>Elective credits (subject to department approval)</li>
+    </ul>
+    <p>Credits are evaluated course-by-course. Our tool gives you a preliminary assessment — the official evaluation happens after you apply.</p>
+  </div>
+
+  <!-- Navigate CTA card -->
+  <aside>
+    <div class="navigate-cta-card" id="cta-card">
+      <div class="navigate-cta-header" id="cta-header">
+        <h3>Will your credits transfer?</h3>
+        <p>Get a preliminary evaluation in 2 minutes — no application required.</p>
+      </div>
+      <div class="navigate-cta-body">
+        <div class="navigate-cta-steps">
+          <div class="cta-step"><div class="cta-step-num" id="cta-num-1">1</div><span>Select your current school</span></div>
+          <div class="cta-step"><div class="cta-step-num" id="cta-num-2">2</div><span>Upload your transcript</span></div>
+          <div class="cta-step"><div class="cta-step-num" id="cta-num-3">3</div><span>Get your credit evaluation by email</span></div>
+        </div>
+        <button class="btn-navigate" id="cta-btn" onclick="openModal()">Check my credit transfer</button>
+      </div>
+      <div class="navigate-cta-footer">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Powered by <strong>EdVisorly Navigate</strong>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- ════════════════════════════════════════
+     NAVIGATE MODAL
+═════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+
+    <!-- Top bar -->
+    <div class="modal-topbar" id="modal-topbar">
+      <div class="modal-brand">
+        <div class="modal-logo" id="modal-logo">TU</div>
+        <div>
+          <div class="modal-school" id="modal-school">Tufts University</div>
+          <div class="modal-secure">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Secure · Encrypted
+          </div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+    </div>
+
+    <!-- Progress -->
+    <div class="modal-prog-wrap" id="modal-prog-wrap">
+      <div class="modal-prog-track"><div class="modal-prog-bar" id="prog"></div></div>
+      <div class="modal-stage-names">
+        <div class="stage-pill active" data-n="0">School</div>
+        <div class="stage-pill" data-n="1">Upload</div>
+        <div class="stage-pill" data-n="2">Review</div>
+        <div class="stage-pill" data-n="3">Results</div>
+        <div class="stage-pill" data-n="4">Done</div>
+      </div>
+    </div>
+
+    <!-- Stage content -->
+    <div class="modal-stages" id="sc"></div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Powered by <strong>EdVisorly Navigate</strong>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── University brand definitions ──
+const UNIVS = {
+  tufts: {
+    id: 'tufts', abbr: 'TU',
+    name: 'Tufts University', short: 'Tufts',
+    primary: '#002E6D', secondary: '#3172AE', accent: '#C1CD23',
+    light: '#EBF3FB', btnText: '#fff',
+    font: "'proxima-nova',system-ui,sans-serif",
+    headingFont: "'ff-meta-serif-web-pro',Georgia,serif",
+  },
+  bu: {
+    id: 'bu', abbr: 'BU',
+    name: 'Boston University', short: 'BU',
+    primary: '#CC0000', secondary: '#8B0000', accent: '#FFFFFF',
+    light: '#FFF5F5', btnText: '#fff',
+    font: "system-ui,sans-serif",
+    headingFont: "Georgia,serif",
+  },
+  northeastern: {
+    id: 'northeastern', abbr: 'NU',
+    name: 'Northeastern University', short: 'Northeastern',
+    primary: '#C8102E', secondary: '#000000', accent: '#D4AF37',
+    light: '#FFF5F7', btnText: '#fff',
+    font: "system-ui,sans-serif",
+    headingFont: "Georgia,serif",
+  },
+  umass: {
+    id: 'umass', abbr: 'UM',
+    name: 'UMass Amherst', short: 'UMass',
+    primary: '#881C1C', secondary: '#4d1a1a', accent: '#C0C0C0',
+    light: '#FFF7F7', btnText: '#fff',
+    font: "system-ui,sans-serif",
+    headingFont: "Georgia,serif",
+  },
+};
+
+let currentUniv = UNIVS.tufts;
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function applyUnivBranding(u) {
+  // CSS custom props for dynamic theming
+  document.documentElement.style.setProperty('--brand', u.primary);
+  document.documentElement.style.setProperty('--brand-secondary', u.secondary);
+  document.documentElement.style.setProperty('--brand-accent', u.accent);
+  document.documentElement.style.setProperty('--brand-light', u.light);
+  document.documentElement.style.setProperty('--brand-shadow', hexToRgba(u.primary, 0.15));
+
+  // University page
+  document.getElementById('topbar').style.background = u.primary;
+  document.getElementById('topbar-name').textContent = u.name;
+  document.getElementById('nav-logo').style.background = u.primary;
+  document.getElementById('nav-logo').textContent = u.abbr;
+  document.getElementById('nav-name').textContent = u.name;
+  document.getElementById('nav-name').style.color = u.primary;
+  const hero = document.getElementById('hero');
+  hero.style.background = u.primary;
+  hero.style.backgroundImage = `linear-gradient(135deg, ${u.primary} 0%, ${u.secondary} 60%, ${u.secondary}cc 100%)`;
+  document.getElementById('hero-univ-name').textContent = u.short;
+  document.getElementById('content-univ-name').textContent = u.short;
+  document.querySelectorAll('.univ-main h2').forEach(h => h.style.color = u.primary);
+  document.querySelector('.univ-nav').style.borderBottomColor = u.primary;
+
+  // CTA card
+  document.getElementById('cta-header').style.background = u.primary;
+  document.getElementById('cta-card').style.borderColor = u.primary;
+  document.getElementById('cta-btn').style.background = u.primary;
+  ['cta-num-1','cta-num-2','cta-num-3'].forEach(id => {
+    document.getElementById(id).style.background = u.primary;
+  });
+
+  // Modal
+  document.getElementById('modal-topbar').style.background = u.primary;
+  document.getElementById('modal-logo').style.background = u.secondary;
+  document.getElementById('modal-logo').textContent = u.abbr;
+  document.getElementById('modal-school').textContent = u.name;
+  document.getElementById('prog').style.background = u.accent !== '#FFFFFF' ? u.accent : 'rgba(255,255,255,0.9)';
+
+  // Demo buttons
+  document.querySelectorAll('.demo-univ-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.toLowerCase().includes(u.short.toLowerCase()) || (u.id === 'tufts' && btn.textContent.includes('Tufts')));
+  });
+}
+
+function switchUniv(id) {
+  currentUniv = UNIVS[id];
+  applyUnivBranding(currentUniv);
+  // Re-render current stage if modal open
+  if (document.getElementById('modal-overlay').classList.contains('open')) {
+    renderCurrentStage();
+  }
+}
+
+// ── Navigate flow state ──
+const MAX_MB = 10;
+const STAGES = ['school','upload','parsing','review','email','confirm'];
+const PROG   = [0,1,2,2,3,4];
+const SCHOOLS = ['Bunker Hill Community College','Mass Bay Community College','Middlesex Community College','Bristol Community College','Cape Cod Community College','Northern Essex Community College'];
+const COURSES = [
+  {term:'Fall 2023',code:'ENG 101',title:'English Composition I',cr:3,grade:'A'},
+  {term:'Fall 2023',code:'MAT 120',title:'Calculus I',cr:4,grade:'B+'},
+  {term:'Fall 2023',code:'PSY 100',title:'Intro to Psychology',cr:3,grade:'A-'},
+  {term:'Spring 2024',code:'BIO 110',title:'General Biology',cr:4,grade:'A-'},
+  {term:'Spring 2024',code:'CHE 101',title:'General Chemistry I',cr:4,grade:'B'},
+  {term:'Spring 2024',code:'ENG 201',title:'English Composition II',cr:3,grade:'B+'},
+];
+let st = {idx:0, school:'', file:null, consent:false, parseFailed:false, manualEntry:false, name:'', email:'', emailTouched:false};
+
+function openModal() {
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  renderCurrentStage();
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleOverlayClick(e) { if (e.target === e.currentTarget) closeModal(); }
+
+function updateProg() {
+  const p = PROG[st.idx];
+  document.getElementById('prog').style.width = ((p+1)/5*100)+'%';
+  document.querySelectorAll('.stage-pill').forEach((el,i) => {
+    el.classList.toggle('active', i===p);
+    el.classList.toggle('done', i<p);
+  });
+}
+
+function renderCurrentStage(dir) { _render(dir||'fwd'); }
+
+function _render(dir) {
+  updateProg();
+  const sc = document.getElementById('sc');
+  // Remove all existing slides
+  while (sc.firstChild) sc.removeChild(sc.firstChild);
+
+  const s = STAGES[st.idx];
+  let html =
+    s==='school'  ? sSchool()   :
+    s==='upload'  ? sUpload()   :
+    s==='parsing' ? sParsing()  :
+    s==='review'  ? sReview()   :
+    s==='email'   ? sEmail()    :
+                    sConfirm();
+
+  const div = document.createElement('div');
+  div.className = 'slide active' + (dir === 'back' ? ' back-anim' : '');
+  div.innerHTML = html;
+  sc.appendChild(div);
+
+  if (s==='parsing') scheduleParsing();
+  applyBrandToStage(div);
+}
+
+function applyBrandToStage(container) {
+  const u = currentUniv;
+  container.querySelectorAll('.btn-primary').forEach(el => {
+    el.style.background = u.primary;
+    el.style.color = u.btnText;
+  });
+  container.querySelectorAll('.btn-secondary').forEach(el => {
+    el.style.borderColor = u.primary;
+    el.style.color = u.primary;
+  });
+  container.querySelectorAll('.resend-btn').forEach(el => el.style.color = u.primary);
+  container.querySelectorAll('.add-course-btn').forEach(el => el.style.borderColor = u.primary + '66');
+  container.querySelectorAll('.dest-box').forEach(el => {
+    el.style.background = u.light;
+  });
+  container.querySelectorAll('.dest-val').forEach(el => el.style.color = u.primary);
+  container.querySelectorAll('.value-box').forEach(el => el.style.background = u.light);
+  container.querySelectorAll('.value-title').forEach(el => el.style.color = u.primary);
+  container.querySelectorAll('.ps.active .ps-icon').forEach(el => el.style.background = u.primary);
+  container.querySelectorAll('.next-num').forEach(el => el.style.background = u.primary);
+  container.querySelectorAll('.confirm-icon-wrap').forEach(el => {
+    el.style.background = hexToRgba(u.primary, 0.08);
+  });
+  container.querySelectorAll('input[type=checkbox]').forEach(el => el.style.accentColor = u.primary);
+  container.querySelectorAll('.inp').forEach(el => {
+    el.style.setProperty('--focus-color', u.primary);
+    el.addEventListener('focus', ()=> el.style.borderColor = u.primary);
+    el.addEventListener('blur', ()=> el.style.borderColor = '');
+  });
+  container.querySelectorAll('.school-item.sel').forEach(el => el.style.color = u.primary);
+}
+
+function next() { st.idx = Math.min(st.idx+1, STAGES.length-1); _render('fwd'); }
+function back() { st.idx = Math.max(st.idx-1, 0); _render('back'); }
+function restart() {
+  st = {idx:0,school:'',file:null,consent:false,parseFailed:false,manualEntry:false,name:'',email:'',emailTouched:false};
+  _render('back');
+}
+
+function esc(s){ return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+
+// ── Stage HTML builders ──
+function sSchool() {
+  const u = currentUniv;
+  const items = SCHOOLS.map(s=>`<div class="school-item${st.school===s?' sel':''}" onclick="pickSchool('${esc(s)}')" style="${st.school===s?'color:'+u.primary:''}">${s}${st.school===s?'<span class="chk">✓</span>':''}</div>`).join('');
+  return `
+    <div><p class="h1">Where are you transferring from?</p>
+    <p class="sub">Tell us your current school and we'll check how your credits transfer to ${u.short}.</p></div>
+    <div class="input-wrap"><label class="input-label">Search schools</label>
+    <input class="inp" id="school-inp" placeholder="Type your school name…" value="${st.school}" oninput="filterSchools(this.value)" autocomplete="off" autocorrect="off" spellcheck="false"></div>
+    <div class="school-list" id="school-list"><div class="list-header">Popular schools</div>${items}</div>
+    <div class="dest-box"><div style="font-size:18px">🎯</div>
+    <div><div class="dest-label">Evaluating transfer to</div><div class="dest-val">${u.name}</div></div></div>
+    <button class="btn btn-primary" onclick="next()" ${st.school?'':'disabled'}>Continue</button>`;
+}
+
+function sUpload() {
+  const hasFile = !!st.file;
+  return `
+    <div><button class="back-btn" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Back</button>
+    <p class="h1">Upload your transcript</p>
+    <p class="sub">We'll check how your credits transfer — before you apply.</p></div>
+    <div class="notice notice-amber">🔒 &nbsp;Your transcript is encrypted and only used for this evaluation. <button onclick="alert('Data deleted after 90 days. Never shared.')" style="color:#7a5c2e;font-size:12px;text-decoration:underline;background:none;border:none;cursor:pointer">Privacy policy</button></div>
+    <label class="upload-box ${hasFile?'has-file':''}" for="file-inp">
+      <div class="upload-icon-wrap"><span class="upload-icon">${hasFile?'✅':'📄'}</span></div>
+      <span class="upload-title${hasFile?' file-ok':''}" style="${hasFile?'color:#0a6e4a':''}">${hasFile?st.file:'Tap to upload your transcript'}</span>
+      <span class="upload-hint">${hasFile?'Tap to change':'PDF, JPG, or PNG · Max 10 MB'}</span>
+      <input type="file" id="file-inp" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="handleFile(this)">
+    </label>
+    <div id="file-error" class="notice notice-red">⚠️ &nbsp;<span id="file-err-msg"></span></div>
+    <label class="consent-row"><input type="checkbox" id="consent-chk" ${st.consent?'checked':''} onchange="st.consent=this.checked;syncUploadBtn()">
+    I agree my transcript data may be processed to evaluate credit transfer eligibility.</label>
+    <button class="btn btn-primary" id="upload-btn" onclick="next()" ${hasFile&&st.consent?'':'disabled'}>Continue</button>`;
+}
+
+function sParsing() {
+  if (st.parseFailed) return `
+    <div><p class="h1">We couldn't read your transcript</p>
+    <p class="sub">Our parser had trouble extracting your course information. This happens with low-resolution scans or certain formats.</p></div>
+    <div style="text-align:center;padding:16px 0"><div style="font-size:40px">😕</div></div>
+    <div class="parse-tips"><div class="parse-tips-title">What usually helps</div>
+    <div class="tip-item"><div class="tip-dot"></div><span>Use an official PDF from your school portal, not a scan</span></div>
+    <div class="tip-item"><div class="tip-dot"></div><span>If scanning, ensure the page is flat and well-lit</span></div>
+    <div class="tip-item"><div class="tip-dot"></div><span>JPG/PNG work best when text is sharp and unrotated</span></div></div>
+    <button class="btn btn-primary" onclick="retryUpload()">Try a different file</button>
+    <div class="divider">or</div>
+    <button class="btn btn-ghost" onclick="enterManually()">Enter my courses manually</button>
+    <button style="font-size:12px;color:#aaa;background:none;border:none;cursor:pointer;padding:8px;min-height:44px;width:100%;text-align:center" onclick="next()">Skip and proceed anyway</button>`;
+
+  return `<div class="parsing-wrap">
+    <div class="spinner" id="spinner" style="border-top-color:${currentUniv.primary}"></div>
+    <div><p style="font-size:15px;font-weight:600;color:#333">Reading your transcript…</p>
+    <p style="font-size:12px;color:#888;line-height:1.5;max-width:240px;margin:6px auto 0">Finding your courses, credits, and grades.</p></div>
+    <div class="parsing-steps">
+      <div class="ps active" id="ps0"><div class="ps-icon">1</div><span>Uploading transcript</span></div>
+      <div class="ps" id="ps1"><div class="ps-icon">2</div><span>Detecting course records</span></div>
+      <div class="ps" id="ps2"><div class="ps-icon">3</div><span>Extracting grades &amp; credits</span></div>
+      <div class="ps" id="ps3"><div class="ps-icon">4</div><span>Preparing your review</span></div>
+    </div></div>`;
+}
+
+function scheduleParsing() {
+  if (st.parseFailed) return;
+  const u = currentUniv;
+  [800,1700,2600,3400].forEach((d,i) => {
+    setTimeout(()=>{
+      if (st.parseFailed) return;
+      const prev = document.getElementById('ps'+(i-1));
+      const cur  = document.getElementById('ps'+i);
+      if (!cur) return;
+      if (prev) { prev.classList.remove('active'); prev.classList.add('done'); prev.querySelector('.ps-icon').textContent='✓'; }
+      cur.classList.add('active');
+      cur.querySelector('.ps-icon').style.background = u.primary;
+      if (i===3) setTimeout(()=>{ if(!st.parseFailed) next(); }, 700);
+    }, d);
+  });
+}
+
+function retryUpload() { st.parseFailed=false; st.file=null; st.idx=STAGES.indexOf('upload'); _render('back'); }
+function enterManually() { st.parseFailed=false; st.manualEntry=true; st.idx=STAGES.indexOf('review'); _render('fwd'); }
+
+function sReview() {
+  const u = currentUniv;
+  const terms={};
+  COURSES.forEach(c=>{ (terms[c.term]=terms[c.term]||[]).push(c); });
+  const total=COURSES.reduce((s,c)=>s+c.cr,0);
+  const banner = st.manualEntry?`<div class="notice notice-blue">ℹ️ &nbsp;We couldn't parse your transcript automatically. Fill in your actual courses before continuing.</div>`:'';
+  return `
+    <div><button class="back-btn" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Back</button>
+    <p class="h1">Does this look right?</p>
+    <p class="sub">We found <strong>${COURSES.length} courses</strong> from <strong>${st.school||'your school'}</strong>.</p></div>
+    ${banner}
+    <div class="summary-row">
+      <div class="summary-card"><div class="summary-num">${COURSES.length}</div><div class="summary-sub">Courses</div></div>
+      <div class="summary-card"><div class="summary-num">${total}</div><div class="summary-sub">Credits</div></div>
+    </div>
+    ${Object.entries(terms).map(([term,cs])=>`<div>
+      <div class="term-label">${term}</div>
+      ${cs.map(c=>`<div class="course-card">
+        <div class="course-top"><span>${c.title}</span><button class="edit-btn">Edit</button></div>
+        <div class="course-meta"><span>${c.code}</span><span>·</span><span>${c.cr} cr</span><span>·</span><span class="${c.grade.startsWith('A')?'grade-good':''}">${c.grade}</span></div>
+      </div>`).join('')}
+    </div>`).join('')}
+    <button class="add-course-btn" onclick="alert('Add course')" style="border-color:${u.primary}66;color:#666">+ Add a missing course</button>
+    <button class="btn btn-primary" onclick="next()">Looks correct — continue</button>`;
+}
+
+function sEmail() {
+  const u = currentUniv;
+  const emailOk = st.email.includes('@') && st.email.includes('.');
+  const showErr = st.emailTouched && st.email && !emailOk;
+  return `
+    <div><button class="back-btn" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Back</button>
+    <p class="h1">Where should we send your results?</p>
+    <p class="sub">Your evaluation is almost ready — we'll email you the full breakdown.</p></div>
+    <div class="value-box">
+      <span class="value-icon">📊</span>
+      <div><div class="value-title">Evaluation ready to run</div>
+      <div class="value-sub">${COURSES.length} courses from ${st.school||'your school'} → ${u.name}</div></div>
+    </div>
+    <div class="input-wrap"><label class="input-label">Your name</label>
+    <input class="inp" id="name-inp" placeholder="Jordan Smith" value="${st.name}" oninput="st.name=this.value;syncEmailBtn()" autocomplete="name"></div>
+    <div class="input-wrap"><label class="input-label">Email address</label>
+    <input class="inp${showErr?' inp-error':''}" id="email-inp" type="email" placeholder="jordan@email.com" value="${st.email}" oninput="st.email=this.value;syncEmailBtn()" onblur="st.emailTouched=true;refreshEmail()" autocomplete="email">
+    <div class="field-err-msg" id="email-err" style="${showErr?'display:block':''}">Please enter a valid email address.</div>
+    <div class="field-hint" id="email-hint" style="${showErr?'display:none':''}">We'll only use this to send your evaluation.</div></div>
+    <button class="btn btn-primary" id="email-btn" onclick="next()" ${st.name&&emailOk?'':'disabled'}>Send my results</button>`;
+}
+
+function sConfirm() {
+  const u = currentUniv;
+  const first = (st.name||'').trim().split(' ')[0];
+  return `
+    <div style="text-align:center;padding-top:8px">
+      <div class="confirm-icon-wrap">✅</div>
+      <p class="h1" style="margin-top:14px">Your evaluation is on its way${first?', '+first:''}!</p>
+      <p class="sub" style="margin-top:6px">We're analyzing your transcript. Expect your ${u.short} credit evaluation within <strong>1–2 business days</strong>.</p>
+      ${st.email?`<div style="margin-top:10px;display:flex;justify-content:center"><div class="email-chip">📧 <span>${st.email}</span></div></div>`:''}
+    </div>
+    <div class="next-steps">
+      <div class="next-title">What happens next</div>
+      <div class="next-item"><div class="next-num">1</div><span>We finish analyzing your ${COURSES.length} courses from ${st.school||'your school'}</span></div>
+      <div class="next-item"><div class="next-num">2</div><span>You'll receive a full credit transfer report by email</span></div>
+      <div class="next-item"><div class="next-num">3</div><span>See exactly which courses count toward your ${u.short} degree</span></div>
+    </div>
+    <button class="resend-btn" onclick="alert('Resent!')">Resend confirmation email</button>
+    <button class="btn btn-secondary" onclick="restart()">Start a new evaluation</button>`;
+}
+
+// ── Interaction handlers ──
+function filterSchools(q) {
+  st.school = '';
+  const list = document.getElementById('school-list');
+  if (!list) return;
+  const u = currentUniv;
+  const q2 = q.trim().toLowerCase();
+  const f = q2 ? SCHOOLS.filter(s=>s.toLowerCase().includes(q2)) : SCHOOLS;
+  const hdr = q2 ? 'Results' : 'Popular schools';
+
+  if (!q2 || f.length) {
+    list.innerHTML = `<div class="list-header">${hdr}</div>${f.map(s=>`<div class="school-item" onclick="pickSchool('${esc(s)}')">${s}</div>`).join('')}`;
+  } else {
+    list.innerHTML = `<div class="school-notfound">
+      <div class="notfound-title">We don't have "${q}" in our system yet</div>
+      <div class="notfound-sub">Your school may not be in our transfer database.</div>
+      <button class="btn btn-primary" style="margin-bottom:8px;font-size:13px" onclick="continueUnknown('${esc(q)}')">Continue anyway</button>
+      <button class="btn btn-ghost" style="font-size:13px" onclick="alert('Request submitted! We\\'ll add this school within 2-3 business days.')">Request this school be added</button>
+      <div class="notice notice-amber" style="margin-top:10px;font-size:11px">ℹ️ &nbsp;Results may be estimated for unverified schools.</div>
+    </div>`;
+    applyBrandToStage(list);
+  }
+  const btn = document.querySelector('#sc .btn-primary');
+  if (btn) btn.disabled = true;
+}
+
+function pickSchool(s) {
+  st.school = s;
+  const inp = document.getElementById('school-inp'); if(inp) inp.value=s;
+  const list = document.getElementById('school-list');
+  if(list) list.innerHTML = `<div class="list-header">Selected</div><div class="school-item sel" style="color:${currentUniv.primary}">${s}<span class="chk">✓</span></div>`;
+  const btn = document.querySelector('#sc .btn-primary'); if(btn) btn.disabled=false;
+}
+
+function continueUnknown(q) {
+  st.school = q;
+  const inp = document.getElementById('school-inp'); if(inp) inp.value=q;
+  const list = document.getElementById('school-list');
+  if(list) list.innerHTML = `<div class="list-header">Continuing with</div><div class="school-item sel" style="color:${currentUniv.primary}">${q}<span class="chk">✓</span></div>`;
+  const btn = document.querySelector('#sc .btn-primary'); if(btn) btn.disabled=false;
+}
+
+function handleFile(input) {
+  const f = input.files[0]; if(!f) return;
+  const ok = ['application/pdf','image/jpeg','image/png'];
+  const errEl = document.getElementById('file-error');
+  const errMsg = document.getElementById('file-err-msg');
+  let err = null;
+  if(!ok.includes(f.type)) err = `Format not supported. Please upload a PDF, JPG, or PNG.`;
+  else if(f.size > MAX_MB*1024*1024) err = `File too large (${(f.size/1024/1024).toFixed(1)} MB). Max is ${MAX_MB} MB. Try a compressed PDF or a clear photo.`;
+  if(err) {
+    if(errMsg) errMsg.textContent=err;
+    if(errEl) errEl.style.display='flex';
+    st.file=null; syncUploadBtn();
+  } else {
+    if(errEl) errEl.style.display='none';
+    st.file=f.name;
+    const slide=document.querySelector('#sc .active');
+    if(slide) slide.innerHTML=sUpload();
+    applyBrandToStage(document.querySelector('#sc .active'));
+  }
+}
+
+function syncUploadBtn() {
+  const btn=document.getElementById('upload-btn'); if(btn) btn.disabled=!(st.file&&st.consent);
+}
+function syncEmailBtn() {
+  const ok=st.email.includes('@')&&st.email.includes('.');
+  const btn=document.getElementById('email-btn'); if(btn) btn.disabled=!(st.name&&ok);
+}
+function refreshEmail() {
+  const ok=st.email.includes('@')&&st.email.includes('.');
+  const show=st.emailTouched&&st.email&&!ok;
+  const inp=document.getElementById('email-inp');
+  const errEl=document.getElementById('email-err');
+  const hintEl=document.getElementById('email-hint');
+  if(inp) inp.classList.toggle('inp-error',show);
+  if(errEl) errEl.style.display=show?'block':'none';
+  if(hintEl) hintEl.style.display=show?'none':'';
+  syncEmailBtn();
+}
+
+// ── Init ──
+applyUnivBranding(currentUniv);
+</script>
+</body>
+</html>
