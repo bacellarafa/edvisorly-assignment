@@ -373,9 +373,7 @@
     COURSES.forEach((c, i) => { (terms[c.term] = terms[c.term] || []).push(Object.assign({ _i: i }, c)); });
     const total = COURSES.reduce((s, c) => s + c.cr, 0);
     const isUnknownSchool = st.scenario === 'school-not-found';
-    const displaySchool = isUnknownSchool
-      ? 'Springfield Technical Community College'
-      : (st.school || 'your school');
+    const displaySchool = st.school || 'your school';
     const banner = st.manualEntry
       ? `<div class="nv-notice nv-notice-blue" id="nv-review-banner">${ic('info')} We couldn't parse your transcript automatically. Fill in your actual courses before continuing.</div>`
       : (isUnknownSchool
