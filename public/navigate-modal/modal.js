@@ -42,7 +42,32 @@
       email: '',
       emailTouched: false,
       scenario: 'success',
+      manualMode: null,   // 'bulk' | 'add' | 'edit' | null
+      editIndex: null,
+      draft: [],
     };
+  }
+
+  // ── Manual-entry helpers ──
+  const GRADES = ['A','A-','B+','B','B-','C+','C','C-','D','F','P','IP'];
+  function blankRow() {
+    const existing = Array.from(new Set(COURSES.map(c => c.term)));
+    return { term: existing[existing.length - 1] || `Fall ${new Date().getFullYear()}`, code: '', title: '', cr: '', grade: '' };
+  }
+  function termOptions() {
+    const seasons = ['Fall','Spring','Summer','Winter'];
+    const now = new Date().getFullYear();
+    const years = [now - 3, now - 2, now - 1, now, now + 1];
+    const out = [];
+    years.forEach(y => seasons.forEach(s => out.push(`${s} ${y}`)));
+    Array.from(new Set(COURSES.map(c => c.term))).forEach(t => { if (!out.includes(t)) out.unshift(t); });
+    return out;
+  }
+  function isValidRow(r) {
+    return !!(r.term && r.code && String(r.code).trim() && r.title && String(r.title).trim() && Number(r.cr) > 0 && r.grade);
+  }
+  function toCourse(r) {
+    return { term: r.term, code: String(r.code).trim(), title: String(r.title).trim(), cr: Number(r.cr), grade: r.grade };
   }
   function detectScenario(filename) {
     const raw = (filename || '').toLowerCase();
@@ -165,6 +190,15 @@
     updateProg();
     const sc = document.getElementById('nv-sc');
     while (sc.firstChild) sc.removeChild(sc.firstChild);
+    const div = document.createElement('div');
+    div.className = 'nv-slide active' + (dir === 'back' ? ' back-anim' : '');
+    if (st.manualMode) {
+      div.innerHTML = sManual();
+      sc.appendChild(div);
+      renderIcons();
+      updateDemoHelp();
+      return;
+    }
     const s = STAGES[st.idx];
     const html =
       s === 'school'  ? sSchool()  :
@@ -173,8 +207,6 @@
       s === 'review'  ? sReview()  :
       s === 'email'   ? sEmail()   :
                         sConfirm();
-    const div = document.createElement('div');
-    div.className = 'nv-slide active' + (dir === 'back' ? ' back-anim' : '');
     div.innerHTML = html;
     sc.appendChild(div);
     if (s === 'parsing') scheduleParsing();
@@ -280,7 +312,7 @@
 
   function sReview() {
     const terms = {};
-    COURSES.forEach(c => { (terms[c.term] = terms[c.term] || []).push(c); });
+    COURSES.forEach((c, i) => { (terms[c.term] = terms[c.term] || []).push(Object.assign({ _i: i }, c)); });
     const total = COURSES.reduce((s, c) => s + c.cr, 0);
     const isUnknownSchool = st.scenario === 'school-not-found';
     const displaySchool = isUnknownSchool
@@ -303,12 +335,89 @@
       ${Object.entries(terms).map(([term, cs]) => `<div>
         <div class="nv-term-label">${term}</div>
         ${cs.map(c => `<div class="nv-course-card">
-          <div class="nv-course-top"><span>${c.title}</span><button class="nv-edit-btn">Edit</button></div>
+          <div class="nv-course-top"><span>${c.title}</span><button class="nv-edit-btn" data-act="edit-course" data-i="${c._i}">Edit</button></div>
           <div class="nv-course-meta"><span>${c.code}</span><span>·</span><span>${c.cr} cr</span><span>·</span><span class="${c.grade.startsWith('A')?'nv-grade-good':''}">${c.grade}</span></div>
         </div>`).join('')}
       </div>`).join('')}
-      <button class="nv-add-course-btn">${ic('plus')} Add a missing course</button>
+      <button class="nv-add-course-btn" data-act="add-course">${ic('plus')} Add a missing course</button>
       <button class="nv-btn nv-btn-primary" data-act="next">Looks correct — continue ${ic('arrow-right')}</button>`;
+  }
+
+  function sManual() {
+    const mode = st.manualMode;
+    const titles = { bulk: 'Enter your courses', add: 'Add a course', edit: 'Edit course' };
+    const ctas   = { bulk: 'Save courses & continue', add: 'Add course', edit: 'Save changes' };
+    const subs   = {
+      bulk: "Add each course as it appears on your transcript. You can edit anything later.",
+      add:  "Fill in the details for the missing course.",
+      edit: "Update the details for this course."
+    };
+    const showRemove = mode === 'bulk' && st.draft.length > 1;
+    const allValid = st.draft.length > 0 && st.draft.every(isValidRow);
+    const totalCr  = st.draft.reduce((s, r) => s + (Number(r.cr) || 0), 0);
+    const TERMS = termOptions();
+
+    const rowsHtml = st.draft.map((r, i) => `
+      <div class="nv-manual-row" data-row="${i}">
+        ${mode === 'bulk' ? `<div class="nv-manual-row-head">
+          <span class="nv-manual-row-num">Course ${i + 1}</span>
+          ${showRemove ? `<button class="nv-manual-remove" data-act="manual-remove-row" data-i="${i}" aria-label="Remove course">${ic('trash-2')}</button>` : ''}
+        </div>` : ''}
+        <div class="nv-manual-grid">
+          <div class="nv-input-wrap nv-mf-term">
+            <label class="nv-input-label" for="nv-mf-term-${i}">Term</label>
+            <select class="nv-inp" id="nv-mf-term-${i}" data-row="${i}" data-field="term">
+              ${TERMS.map(t => `<option value="${esc(t)}"${r.term===t?' selected':''}>${t}</option>`).join('')}
+            </select>
+          </div>
+          <div class="nv-input-wrap nv-mf-code">
+            <label class="nv-input-label" for="nv-mf-code-${i}">Course code</label>
+            <input class="nv-inp" id="nv-mf-code-${i}" data-row="${i}" data-field="code" placeholder="ENG 101" value="${esc(r.code)}" autocomplete="off">
+          </div>
+          <div class="nv-input-wrap nv-mf-title">
+            <label class="nv-input-label" for="nv-mf-title-${i}">Course title</label>
+            <input class="nv-inp" id="nv-mf-title-${i}" data-row="${i}" data-field="title" placeholder="English Composition I" value="${esc(r.title)}" autocomplete="off">
+          </div>
+          <div class="nv-input-wrap nv-mf-cr">
+            <label class="nv-input-label" for="nv-mf-cr-${i}">Credits</label>
+            <input class="nv-inp" id="nv-mf-cr-${i}" type="number" inputmode="decimal" min="0" max="6" step="0.5" data-row="${i}" data-field="cr" placeholder="3" value="${r.cr}">
+          </div>
+          <div class="nv-input-wrap nv-mf-grade">
+            <label class="nv-input-label" for="nv-mf-grade-${i}">Grade</label>
+            <select class="nv-inp" id="nv-mf-grade-${i}" data-row="${i}" data-field="grade">
+              <option value="">—</option>
+              ${GRADES.map(g => `<option value="${g}"${r.grade===g?' selected':''}>${g}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      </div>`).join('');
+
+    return `
+      <div><button class="nv-back-btn" data-act="manual-cancel">${ic('arrow-left')} Back</button>
+      <p class="nv-h1">${titles[mode]}</p>
+      <p class="nv-sub">${subs[mode]}</p></div>
+      ${mode === 'bulk'
+        ? `<div class="nv-manual-summary" id="nv-manual-summary">${st.draft.length} ${st.draft.length===1?'course':'courses'} · ${totalCr} ${totalCr===1?'credit':'credits'}</div>`
+        : ''}
+      ${rowsHtml}
+      ${mode === 'bulk'
+        ? `<button class="nv-add-course-btn" data-act="manual-add-row">${ic('plus')} Add another course</button>`
+        : ''}
+      <button class="nv-btn nv-btn-primary" data-act="manual-save" ${allValid ? '' : 'disabled'}>${ctas[mode]}${mode==='bulk' ? ' ' + ic('arrow-right') : ''}</button>
+      <button class="nv-text-link" data-act="manual-cancel">Cancel</button>`;
+  }
+
+  function updateManualState() {
+    const slide = document.querySelector('#nv-sc .nv-slide');
+    if (!slide) return;
+    const allValid = st.draft.length > 0 && st.draft.every(isValidRow);
+    const btn = slide.querySelector('[data-act="manual-save"]');
+    if (btn) btn.disabled = !allValid;
+    const sum = document.getElementById('nv-manual-summary');
+    if (sum && st.manualMode === 'bulk') {
+      const totalCr = st.draft.reduce((s, r) => s + (Number(r.cr) || 0), 0);
+      sum.textContent = `${st.draft.length} ${st.draft.length===1?'course':'courses'} · ${totalCr} ${totalCr===1?'credit':'credits'}`;
+    }
   }
 
   function sEmail() {
@@ -365,7 +474,53 @@
       else if (a === 'back') back();
       else if (a === 'restart') restart();
       else if (a === 'retry') { st.parseFailed = false; st.file = null; st.scenario = 'success'; st.idx = STAGES.indexOf('upload'); render('back'); }
-      else if (a === 'manual') { st.parseFailed = false; st.manualEntry = true; st.idx = STAGES.indexOf('review'); render('fwd'); }
+      else if (a === 'manual') { st.parseFailed = false; st.manualMode = 'bulk'; st.draft = [blankRow()]; st.editIndex = null; render('fwd'); }
+      else if (a === 'add-course') { st.manualMode = 'add'; st.draft = [blankRow()]; st.editIndex = null; render('fwd'); }
+      else if (a === 'edit-course') {
+        const i = Number(act.dataset.i);
+        if (!Number.isFinite(i) || !COURSES[i]) return;
+        st.manualMode = 'edit'; st.editIndex = i;
+        st.draft = [{ term: COURSES[i].term, code: COURSES[i].code, title: COURSES[i].title, cr: COURSES[i].cr, grade: COURSES[i].grade }];
+        render('fwd');
+      }
+      else if (a === 'manual-add-row') {
+        st.draft.push(blankRow());
+        render('fwd');
+        const last = st.draft.length - 1;
+        const focusEl = document.getElementById('nv-mf-code-' + last);
+        if (focusEl) focusEl.focus();
+      }
+      else if (a === 'manual-remove-row') {
+        const i = Number(act.dataset.i);
+        if (!Number.isFinite(i)) return;
+        st.draft.splice(i, 1);
+        if (!st.draft.length) st.draft.push(blankRow());
+        render('fwd');
+      }
+      else if (a === 'manual-save') {
+        if (!st.draft.every(isValidRow)) return;
+        if (st.manualMode === 'bulk') {
+          COURSES.length = 0;
+          st.draft.forEach(r => COURSES.push(toCourse(r)));
+          st.manualEntry = true;
+          st.manualMode = null;
+          st.draft = [];
+          st.idx = STAGES.indexOf('review');
+          render('fwd');
+        } else if (st.manualMode === 'add') {
+          COURSES.push(toCourse(st.draft[0]));
+          st.manualMode = null; st.draft = [];
+          render('back');
+        } else if (st.manualMode === 'edit') {
+          COURSES[st.editIndex] = toCourse(st.draft[0]);
+          st.manualMode = null; st.editIndex = null; st.draft = [];
+          render('back');
+        }
+      }
+      else if (a === 'manual-cancel') {
+        st.manualMode = null; st.editIndex = null; st.draft = [];
+        render('back');
+      }
       else if (a === 'skip-review') { st.parseFailed = false; st.idx = STAGES.indexOf('review'); render('fwd'); }
       else if (a === 'skip') { st.parseFailed = false; st.idx = STAGES.indexOf('email'); render('fwd'); }
       else if (a === 'request-school') {
@@ -411,10 +566,22 @@
     }
     if (e.target.id === 'nv-name-inp')  { st.name = e.target.value; syncEmailBtn(); }
     if (e.target.id === 'nv-email-inp') { st.email = e.target.value; syncEmailBtn(); }
+    const t = e.target;
+    if (st.manualMode && t && t.dataset && t.dataset.row !== undefined && t.dataset.field) {
+      const i = Number(t.dataset.row);
+      const f = t.dataset.field;
+      if (st.draft[i]) { st.draft[i][f] = t.value; updateManualState(); }
+    }
   });
   document.addEventListener('change', (e) => {
     if (e.target.id === 'nv-consent-chk') { st.consent = e.target.checked; syncUploadBtn(); }
     if (e.target.id === 'nv-file-inp') handleFile(e.target);
+    const t = e.target;
+    if (st.manualMode && t && t.dataset && t.dataset.row !== undefined && t.dataset.field) {
+      const i = Number(t.dataset.row);
+      const f = t.dataset.field;
+      if (st.draft[i]) { st.draft[i][f] = t.value; updateManualState(); }
+    }
   });
   document.addEventListener('blur', (e) => {
     if (e.target && e.target.id === 'nv-email-inp') {
