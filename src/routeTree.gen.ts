@@ -9,8 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UmassRouteImport } from './routes/umass'
+import { Route as TuftsRouteImport } from './routes/tufts'
+import { Route as NortheasternRouteImport } from './routes/northeastern'
+import { Route as BuRouteImport } from './routes/bu'
 import { Route as IndexRouteImport } from './routes/index'
 
+const UmassRoute = UmassRouteImport.update({
+  id: '/umass',
+  path: '/umass',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TuftsRoute = TuftsRouteImport.update({
+  id: '/tufts',
+  path: '/tufts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NortheasternRoute = NortheasternRouteImport.update({
+  id: '/northeastern',
+  path: '/northeastern',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuRoute = BuRouteImport.update({
+  id: '/bu',
+  path: '/bu',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +43,72 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/bu': typeof BuRoute
+  '/northeastern': typeof NortheasternRoute
+  '/tufts': typeof TuftsRoute
+  '/umass': typeof UmassRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/bu': typeof BuRoute
+  '/northeastern': typeof NortheasternRoute
+  '/tufts': typeof TuftsRoute
+  '/umass': typeof UmassRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/bu': typeof BuRoute
+  '/northeastern': typeof NortheasternRoute
+  '/tufts': typeof TuftsRoute
+  '/umass': typeof UmassRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/bu' | '/northeastern' | '/tufts' | '/umass'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/bu' | '/northeastern' | '/tufts' | '/umass'
+  id: '__root__' | '/' | '/bu' | '/northeastern' | '/tufts' | '/umass'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BuRoute: typeof BuRoute
+  NortheasternRoute: typeof NortheasternRoute
+  TuftsRoute: typeof TuftsRoute
+  UmassRoute: typeof UmassRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/umass': {
+      id: '/umass'
+      path: '/umass'
+      fullPath: '/umass'
+      preLoaderRoute: typeof UmassRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tufts': {
+      id: '/tufts'
+      path: '/tufts'
+      fullPath: '/tufts'
+      preLoaderRoute: typeof TuftsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/northeastern': {
+      id: '/northeastern'
+      path: '/northeastern'
+      fullPath: '/northeastern'
+      preLoaderRoute: typeof NortheasternRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bu': {
+      id: '/bu'
+      path: '/bu'
+      fullPath: '/bu'
+      preLoaderRoute: typeof BuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,7 +121,21 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BuRoute: BuRoute,
+  NortheasternRoute: NortheasternRoute,
+  TuftsRoute: TuftsRoute,
+  UmassRoute: UmassRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
