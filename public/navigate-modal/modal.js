@@ -446,19 +446,31 @@
     const errEl = document.getElementById('nv-file-error');
     const errMsg = document.getElementById('nv-file-err-msg');
     const scenario = detectScenario(f.name);
+    const accepted = ['application/pdf', 'image/jpeg', 'image/png'];
     let err = null;
-    if (scenario === 'wrong-format') {
+
+    // Check 1 — wrong format (simulated OR real MIME mismatch)
+    if (scenario === 'wrong-format' || !accepted.includes(f.type)) {
       err = `That file format isn't supported. Navigate only accepts PDF, JPG, or PNG transcripts.`;
-    } else if (scenario === 'too-large') {
-      err = `This file is too large (14.2 MB). The maximum is 10 MB. Try exporting a compressed PDF from your school portal, or take a clear photo instead.`;
+    } else {
+      // Check 2 — file too large (simulated OR real size)
+      const simulatedMB = 14.2;
+      const displayMB = scenario === 'too-large' ? simulatedMB : (f.size / 1024 / 1024).toFixed(1);
+      if (scenario === 'too-large' || f.size > MAX_MB * 1024 * 1024) {
+        err = `This file is too large (${displayMB} MB). The maximum is ${MAX_MB} MB. Try exporting a compressed PDF from your school portal, or take a clear photo instead.`;
+      }
     }
+
     if (err) {
       if (errMsg) errMsg.textContent = err;
       if (errEl) errEl.style.display = 'flex';
-      st.file = null; st.scenario = 'success'; syncUploadBtn();
+      st.file = null;
+      st.scenario = 'success';
+      syncUploadBtn();
       input.value = '';
       return;
     }
+
     if (errEl) errEl.style.display = 'none';
     st.file = f.name;
     st.scenario = scenario;
