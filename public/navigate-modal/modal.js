@@ -50,14 +50,9 @@
 
   // ── Manual-entry helpers ──
   const GRADES = ['A','A-','B+','B','B-','C+','C','C-','D','F','P','IP'];
-  const FIELDS = ['term','code','title','cr','grade'];
   function blankRow() {
     const existing = Array.from(new Set(COURSES.map(c => c.term)));
-    return {
-      term: existing[existing.length - 1] || `Fall ${new Date().getFullYear()}`,
-      code: '', title: '', cr: '', grade: '',
-      _t: { term:false, code:false, title:false, cr:false, grade:false },
-    };
+    return { term: existing[existing.length - 1] || `Fall ${new Date().getFullYear()}`, code: '', title: '', cr: '', grade: '' };
   }
   function termOptions() {
     const seasons = ['Fall','Spring','Summer','Winter'];
@@ -68,35 +63,9 @@
     Array.from(new Set(COURSES.map(c => c.term))).forEach(t => { if (!out.includes(t)) out.unshift(t); });
     return out;
   }
-  function validateField(r, f) {
-    const v = r[f];
-    if (f === 'term')  return v ? null : 'Pick a term';
-    if (f === 'grade') return v ? null : 'Pick a grade';
-    if (f === 'code') {
-      const s = String(v || '').trim();
-      if (!s) return 'Required';
-      if (s.length > 32) return 'Max 32 characters';
-      if (!/^[A-Za-z0-9 \-]+$/.test(s)) return 'Letters, digits, spaces, hyphens only';
-      return null;
-    }
-    if (f === 'title') {
-      const s = String(v || '').trim();
-      if (!s) return 'Required';
-      if (s.length > 120) return 'Max 120 characters';
-      return null;
-    }
-    if (f === 'cr') {
-      if (v === '' || v == null) return 'Required';
-      const n = Number(v);
-      if (!Number.isFinite(n) || n <= 0) return 'Must be greater than 0';
-      if (n > 6) return 'Max 6 credits';
-      if (Math.abs(n * 2 - Math.round(n * 2)) > 1e-9) return 'Use 0.5 steps';
-      return null;
-    }
-    return null;
+  function isValidRow(r) {
+    return !!(r.term && r.code && String(r.code).trim() && r.title && String(r.title).trim() && Number(r.cr) > 0 && r.grade);
   }
-  function isValidRow(r) { return FIELDS.every(f => !validateField(r, f)); }
-  function markRowTouched(r) { FIELDS.forEach(f => { r._t[f] = true; }); }
   function toCourse(r) {
     return { term: r.term, code: String(r.code).trim(), title: String(r.title).trim(), cr: Number(r.cr), grade: r.grade };
   }
@@ -121,6 +90,26 @@
     if (window.lucide && typeof window.lucide.createIcons === 'function') {
       try { window.lucide.createIcons(); } catch (_) { /* noop */ }
     }
+  }
+
+  function showToast(msg) {
+    const host = document.getElementById('nv-root') || document.body;
+    let t = document.getElementById('nv-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'nv-toast';
+      t.className = 'nv-toast';
+      t.setAttribute('role', 'status');
+      t.setAttribute('aria-live', 'polite');
+      host.appendChild(t);
+    }
+    t.innerHTML = `<span class="nv-toast-icon">${ic('check-circle-2')}</span><span>${msg}</span>`;
+    renderIcons();
+    t.classList.remove('nv-toast-show');
+    void t.offsetWidth;
+    t.classList.add('nv-toast-show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => t.classList.remove('nv-toast-show'), 3200);
   }
 
   function ensureMarkup() {
@@ -388,22 +377,7 @@
     const totalCr  = st.draft.reduce((s, r) => s + (Number(r.cr) || 0), 0);
     const TERMS = termOptions();
 
-    const fieldHtml = (r, i, f) => {
-      const err = validateField(r, f);
-      const showErr = !!err && r._t && r._t[f];
-      const errId = `nv-mf-err-${i}-${f}`;
-      const aria = `aria-invalid="${showErr ? 'true' : 'false'}" aria-describedby="${errId}"`;
-      const cls = `nv-inp${showErr ? ' nv-inp-error' : ''}`;
-      return { errHtml: `<div class="nv-field-err-msg" id="${errId}"${showErr ? ' style="display:block"' : ''}>${showErr ? err : ''}</div>`, cls, aria };
-    };
-
-    const rowsHtml = st.draft.map((r, i) => {
-      const term = fieldHtml(r, i, 'term');
-      const code = fieldHtml(r, i, 'code');
-      const title = fieldHtml(r, i, 'title');
-      const cr = fieldHtml(r, i, 'cr');
-      const grade = fieldHtml(r, i, 'grade');
-      return `
+    const rowsHtml = st.draft.map((r, i) => `
       <div class="nv-manual-row" data-row="${i}">
         ${mode === 'bulk' ? `<div class="nv-manual-row-head">
           <span class="nv-manual-row-num">Course ${i + 1}</span>
@@ -412,39 +386,31 @@
         <div class="nv-manual-grid">
           <div class="nv-input-wrap nv-mf-term">
             <label class="nv-input-label" for="nv-mf-term-${i}">Term</label>
-            <select class="${term.cls}" id="nv-mf-term-${i}" data-row="${i}" data-field="term" ${term.aria}>
+            <select class="nv-inp" id="nv-mf-term-${i}" data-row="${i}" data-field="term">
               ${TERMS.map(t => `<option value="${esc(t)}"${r.term===t?' selected':''}>${t}</option>`).join('')}
             </select>
-            ${term.errHtml}
           </div>
           <div class="nv-input-wrap nv-mf-code">
             <label class="nv-input-label" for="nv-mf-code-${i}">Course code</label>
-            <input class="${code.cls}" id="nv-mf-code-${i}" data-row="${i}" data-field="code" placeholder="ENG 101" value="${esc(r.code)}" maxlength="32" autocomplete="off" ${code.aria}>
-            ${code.errHtml}
+            <input class="nv-inp" id="nv-mf-code-${i}" data-row="${i}" data-field="code" placeholder="ENG 101" value="${esc(r.code)}" autocomplete="off">
           </div>
           <div class="nv-input-wrap nv-mf-title">
             <label class="nv-input-label" for="nv-mf-title-${i}">Course title</label>
-            <input class="${title.cls}" id="nv-mf-title-${i}" data-row="${i}" data-field="title" placeholder="English Composition I" value="${esc(r.title)}" maxlength="120" autocomplete="off" ${title.aria}>
-            ${title.errHtml}
+            <input class="nv-inp" id="nv-mf-title-${i}" data-row="${i}" data-field="title" placeholder="English Composition I" value="${esc(r.title)}" autocomplete="off">
           </div>
           <div class="nv-input-wrap nv-mf-cr">
             <label class="nv-input-label" for="nv-mf-cr-${i}">Credits</label>
-            <input class="${cr.cls}" id="nv-mf-cr-${i}" type="number" inputmode="decimal" min="0" max="6" step="0.5" data-row="${i}" data-field="cr" placeholder="3" value="${r.cr}" ${cr.aria}>
-            ${cr.errHtml}
+            <input class="nv-inp" id="nv-mf-cr-${i}" type="number" inputmode="decimal" min="0" max="6" step="0.5" data-row="${i}" data-field="cr" placeholder="3" value="${r.cr}">
           </div>
           <div class="nv-input-wrap nv-mf-grade">
             <label class="nv-input-label" for="nv-mf-grade-${i}">Grade</label>
-            <select class="${grade.cls}" id="nv-mf-grade-${i}" data-row="${i}" data-field="grade" ${grade.aria}>
+            <select class="nv-inp" id="nv-mf-grade-${i}" data-row="${i}" data-field="grade">
               <option value="">—</option>
               ${GRADES.map(g => `<option value="${g}"${r.grade===g?' selected':''}>${g}</option>`).join('')}
             </select>
-            ${grade.errHtml}
           </div>
         </div>
-      </div>`;
-    }).join('');
-
-    const anyTouchedInvalid = st.draft.some(r => FIELDS.some(f => r._t && r._t[f] && validateField(r, f)));
+      </div>`).join('');
 
     return `
       <div><button class="nv-back-btn" data-act="manual-cancel">${ic('arrow-left')} Back</button>
@@ -457,19 +423,8 @@
       ${mode === 'bulk'
         ? `<button class="nv-add-course-btn" data-act="manual-add-row">${ic('plus')} Add another course</button>`
         : ''}
-      <button class="nv-btn nv-btn-primary" data-act="manual-save" ${allValid ? '' : 'disabled'} aria-disabled="${allValid ? 'false' : 'true'}">${ctas[mode]}${mode==='bulk' ? ' ' + ic('arrow-right') : ''}</button>
-      <div class="nv-manual-hint" id="nv-manual-hint"${(!allValid && anyTouchedInvalid) ? '' : ' hidden'}>Fix the highlighted fields to continue.</div>
+      <button class="nv-btn nv-btn-primary" data-act="manual-save" ${allValid ? '' : 'disabled'}>${ctas[mode]}${mode==='bulk' ? ' ' + ic('arrow-right') : ''}</button>
       <button class="nv-text-link" data-act="manual-cancel">Cancel</button>`;
-  }
-
-  function updateFieldError(i, f) {
-    const r = st.draft[i]; if (!r) return;
-    const inp = document.getElementById(`nv-mf-${f}-${i}`);
-    const errEl = document.getElementById(`nv-mf-err-${i}-${f}`);
-    const err = validateField(r, f);
-    const show = !!err && r._t && r._t[f];
-    if (inp) { inp.classList.toggle('nv-inp-error', show); inp.setAttribute('aria-invalid', show ? 'true' : 'false'); }
-    if (errEl) { errEl.textContent = show ? err : ''; errEl.style.display = show ? 'block' : 'none'; }
   }
 
   function updateManualState() {
@@ -477,16 +432,11 @@
     if (!slide) return;
     const allValid = st.draft.length > 0 && st.draft.every(isValidRow);
     const btn = slide.querySelector('[data-act="manual-save"]');
-    if (btn) { btn.disabled = !allValid; btn.setAttribute('aria-disabled', allValid ? 'false' : 'true'); }
+    if (btn) btn.disabled = !allValid;
     const sum = document.getElementById('nv-manual-summary');
     if (sum && st.manualMode === 'bulk') {
       const totalCr = st.draft.reduce((s, r) => s + (Number(r.cr) || 0), 0);
       sum.textContent = `${st.draft.length} ${st.draft.length===1?'course':'courses'} · ${totalCr} ${totalCr===1?'credit':'credits'}`;
-    }
-    const hint = document.getElementById('nv-manual-hint');
-    if (hint) {
-      const anyTouchedInvalid = st.draft.some(r => FIELDS.some(f => r._t && r._t[f] && validateField(r, f)));
-      hint.hidden = !(!allValid && anyTouchedInvalid);
     }
   }
 
@@ -526,7 +476,7 @@
         <div class="nv-next-item"><div class="nv-next-num">2</div><span>You'll receive a full credit transfer report by email</span></div>
         <div class="nv-next-item"><div class="nv-next-num">3</div><span>See exactly which courses count toward your ${brand.short} degree</span></div>
       </div>
-      <button class="nv-resend-btn">Resend confirmation email</button>
+      <button class="nv-resend-btn" data-act="resend-email">Resend confirmation email</button>
       <button class="nv-btn nv-btn-secondary" data-act="restart">Start a new evaluation</button>`;
   }
 
@@ -543,6 +493,14 @@
       if (a === 'next') next();
       else if (a === 'back') back();
       else if (a === 'restart') restart();
+      else if (a === 'resend-email') {
+        const btn = act;
+        const prev = btn.textContent;
+        btn.disabled = true;
+        showToast(`Confirmation email sent to ${st.email || 'your inbox'}.`);
+        btn.textContent = 'Email sent ✓';
+        setTimeout(() => { btn.disabled = false; btn.textContent = prev; }, 4000);
+      }
       else if (a === 'retry') { st.parseFailed = false; st.file = null; st.scenario = 'success'; st.idx = STAGES.indexOf('upload'); render('back'); }
       else if (a === 'manual') { st.parseFailed = false; st.manualMode = 'bulk'; st.draft = [blankRow()]; st.editIndex = null; render('fwd'); }
       else if (a === 'add-course') { st.manualMode = 'add'; st.draft = [blankRow()]; st.editIndex = null; render('fwd'); }
@@ -550,7 +508,7 @@
         const i = Number(act.dataset.i);
         if (!Number.isFinite(i) || !COURSES[i]) return;
         st.manualMode = 'edit'; st.editIndex = i;
-        st.draft = [{ term: COURSES[i].term, code: COURSES[i].code, title: COURSES[i].title, cr: COURSES[i].cr, grade: COURSES[i].grade, _t: { term:true, code:true, title:true, cr:true, grade:true } }];
+        st.draft = [{ term: COURSES[i].term, code: COURSES[i].code, title: COURSES[i].title, cr: COURSES[i].cr, grade: COURSES[i].grade }];
         render('fwd');
       }
       else if (a === 'manual-add-row') {
@@ -640,12 +598,7 @@
     if (st.manualMode && t && t.dataset && t.dataset.row !== undefined && t.dataset.field) {
       const i = Number(t.dataset.row);
       const f = t.dataset.field;
-      if (st.draft[i]) {
-        st.draft[i][f] = t.value;
-        // Live-clear errors as the user fixes the field, but don't surface new ones before blur.
-        if (st.draft[i]._t && st.draft[i]._t[f]) updateFieldError(i, f);
-        updateManualState();
-      }
+      if (st.draft[i]) { st.draft[i][f] = t.value; updateManualState(); }
     }
   });
   document.addEventListener('change', (e) => {
@@ -655,13 +608,7 @@
     if (st.manualMode && t && t.dataset && t.dataset.row !== undefined && t.dataset.field) {
       const i = Number(t.dataset.row);
       const f = t.dataset.field;
-      if (st.draft[i]) {
-        st.draft[i][f] = t.value;
-        // <select> change implies the user committed a choice — treat as touched so errors surface.
-        if (st.draft[i]._t) st.draft[i]._t[f] = true;
-        updateFieldError(i, f);
-        updateManualState();
-      }
+      if (st.draft[i]) { st.draft[i][f] = t.value; updateManualState(); }
     }
   });
   document.addEventListener('blur', (e) => {
@@ -676,16 +623,6 @@
       if (errEl) errEl.style.display = show ? 'block' : 'none';
       if (hintEl) hintEl.style.display = show ? 'none' : '';
       syncEmailBtn();
-    }
-    const tgt = e.target;
-    if (st.manualMode && tgt && tgt.dataset && tgt.dataset.row !== undefined && tgt.dataset.field) {
-      const i = Number(tgt.dataset.row);
-      const f = tgt.dataset.field;
-      if (st.draft[i] && st.draft[i]._t) {
-        st.draft[i]._t[f] = true;
-        updateFieldError(i, f);
-        updateManualState();
-      }
     }
   }, true);
   document.addEventListener('click', (e) => {
