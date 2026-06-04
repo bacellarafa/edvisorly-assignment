@@ -566,10 +566,22 @@
     }
     if (e.target.id === 'nv-name-inp')  { st.name = e.target.value; syncEmailBtn(); }
     if (e.target.id === 'nv-email-inp') { st.email = e.target.value; syncEmailBtn(); }
+    const t = e.target;
+    if (st.manualMode && t && t.dataset && t.dataset.row !== undefined && t.dataset.field) {
+      const i = Number(t.dataset.row);
+      const f = t.dataset.field;
+      if (st.draft[i]) { st.draft[i][f] = t.value; updateManualState(); }
+    }
   });
   document.addEventListener('change', (e) => {
     if (e.target.id === 'nv-consent-chk') { st.consent = e.target.checked; syncUploadBtn(); }
     if (e.target.id === 'nv-file-inp') handleFile(e.target);
+    const t = e.target;
+    if (st.manualMode && t && t.dataset && t.dataset.row !== undefined && t.dataset.field) {
+      const i = Number(t.dataset.row);
+      const f = t.dataset.field;
+      if (st.draft[i]) { st.draft[i][f] = t.value; updateManualState(); }
+    }
   });
   document.addEventListener('blur', (e) => {
     if (e.target && e.target.id === 'nv-email-inp') {
