@@ -179,7 +179,7 @@
     <div class="nv-modal-main">
       <div class="nv-stages" id="nv-sc"></div>
       <div class="nv-modal-footer">
-        ${ic('shield-check')} Powered by <a href="https://www.edvisorly.com/" target="_blank" rel="noopener noreferrer" class="nv-edvisorly-link"><strong>EdVisorly</strong></a>
+        <img src="/__l5e/assets-v1/0b999754-a270-4521-b6f7-b4aae9016fba/edvisorly-owl.png" alt="" class="nv-foot-owl" aria-hidden="true"> Powered by <a href="https://www.edvisorly.com/" target="_blank" rel="noopener noreferrer" class="nv-edvisorly-link"><strong>EdVisorly</strong></a>
       </div>
     </div>
   </div>
