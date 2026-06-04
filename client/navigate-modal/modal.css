@@ -94,6 +94,7 @@
 }
 .nv-modal-footer strong{color:#1a1a1a;font-weight:700}
 .nv-modal-footer i,.nv-modal-footer svg{width:12px;height:12px}
+.nv-foot-owl{width:16px;height:16px;object-fit:contain;display:inline-block;vertical-align:middle;filter:grayscale(1) brightness(1.35) opacity(.65)}
 .nv-edvisorly-link{color:inherit;text-decoration:none}
 .nv-edvisorly-link:hover{text-decoration:underline}
 
