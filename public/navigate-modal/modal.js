@@ -312,7 +312,7 @@
 
   function sReview() {
     const terms = {};
-    COURSES.forEach(c => { (terms[c.term] = terms[c.term] || []).push(c); });
+    COURSES.forEach((c, i) => { (terms[c.term] = terms[c.term] || []).push(Object.assign({ _i: i }, c)); });
     const total = COURSES.reduce((s, c) => s + c.cr, 0);
     const isUnknownSchool = st.scenario === 'school-not-found';
     const displaySchool = isUnknownSchool
@@ -335,12 +335,89 @@
       ${Object.entries(terms).map(([term, cs]) => `<div>
         <div class="nv-term-label">${term}</div>
         ${cs.map(c => `<div class="nv-course-card">
-          <div class="nv-course-top"><span>${c.title}</span><button class="nv-edit-btn">Edit</button></div>
+          <div class="nv-course-top"><span>${c.title}</span><button class="nv-edit-btn" data-act="edit-course" data-i="${c._i}">Edit</button></div>
           <div class="nv-course-meta"><span>${c.code}</span><span>·</span><span>${c.cr} cr</span><span>·</span><span class="${c.grade.startsWith('A')?'nv-grade-good':''}">${c.grade}</span></div>
         </div>`).join('')}
       </div>`).join('')}
-      <button class="nv-add-course-btn">${ic('plus')} Add a missing course</button>
+      <button class="nv-add-course-btn" data-act="add-course">${ic('plus')} Add a missing course</button>
       <button class="nv-btn nv-btn-primary" data-act="next">Looks correct — continue ${ic('arrow-right')}</button>`;
+  }
+
+  function sManual() {
+    const mode = st.manualMode;
+    const titles = { bulk: 'Enter your courses', add: 'Add a course', edit: 'Edit course' };
+    const ctas   = { bulk: 'Save courses & continue', add: 'Add course', edit: 'Save changes' };
+    const subs   = {
+      bulk: "Add each course as it appears on your transcript. You can edit anything later.",
+      add:  "Fill in the details for the missing course.",
+      edit: "Update the details for this course."
+    };
+    const showRemove = mode === 'bulk' && st.draft.length > 1;
+    const allValid = st.draft.length > 0 && st.draft.every(isValidRow);
+    const totalCr  = st.draft.reduce((s, r) => s + (Number(r.cr) || 0), 0);
+    const TERMS = termOptions();
+
+    const rowsHtml = st.draft.map((r, i) => `
+      <div class="nv-manual-row" data-row="${i}">
+        ${mode === 'bulk' ? `<div class="nv-manual-row-head">
+          <span class="nv-manual-row-num">Course ${i + 1}</span>
+          ${showRemove ? `<button class="nv-manual-remove" data-act="manual-remove-row" data-i="${i}" aria-label="Remove course">${ic('trash-2')}</button>` : ''}
+        </div>` : ''}
+        <div class="nv-manual-grid">
+          <div class="nv-input-wrap nv-mf-term">
+            <label class="nv-input-label" for="nv-mf-term-${i}">Term</label>
+            <select class="nv-inp" id="nv-mf-term-${i}" data-row="${i}" data-field="term">
+              ${TERMS.map(t => `<option value="${esc(t)}"${r.term===t?' selected':''}>${t}</option>`).join('')}
+            </select>
+          </div>
+          <div class="nv-input-wrap nv-mf-code">
+            <label class="nv-input-label" for="nv-mf-code-${i}">Course code</label>
+            <input class="nv-inp" id="nv-mf-code-${i}" data-row="${i}" data-field="code" placeholder="ENG 101" value="${esc(r.code)}" autocomplete="off">
+          </div>
+          <div class="nv-input-wrap nv-mf-title">
+            <label class="nv-input-label" for="nv-mf-title-${i}">Course title</label>
+            <input class="nv-inp" id="nv-mf-title-${i}" data-row="${i}" data-field="title" placeholder="English Composition I" value="${esc(r.title)}" autocomplete="off">
+          </div>
+          <div class="nv-input-wrap nv-mf-cr">
+            <label class="nv-input-label" for="nv-mf-cr-${i}">Credits</label>
+            <input class="nv-inp" id="nv-mf-cr-${i}" type="number" inputmode="decimal" min="0" max="6" step="0.5" data-row="${i}" data-field="cr" placeholder="3" value="${r.cr}">
+          </div>
+          <div class="nv-input-wrap nv-mf-grade">
+            <label class="nv-input-label" for="nv-mf-grade-${i}">Grade</label>
+            <select class="nv-inp" id="nv-mf-grade-${i}" data-row="${i}" data-field="grade">
+              <option value="">—</option>
+              ${GRADES.map(g => `<option value="${g}"${r.grade===g?' selected':''}>${g}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      </div>`).join('');
+
+    return `
+      <div><button class="nv-back-btn" data-act="manual-cancel">${ic('arrow-left')} Back</button>
+      <p class="nv-h1">${titles[mode]}</p>
+      <p class="nv-sub">${subs[mode]}</p></div>
+      ${mode === 'bulk'
+        ? `<div class="nv-manual-summary" id="nv-manual-summary">${st.draft.length} ${st.draft.length===1?'course':'courses'} · ${totalCr} ${totalCr===1?'credit':'credits'}</div>`
+        : ''}
+      ${rowsHtml}
+      ${mode === 'bulk'
+        ? `<button class="nv-add-course-btn" data-act="manual-add-row">${ic('plus')} Add another course</button>`
+        : ''}
+      <button class="nv-btn nv-btn-primary" data-act="manual-save" ${allValid ? '' : 'disabled'}>${ctas[mode]}${mode==='bulk' ? ' ' + ic('arrow-right') : ''}</button>
+      <button class="nv-text-link" data-act="manual-cancel">Cancel</button>`;
+  }
+
+  function updateManualState() {
+    const slide = document.querySelector('#nv-sc .nv-slide');
+    if (!slide) return;
+    const allValid = st.draft.length > 0 && st.draft.every(isValidRow);
+    const btn = slide.querySelector('[data-act="manual-save"]');
+    if (btn) btn.disabled = !allValid;
+    const sum = document.getElementById('nv-manual-summary');
+    if (sum && st.manualMode === 'bulk') {
+      const totalCr = st.draft.reduce((s, r) => s + (Number(r.cr) || 0), 0);
+      sum.textContent = `${st.draft.length} ${st.draft.length===1?'course':'courses'} · ${totalCr} ${totalCr===1?'credit':'credits'}`;
+    }
   }
 
   function sEmail() {
