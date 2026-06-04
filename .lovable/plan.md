@@ -1,91 +1,54 @@
-# Align Navigate modal upload/parsing flow with spec
+## Goal
 
-All changes are confined to `public/navigate-modal/modal.js` (with minor CSS additions in `public/navigate-modal/modal.css` for the text-link "Skip and proceed anyway" style). No other files are touched. UI, branding, layout, fonts, and progress bar are preserved.
+Add two layers of contextual help inside the floating "Demo" switcher (bottom-right of every school page), without changing how the modal itself looks.
 
-## 1. `detectScenario` — accept underscore variants
+## 1. Small explainer inside the Demo menu (all screen sizes)
 
-Update to match both hyphen and underscore filename hints:
+Edit: `public/navigate-modal/modal.js` → `mountDemoSwitcher()` and `public/navigate-modal/modal.css`.
 
-```js
-function detectScenario(filename) {
-  const n = (filename || '').toLowerCase();
-  if (n.includes('wrong-format') || n.includes('wrong_format')) return 'wrong-format';
-  if (n.includes('too-large')    || n.includes('too_large'))    return 'too-large';
-  if (n.includes('parse-error')  || n.includes('parse_error'))  return 'parse-error';
-  if (n.includes('school-not-found') || n.includes('school_not_found')) return 'school-not-found';
-  return 'success';
-}
-```
+Inside the existing `.nv-demo-fab-menu` dropdown, prepend a short helper block above the school list:
 
-Result is stored as `st.scenario` (already named that — kept).
+> **Demo navigator** — Switch between mock university pages to see the EdVisorly Navigate experience embedded in different brands. Click "Check my credit transfer" on any page to open the credit-transfer modal.
 
-## 2. `handleFile` — real + simulated validation, in order
+Styling: muted text (`#aaa`), 11px, 1.45 line-height, padding `10px 12px 8px`, a thin `border-bottom: 1px solid rgba(255,255,255,.08)` separating it from the school list. Always visible when the menu is open, on mobile and desktop.
 
-Replace current logic so both real-file and filename-simulated errors are caught, with the exact messages from the spec:
+## 2. Desktop-only "Demo files" panel during upload stage
 
-- Compute `scenario = detectScenario(f.name)`.
-- Check 1 (wrong format): if `scenario === 'wrong-format'` OR `f.type` not in `['application/pdf','image/jpeg','image/png']`, show:
-  `"That file format isn't supported. Navigate only accepts PDF, JPG, or PNG transcripts."`
-- Check 2 (too large): `MAX_MB = 10`, `simulatedMB = 14.2`. `displayMB = scenario === 'too-large' ? 14.2 : (f.size/1024/1024).toFixed(1)`. If simulated OR real `f.size > MAX_MB*1024*1024`, show:
-  `` `This file is too large (${displayMB} MB). The maximum is 10 MB. Try exporting a compressed PDF from your school portal, or take a clear photo instead.` ``
-- On error: show inline red banner, clear `st.file`, reset input value, keep Continue disabled. Never advance.
-- On success: store `st.file = f.name`, `st.scenario = scenario`, clear error, re-render upload slide so `syncUploadBtn()` enables Continue only when consent is also checked.
+Edit: `public/navigate-modal/modal.js` and `public/navigate-modal/modal.css`.
 
-## 3. Parsing screen — labels and timing
+Add a second floating panel anchored to the left of the existing Demo FAB, only rendered when:
+- the modal is open, AND
+- the current stage is `'upload'` (i.e. `STAGES[st.idx] === 'upload'`), AND
+- viewport ≥ 900px (CSS media query — hidden on tablet/mobile).
 
-Update step labels to spec wording:
-- step 0 "Uploading transcript"
-- step 1 "Detecting course records"
-- step 2 "Extracting grades & credits"
-- step 3 "Preparing your review"
-
-Rewrite `scheduleParsing` to the spec schedule (step indexes shift compared to current code):
+Content mirrors the attached screenshot:
 
 ```text
-mount        → step 0 active
-@800ms       → step 0 ✓ done, step 1 active
-@1700ms      → step 1 ✓ done, step 2 active
-@2600ms      → step 2 ✓ done, step 3 active   [skipped on parse-error]
-@3400ms      → step 3 ✓ done, advance to Review
+Demo files — upload each to trigger a scenario:
+✅  transcript-jordan-SUCCESS.pdf        → Happy path
+❌  transcript-jordan-WRONG-FORMAT.txt   → Wrong file type
+⚠️  transcript-jordan-TOO-LARGE.pdf      → File too large
+🐞  transcript-jordan-PARSE-ERROR.pdf    → Parsing failure
+🔍  transcript-jordan-SCHOOL-NOT-FOUND.pdf → Unknown school
 ```
 
-Parse-error branch:
-```text
-@800ms   → step 0 ✓, step 1 active
-@1700ms  → step 1 ✓, step 2 active
-@2600ms  → step 2 icon → ✗ red, label → "Unable to extract course data"
-@3500ms  → set st.parseFailed = true, render parse-failure screen
-```
+Header in the same yellow/amber accent as the screenshot (`#f5c451`), filenames in monospace (`'JetBrains Mono', monospace`), 12px, on the same dark translucent surface as the demo FAB (`rgba(20,20,30,.92)` with blur). Width ~360px, rounded `12px`, soft shadow matching the FAB.
 
-Implementation: drive the sequence with explicit `setTimeout`s rather than the current generic loop so the parse-error path lines up with the spec timestamps exactly.
+### Wiring the visibility
 
-## 4. Parse failure screen — copy + buttons
+- In `mountDemoSwitcher()`, also create a sibling `.nv-demo-help` element appended once to `<body>`, hidden by default (`display:none`).
+- Expose a tiny internal helper `updateDemoHelp()` that toggles `display` based on:
+  - `document.querySelector('.nv-modal.is-open')` existence (modal open), AND
+  - `STAGES[st.idx] === 'upload'`.
+- Call `updateDemoHelp()` from `render()` (every slide transition), from `openModal()`, and from `closeModal()`.
+- Final visibility on mobile/tablet is enforced via CSS: `@media (max-width: 899px) { .nv-demo-help { display:none !important; } }`.
 
-Update `sParsing()` failure branch:
+### Positioning
 
-- Body text: `"Our parser had trouble extracting your course information. This happens with low-resolution scans or certain formats."`
-- Tips box content stays as the three spec bullets.
-- Buttons (stacked, in order):
-  1. Primary: "Try a different file" → existing `data-act="retry"` (resets file, scenario, parseFailed, returns to upload).
-  2. Ghost (use `nv-btn-ghost` class — not secondary): "Enter my courses manually" → `data-act="manual"` sets `manualEntry=true` and jumps to review.
-  3. Text link: "Skip and proceed anyway" → new `data-act="skip-review"` jumps to Review (not Email as today) without `manualEntry`. Add a small `.nv-text-link` style in `modal.css` for the link appearance (underlined, brand color, transparent background).
+`.nv-demo-help` is `position:fixed; bottom:16px; right:120px;` (sits to the left of the Demo FAB so they don't overlap). `z-index:1100` to stay above the modal backdrop, just like the FAB.
 
-## 5. Review screen banners + school override
+## Out of scope
 
-`sReview()`:
-- When `st.scenario === 'school-not-found'`, display the parsed school name as the hardcoded `"Springfield Technical Community College"` everywhere the school name appears on this screen (subtitle "We found N courses from …" and the amber banner). The user's originally selected school in `st.school` is preserved for later screens.
-- Amber banner copy uses that hardcoded name and includes the "Request it be added →" button.
-- `manualEntry` blue banner unchanged in intent; copy matches spec.
-- `success` → no banner.
-
-`data-act="request-school"` handler: replace the banner contents inline with a confirmation message: `"Request submitted! We'll notify you when this school is added."` (keeps amber styling, no link).
-
-## 6. State reset on "Start a new evaluation"
-
-`restart()` already calls `resetState()`, which initializes every field. Extend `resetState()` to explicitly include all keys named in the spec (file, consent, scenario→'success', parseFailed, manualEntry, name, email, plus existing idx/school/emailTouched) so the reset contract is explicit. `idx:0` returns to school selection.
-
-## Technical notes
-
-- All edits to `public/navigate-modal/modal.js`; minor `.nv-text-link` rule added to `public/navigate-modal/modal.css`.
-- No framework code, routes, or React components are touched.
-- Branding system, progress bar, footer, and existing slide transitions remain untouched.
+- No changes to the modal upload flow itself or to the scenario-detection logic.
+- No new copy on school pages.
+- No restyling of the existing FAB toggle button.
