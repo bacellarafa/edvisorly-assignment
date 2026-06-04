@@ -8,8 +8,10 @@
 
 .nv-modal-topbar{padding:13px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.15);background:var(--nv-brand)}
 .nv-modal-brand{display:flex;align-items:center;gap:9px}
-.nv-modal-logo{width:30px;height:30px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;background:var(--nv-brand-secondary);overflow:hidden}
-.nv-modal-logo img{width:100%;height:100%;object-fit:contain;background:#fff;padding:3px}
+.nv-modal-logo{height:34px;min-width:34px;max-width:120px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;background:var(--nv-brand-secondary);overflow:hidden;padding:3px 6px}
+.nv-modal-logo img{height:100%;width:auto;max-width:100%;object-fit:contain;display:block}
+.nv-modal-logo:has(img){background:#fff}
+
 .nv-modal-school{font-size:13px;font-weight:700;color:#fff}
 .nv-modal-close{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;line-height:1;flex-shrink:0;transition:background 0.15s}
 .nv-modal-close:hover{background:rgba(255,255,255,0.3)}
