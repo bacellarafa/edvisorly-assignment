@@ -473,6 +473,14 @@
       if (a === 'next') next();
       else if (a === 'back') back();
       else if (a === 'restart') restart();
+      else if (a === 'resend-email') {
+        const btn = act;
+        const prev = btn.textContent;
+        btn.disabled = true;
+        showToast(`Confirmation email sent to ${st.email || 'your inbox'}.`);
+        btn.textContent = 'Email sent ✓';
+        setTimeout(() => { btn.disabled = false; btn.textContent = prev; }, 4000);
+      }
       else if (a === 'retry') { st.parseFailed = false; st.file = null; st.scenario = 'success'; st.idx = STAGES.indexOf('upload'); render('back'); }
       else if (a === 'manual') { st.parseFailed = false; st.manualMode = 'bulk'; st.draft = [blankRow()]; st.editIndex = null; render('fwd'); }
       else if (a === 'add-course') { st.manualMode = 'add'; st.draft = [blankRow()]; st.editIndex = null; render('fwd'); }
