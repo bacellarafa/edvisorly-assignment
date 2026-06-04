@@ -277,15 +277,19 @@
     const terms = {};
     COURSES.forEach(c => { (terms[c.term] = terms[c.term] || []).push(c); });
     const total = COURSES.reduce((s, c) => s + c.cr, 0);
+    const isUnknownSchool = st.scenario === 'school-not-found';
+    const displaySchool = isUnknownSchool
+      ? 'Springfield Technical Community College'
+      : (st.school || 'your school');
     const banner = st.manualEntry
-      ? `<div class="nv-notice nv-notice-blue">${ic('info')} We couldn't parse your transcript automatically. Fill in your actual courses before continuing.</div>`
-      : (st.scenario === 'school-not-found'
-        ? `<div class="nv-notice nv-notice-amber"><span>${ic('alert-triangle')}</span><span><strong>${st.school || 'This school'}</strong> isn't in our transfer database yet. We've parsed your courses, but credit mapping may be estimated. <a href="#" class="nv-banner-link" data-act="request-school">Request it be added →</a></span></div>`
+      ? `<div class="nv-notice nv-notice-blue" id="nv-review-banner">${ic('info')} We couldn't parse your transcript automatically. Fill in your actual courses before continuing.</div>`
+      : (isUnknownSchool
+        ? `<div class="nv-notice nv-notice-amber" id="nv-review-banner"><span>${ic('alert-triangle')}</span><span><strong>${displaySchool}</strong> isn't in our transfer database yet. We've parsed your courses, but credit mapping may be estimated. <a href="#" class="nv-banner-link" data-act="request-school">Request it be added →</a></span></div>`
         : '');
     return `
       <div><button class="nv-back-btn" data-act="back">${ic('arrow-left')} Back</button>
       <p class="nv-h1">Does this look right?</p>
-      <p class="nv-sub">We found <strong>${COURSES.length} courses</strong> from <strong>${st.school||'your school'}</strong>.</p></div>
+      <p class="nv-sub">We found <strong>${COURSES.length} courses</strong> from <strong>${displaySchool}</strong>.</p></div>
       ${banner}
       <div class="nv-summary-row">
         <div class="nv-summary-card"><div class="nv-summary-num">${COURSES.length}</div><div class="nv-summary-sub">Courses</div></div>
