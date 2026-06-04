@@ -31,7 +31,15 @@
   let brand = null;
   let st;
   function resetState() {
-    st = { idx: 0, school: '', file: null, consent: false, parseFailed: false, manualEntry: false, name: '', email: '', emailTouched: false };
+    st = { idx: 0, school: '', file: null, consent: false, parseFailed: false, manualEntry: false, name: '', email: '', emailTouched: false, scenario: 'success' };
+  }
+  function detectScenario(name) {
+    const n = (name || '').toLowerCase();
+    if (n.includes('wrong-format')) return 'wrong-format';
+    if (n.includes('too-large'))    return 'too-large';
+    if (n.includes('parse-error'))  return 'parse-error';
+    if (n.includes('school-not-found')) return 'school-not-found';
+    return 'success';
   }
 
   function hexToRgba(hex, a) {
