@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admissions Overview — Boston University</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/navigate-modal/modal.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:Roboto,system-ui,sans-serif;color:#222;background:#f3f3f3;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+
+/* Red top band */
+.bu-band{height:6px;background:#CC0000}
+
+/* Main header — light grey */
+.bu-header{background:#f3f3f3;padding:28px 36px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px}
+.bu-menu{display:flex;align-items:center;gap:28px}
+.bu-hamb{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;letter-spacing:0.06em;color:#222;font-weight:500}
+.bu-hamb-icon{display:flex;flex-direction:column;gap:4px}
+.bu-hamb-icon span{width:22px;height:2px;background:#222}
+.bu-menu-links{display:flex;gap:24px;font-size:13px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:#444}
+.bu-menu-links a:hover{color:#CC0000}
+.bu-wordmark{display:flex;align-items:center;justify-content:center;height:64px;min-width:0}
+.bu-wordmark img{height:100%;width:auto;max-width:100%;display:block;object-fit:contain}
+.bu-right{display:flex;justify-content:flex-end;align-items:center;gap:14px;min-width:0}
+.bu-giving{background:#9a9a9a;color:#fff;padding:9px 26px;font-size:12px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;border:none;cursor:pointer;white-space:nowrap}
+.bu-search{background:#e6e6e6;border:none;padding:9px 14px 9px 18px;font-size:13px;color:#777;width:260px;display:flex;align-items:center;justify-content:space-between;letter-spacing:0.08em;text-transform:uppercase}
+
+/* Hero / intro */
+.bu-intro{padding:80px 36px 40px;text-align:center;max-width:920px;margin:0 auto}
+.bu-intro-rule{width:80px;height:3px;background:#CC0000;margin:0 auto 28px}
+.bu-intro h1{font-family:'Playfair Display',Georgia,serif;font-size:88px;font-weight:900;color:#111;line-height:1.05;letter-spacing:-0.02em;margin-bottom:32px;word-wrap:break-word}
+.bu-intro p{font-size:18px;color:#444;line-height:1.7;max-width:720px;margin:0 auto}
+.bu-intro a.link{color:#CC0000;text-decoration:underline}
+.bu-intro-cta{margin-top:36px;display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.bu-btn-red{background:#CC0000;color:#fff;border:none;padding:16px 32px;font-size:14px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:10px}
+.bu-btn-red:hover{background:#a30000}
+.bu-btn-ghost{background:transparent;color:#222;border:1.5px solid #999;padding:16px 32px;font-size:14px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer}
+
+@media(max-width:900px){
+  .bu-header{grid-template-columns:auto 1fr auto;padding:20px 20px;gap:14px}
+  .bu-menu-links,.bu-search{display:none}
+  .bu-wordmark{height:48px}
+  .bu-hamb span:not(:only-child){font-size:0}
+  .bu-intro{padding:56px 20px 32px}
+  .bu-intro h1{font-size:44px}
+  .bu-intro p{font-size:16px}
+}
+@media(max-width:560px){
+  .bu-header{padding:14px 16px;gap:10px}
+  .bu-wordmark{height:38px}
+  .bu-hamb{font-size:0;gap:0}
+  .bu-hamb-icon{gap:5px}
+  .bu-giving{padding:8px 14px;font-size:11px;letter-spacing:0.08em}
+  .bu-intro{padding:40px 18px 24px}
+  .bu-intro h1{font-size:34px;margin-bottom:20px}
+  .bu-intro-rule{margin-bottom:20px}
+}
+
+/* Cards row */
+.bu-cards{max-width:1280px;margin:48px auto 0;padding:0 36px 48px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.bu-card{background:#fff;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.bu-card-img{height:240px;background-size:cover;background-position:center;position:relative;display:flex;align-items:flex-end;padding:24px}
+.bu-card-img::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,0.7) 100%)}
+.bu-card-img h3{position:relative;color:#fff;font-family:'Playfair Display',Georgia,serif;font-size:26px;font-weight:800}
+.bu-card-body{padding:24px;font-size:15px;color:#555;line-height:1.6}
+.bu-card-btn{display:block;width:100%;text-align:center;background:#CC0000;color:#fff;padding:14px;border:none;font-size:14px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;font-family:inherit}
+.bu-card-1{background-image:linear-gradient(135deg,#5a1818,#a02525)}
+.bu-card-2{background-image:linear-gradient(135deg,#2a4a5e,#3d6a82)}
+.bu-card-3{background-image:linear-gradient(135deg,#3a3a3a,#5a5a5a)}
+@media(max-width:900px){.bu-cards{grid-template-columns:1fr}}
+
+/* Transfer section with prominent CTA */
+.bu-transfer{background:#fff;padding:64px 36px;margin-top:48px;border-top:6px solid #CC0000}
+.bu-transfer-inner{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:center}
+.bu-transfer h2{font-family:'Playfair Display',Georgia,serif;font-size:42px;font-weight:800;color:#111;margin-bottom:18px}
+.bu-transfer p{font-size:16px;color:#444;line-height:1.7;margin-bottom:16px}
+.bu-transfer-cta{background:#f8f4f4;border:1px solid #e0d0d0;padding:32px;border-left:6px solid #CC0000}
+.bu-transfer-cta h3{font-family:'Playfair Display',serif;font-size:22px;color:#5a1818;margin-bottom:8px}
+.bu-transfer-cta p{font-size:14px;color:#666;margin-bottom:20px}
+.bu-transfer-cta .bu-steps{font-size:13px;color:#444;line-height:1.9;margin-bottom:20px}
+.bu-transfer-cta .bu-steps b{color:#CC0000;margin-right:6px}
+@media(max-width:900px){.bu-transfer-inner{grid-template-columns:1fr}}
+
+/* Footer */
+.bu-footer{background:#222;color:#bbb;padding:48px 36px;margin-top:64px;font-size:13px}
+.bu-footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:36px}
+.bu-footer h4{color:#fff;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px}
+.bu-footer a{display:block;color:#aaa;padding:4px 0}
+.bu-footer-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:10px}
+@media(max-width:900px){.bu-footer-inner{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="bu-band"></div>
+
+<header class="bu-header">
+  <div class="bu-menu">
+    <div class="bu-hamb"><div class="bu-hamb-icon"><span></span><span></span><span></span></div>FULL MENU</div>
+    <div class="bu-menu-links">
+      <a href="#">ADMISSIONS</a>
+      <a href="#">ACADEMICS</a>
+      <a href="#">RESEARCH</a>
+    </div>
+  </div>
+  <div class="bu-wordmark"><img src="/__l5e/assets-v1/fe5b6115-a5b9-4579-9998-de7f6f5478f2/bu.webp" alt="Boston University"></div>
+  <div class="bu-right">
+    <button class="bu-giving">GIVING</button>
+    <div class="bu-search">SEARCH BU…<i data-lucide="search" style="width:14px;height:14px"></i></div>
+  </div>
+</header>
+
+<section class="bu-intro">
+  <div class="bu-intro-rule"></div>
+  <h1>Admissions Overview</h1>
+  <p><a href="#" class="link">BU</a> has been educating students of all kinds for more than 150 years: <a href="#" class="link">undergraduates</a>, <a href="#" class="link">international scholars</a>, <a href="#" class="link">master's and doctoral degree candidates</a>, and busy professionals looking to <a href="#" class="link">extend their education</a>. For more on admissions and <a href="#" class="link">financial aid</a>, check out the links below.</p>
+  <div class="bu-intro-cta">
+    <button class="bu-btn-red" data-navigate-open><i data-lucide="file-text" style="width:16px;height:16px"></i> Check my credit transfer</button>
+    <button class="bu-btn-ghost">Plan a visit</button>
+  </div>
+</section>
+
+<section class="bu-cards">
+  <article class="bu-card">
+    <div class="bu-card-img bu-card-1"><h3>Undergraduate Students</h3></div>
+    <div class="bu-card-body">Learn more about our degree programs across the disciplines.</div>
+    <button class="bu-card-btn">Undergraduate Admissions</button>
+  </article>
+  <article class="bu-card">
+    <div class="bu-card-img bu-card-2"><h3>Graduate Students</h3></div>
+    <div class="bu-card-body">Explore programs in our 16 graduate schools and colleges.</div>
+    <button class="bu-card-btn">Graduate Admissions</button>
+  </article>
+  <article class="bu-card">
+    <div class="bu-card-img bu-card-3"><h3>International Students</h3></div>
+    <div class="bu-card-body">Become one of the thousands of international students who study at BU.</div>
+    <button class="bu-card-btn">International Applicants</button>
+  </article>
+</section>
+
+<section class="bu-transfer">
+  <div class="bu-transfer-inner">
+    <div>
+      <h2>Transfer to BU</h2>
+      <p>Every year, hundreds of students transfer to Boston University from community colleges and other four-year institutions. Our transfer admissions process is built to recognize the work you've already done.</p>
+      <p>Before you apply, get a preliminary view of how your credits will count toward your BU degree — no application required.</p>
+    </div>
+    <div class="bu-transfer-cta">
+      <h3>Will your credits transfer?</h3>
+      <p>Free preliminary evaluation in 2 minutes.</p>
+      <div class="bu-steps">
+        <div><b>1.</b>Select your current school</div>
+        <div><b>2.</b>Upload your transcript</div>
+        <div><b>3.</b>Get your evaluation by email</div>
+      </div>
+      <button class="bu-btn-red" style="width:100%" data-navigate-open>Check my credit transfer <i data-lucide="arrow-right" style="width:14px;height:14px"></i></button>
+    </div>
+  </div>
+</section>
+
+<footer class="bu-footer">
+  <div class="bu-footer-inner">
+    <div>
+      <div class="bu-footer-logo" style="margin-bottom:10px">
+        <img src="/__l5e/assets-v1/75bf3713-3c6d-4c39-b986-0be67aa0e79d/bu-seal.png" alt="Boston University" style="height:72px;width:auto;filter:brightness(0) invert(1);display:block">
+      </div>
+      <p>One Silber Way, Boston, MA 02215</p>
+    </div>
+    <div><h4>Admissions</h4><a href="#">Undergraduate</a><a href="#">Graduate</a><a href="#">Transfer</a><a href="#">Financial Aid</a></div>
+    <div><h4>Academics</h4><a href="#">Programs</a><a href="#">Schools &amp; Colleges</a><a href="#">Faculty</a></div>
+    <div><h4>Connect</h4><a href="#">Contact</a><a href="#">Visit</a><a href="#">Give</a></div>
+  </div>
+</footer>
+
+
+
+<script src="/navigate-modal/modal.js"></script>
+<script>
+  NavigateModal.mount({
+    name: 'Boston University',
+    short: 'BU',
+    abbr: 'BU',
+    primary: '#CC0000',
+    secondary: '#000000',
+    accent: '#ffffff',
+    light: '#fdf2f2',
+    logoUrl: '/__l5e/assets-v1/fe5b6115-a5b9-4579-9998-de7f6f5478f2/bu.webp',
+  });
+  if (window.lucide) window.lucide.createIcons();
+</script>
+</body>
+</html>

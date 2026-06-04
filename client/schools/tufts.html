@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admissions and Aid — Tufts University</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/navigate-modal/modal.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>.tu-icon{display:inline-flex;align-items:center;justify-content:center}.tu-icon svg{width:1em;height:1em}</style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Source Sans 3',system-ui,sans-serif;color:#222;background:#fff}
+a{color:inherit;text-decoration:none}
+
+/* Top utility bar */
+.tu-top{background:#3E8EDE;color:#fff;padding:10px 32px;display:flex;justify-content:flex-end;align-items:center;gap:28px;font-size:13px;font-weight:600}
+.tu-top a{opacity:.95}
+.tu-top a:hover{text-decoration:underline}
+.tu-give{border:1px solid #fff;padding:4px 14px;border-radius:2px}
+.tu-resources{border-left:1px solid rgba(255,255,255,.4);padding-left:24px;margin-left:8px;display:flex;align-items:center;gap:6px;font-weight:700}
+
+/* Main nav */
+.tu-nav{background:#fff;border-bottom:1px solid #eee;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;height:96px}
+.tu-logo{display:flex;align-items:center;height:56px}
+.tu-logo img{height:100%;width:auto;display:block}
+.tu-nav-right{display:flex;align-items:center;gap:36px}
+.tu-nav-right a{font-size:18px;color:#222;font-weight:400}
+.tu-nav-right a.active{color:#3E8EDE;border-bottom:3px solid #3E8EDE;padding-bottom:4px}
+.tu-search{background:none;border:none;cursor:pointer;color:#3E8EDE;padding-left:12px;border-left:1px solid #ddd}
+
+/* Hero */
+.tu-hero{position:relative;height:560px;overflow:hidden;background:#999}
+.tu-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tu-hero-title{position:absolute;left:0;bottom:0;background:#fff;padding:32px 80px 32px 40px;font-family:'Source Serif 4',Georgia,serif;font-size:84px;font-weight:400;color:#111;line-height:1}
+@media(max-width:900px){.tu-hero-title{font-size:48px;padding:20px 30px 20px 20px}.tu-hero{height:380px}}
+
+/* Content */
+.tu-content{max-width:1280px;margin:0 auto;padding:72px 32px;display:grid;grid-template-columns:300px 1fr;gap:80px}
+.tu-side{display:flex;flex-direction:column;gap:18px}
+.tu-side a{font-size:18px;color:#3E8EDE;font-weight:600;padding:8px 0;border-bottom:1px solid #eee}
+.tu-side a.active{color:#111}
+.tu-side .tu-tour{margin-top:16px;background:#3E8EDE;color:#fff;padding:18px 24px;text-align:center;font-weight:700;border-radius:2px;font-size:16px}
+
+.tu-main p{font-size:18px;line-height:1.65;color:#333;margin-bottom:20px}
+.tu-main h2{font-family:'Source Serif 4',Georgia,serif;font-size:36px;color:#222;margin:32px 0 16px;font-weight:600}
+.tu-main ul{margin:0 0 24px 24px;color:#333;font-size:17px;line-height:1.8}
+
+/* CTA */
+.tu-cta{margin-top:40px;border:1px solid #d9e7f7;border-left:6px solid #3E8EDE;padding:32px;background:#f6faff;border-radius:2px}
+.tu-cta h3{font-family:'Source Serif 4',Georgia,serif;font-size:26px;color:#003a70;margin-bottom:8px}
+.tu-cta p{font-size:16px;color:#444;margin-bottom:20px}
+.tu-cta-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.tu-cta-btn{background:#3E8EDE;color:#fff;border:none;padding:16px 28px;font-size:16px;font-weight:700;border-radius:2px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;font-family:inherit}
+.tu-cta-btn:hover{background:#2f7ac8}
+.tu-cta-meta{font-size:13px;color:#666}
+.tu-cta-meta strong{color:#3E8EDE}
+
+/* Hero floating CTA */
+.tu-hero-cta{position:absolute;right:40px;bottom:40px;background:#3E8EDE;color:#fff;border:none;padding:18px 28px;font-weight:700;border-radius:2px;font-size:16px;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,0.3);display:inline-flex;align-items:center;gap:10px;font-family:inherit}
+.tu-hero-cta:hover{background:#2f7ac8}
+@media(max-width:900px){.tu-hero-cta{top:16px;right:16px;bottom:auto;left:auto;padding:12px 16px;font-size:13px}}
+
+/* Footer */
+.tu-footer{background:#002554;color:#fff;padding:56px 32px;margin-top:48px}
+.tu-footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px}
+.tu-footer h4{font-size:13px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:14px;color:#7eb6f0}
+.tu-footer a{display:block;font-size:14px;color:#cfd8e8;padding:5px 0}
+.tu-footer .tu-foot-logo{font-family:'Source Serif 4',Georgia,serif;font-size:32px;font-weight:700;margin-bottom:8px}
+@media(max-width:900px){.tu-content{grid-template-columns:1fr;gap:32px;padding:40px 20px}.tu-nav-right a:not(.active){display:none}.tu-footer-inner{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.tu-nav{padding:12px 18px;height:72px}.tu-logo{height:38px}}
+</style>
+</head>
+<body>
+
+<div class="tu-top">
+  <a href="#">Visit</a><a href="#">News</a><a href="#">Events</a><a href="#">Directory</a>
+  <a href="#" class="tu-give">Give</a>
+  <a href="#" class="tu-resources">Resources For ▾</a>
+</div>
+
+<nav class="tu-nav">
+  <a href="#" class="tu-logo">
+    <img src="/__l5e/assets-v1/71acf05c-0a03-4bc0-892e-9331bf391be4/tufts.png" alt="Tufts University">
+  </a>
+  <div class="tu-nav-right">
+    <a href="#">Academics</a>
+    <a href="#" class="active">Admissions and Aid</a>
+    <a href="#">Research</a>
+    <a href="#">Student Experience</a>
+    <a href="#">About</a>
+    <button class="tu-search" aria-label="Search"><i data-lucide="search" style="width:18px;height:18px"></i></button>
+  </div>
+</nav>
+
+<section class="tu-hero">
+  <img src="/brands/tufts/hero.jpg" alt="Students on campus lawn">
+  <h1 class="tu-hero-title">Admissions and Aid</h1>
+  <button class="tu-hero-cta" data-navigate-open><i data-lucide="file-text" style="width:18px;height:18px"></i> Check my credit transfer <i data-lucide="arrow-right" style="width:16px;height:16px"></i></button>
+</section>
+
+<div class="tu-content">
+  <aside class="tu-side">
+    <a href="#" class="active">Undergraduate Admissions</a>
+    <a href="#">Graduate Admissions</a>
+    <a href="#">Pre-College Admissions</a>
+    <a href="#">Financial Aid</a>
+    <a href="#">Visit</a>
+    <a href="#" class="tu-tour">Take a Tour</a>
+  </aside>
+  <article class="tu-main">
+    <p>At Tufts, individuals from every state and around the world come together to form a community of curious, engaged peers who challenge and encourage each other. Our admissions team is committed to finding and bringing to Tufts students with the potential and motivation to change the world.</p>
+    <p>You can find your place at Tufts, whether you're fresh out of high school, ready to engage in graduate-level academic work, or preparing to take the next leap in your career. Open your mind, further your exploration, and set yourself on the road to success.</p>
+
+    <h2>Transferring to Tufts</h2>
+    <p>We welcome transfer students from community colleges and four-year institutions. Our transfer admission process is designed to recognize the work you've already done and help you build on it here.</p>
+    <ul>
+      <li>General education requirements (writing, math, sciences)</li>
+      <li>Introductory major coursework</li>
+      <li>Elective credits (subject to department approval)</li>
+    </ul>
+
+    <div class="tu-cta">
+      <h3>Will your credits transfer?</h3>
+      <p>Get a preliminary evaluation in 2 minutes — no application required. Upload your transcript and we'll show you which courses are likely to transfer to Tufts.</p>
+      <div class="tu-cta-row">
+        <button class="tu-cta-btn" data-navigate-open>Check my credit transfer <i data-lucide="arrow-right" style="width:16px;height:16px"></i></button>
+        <span class="tu-cta-meta">Powered by <a href="https://www.edvisorly.com/" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none"><strong>EdVisorly</strong></a></span>
+      </div>
+    </div>
+  </article>
+</div>
+
+<footer class="tu-footer">
+  <div class="tu-footer-inner">
+    <div>
+      <div class="tu-foot-logo" style="margin-bottom:14px">
+        <img src="/__l5e/assets-v1/71acf05c-0a03-4bc0-892e-9331bf391be4/tufts.png" alt="Tufts University" style="height:42px;width:auto;filter:brightness(0) invert(1);display:block">
+      </div>
+      <p style="font-size:14px;color:#9eb3d0;line-height:1.6">Tufts is a leader in American higher education, distinctive for its success as a moderately sized university that excels at research and providing students with a personal experience.</p>
+    </div>
+    <div><h4>Admissions</h4><a href="#">Undergraduate</a><a href="#">Graduate</a><a href="#">Financial Aid</a><a href="#">Visit</a></div>
+    <div><h4>About</h4><a href="#">Our Schools</a><a href="#">Leadership</a><a href="#">News</a><a href="#">Contact</a></div>
+    <div><h4>Quick Links</h4><a href="#">Directory</a><a href="#">Library</a><a href="#">Careers</a><a href="#">Giving</a></div>
+  </div>
+</footer>
+
+
+
+<script src="/navigate-modal/modal.js"></script>
+<script>
+  NavigateModal.mount({
+    name: 'Tufts University',
+    short: 'Tufts',
+    abbr: 'T',
+    primary: '#418FDE',
+    secondary: '#002E5D',
+    accent: '#ffffff',
+    light: '#EBF3FB',
+    logoUrl: '/__l5e/assets-v1/71acf05c-0a03-4bc0-892e-9331bf391be4/tufts.png',
+  });
+  if (window.lucide) window.lucide.createIcons();
+</script>
+</body>
+</html>
