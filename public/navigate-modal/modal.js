@@ -344,8 +344,10 @@
       if (a === 'next') next();
       else if (a === 'back') back();
       else if (a === 'restart') restart();
-      else if (a === 'retry') { st.parseFailed = false; st.file = null; st.idx = STAGES.indexOf('upload'); render('back'); }
+      else if (a === 'retry') { st.parseFailed = false; st.file = null; st.scenario = 'success'; st.idx = STAGES.indexOf('upload'); render('back'); }
       else if (a === 'manual') { st.parseFailed = false; st.manualEntry = true; st.idx = STAGES.indexOf('review'); render('fwd'); }
+      else if (a === 'skip') { st.parseFailed = false; st.idx = STAGES.indexOf('email'); render('fwd'); }
+      else if (a === 'request-school') { e.preventDefault(); }
       return;
     }
     const pick = e.target.closest('[data-pick]');
