@@ -456,7 +456,7 @@
         <div class="nv-next-item"><div class="nv-next-num">2</div><span>You'll receive a full credit transfer report by email</span></div>
         <div class="nv-next-item"><div class="nv-next-num">3</div><span>See exactly which courses count toward your ${brand.short} degree</span></div>
       </div>
-      <button class="nv-resend-btn">Resend confirmation email</button>
+      <button class="nv-resend-btn" data-act="resend-email">Resend confirmation email</button>
       <button class="nv-btn nv-btn-secondary" data-act="restart">Start a new evaluation</button>`;
   }
 
