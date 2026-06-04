@@ -1,59 +1,91 @@
+# Align Navigate modal upload/parsing flow with spec
 
-## Modal (`public/navigate-modal/modal.css` + `modal.js`)
+All changes are confined to `public/navigate-modal/modal.js` (with minor CSS additions in `public/navigate-modal/modal.css` for the text-link "Skip and proceed anyway" style). No other files are touched. UI, branding, layout, fonts, and progress bar are preserved.
 
-1. **Close button on all viewports**
-   - Already exists in markup. Audit CSS to confirm it's visible at every breakpoint; remove any rule that hides it on tablet/mobile (none found, but verify after fullscreen changes).
+## 1. `detectScenario` — accept underscore variants
 
-2. **Mobile = full-screen modal**
-   - Add `@media(max-width:560px)` rule: `.nv-modal-overlay { padding:0 }` and `.nv-modal { max-width:100%; width:100%; height:100vh; height:100dvh; border-radius:0; max-height:none }`.
-   - Keep close button anchored top-right; ensure brand column + footer remain in place.
+Update to match both hyphen and underscore filename hints:
 
-3. **Rounded corners — pill aesthetic from the reference button**
-   - The reference CTA uses a ~10–12px radius on a tall pill. Apply that family across modal surfaces:
-     - `.nv-school-list`, `.nv-dest-box`, `.nv-notice`, `.nv-upload-box`, `.nv-parsing-steps`, `.nv-parse-tips`, `.nv-school-notfound`, `.nv-summary-card`, `.nv-course-card`, `.nv-value-box`, `.nv-next-steps`, `.nv-add-course-btn`, `.nv-parse-failed-icon` (only the cards, not circular icons) → unify to `border-radius: 12px` (currently 14–20px).
-   - Keep `.nv-btn` and `.nv-inp` as full pills (99px) — matches the blue CTA in the reference.
-   - Logo tile `.nv-modal-logo` → `border-radius: 10px`.
+```js
+function detectScenario(filename) {
+  const n = (filename || '').toLowerCase();
+  if (n.includes('wrong-format') || n.includes('wrong_format')) return 'wrong-format';
+  if (n.includes('too-large')    || n.includes('too_large'))    return 'too-large';
+  if (n.includes('parse-error')  || n.includes('parse_error'))  return 'parse-error';
+  if (n.includes('school-not-found') || n.includes('school_not_found')) return 'school-not-found';
+  return 'success';
+}
+```
 
-## Floating Demo Switcher (all 4 admission pages)
+Result is stored as `st.scenario` (already named that — kept).
 
-4. Replace top-bar `.nv-demo-switcher` with a fixed bottom-right floating button:
-   - Collapsed: 48px circular pill with "Demo" label / chevron icon, `z-index: 1100` (above modal overlay which is 1000 — bump overlay or use 999 for switcher? Keep switcher above modal so it remains accessible per request → `z-index: 1100`).
-   - Expanded on click/tap: vertical stack of school links above the trigger, animated.
-   - Works inside modal-open state (no pointer-events blocking).
-   - Same component on desktop, tablet, mobile (bottom: 16px, right: 16px).
-   - Extract markup into a shared snippet — inject via `modal.js` (new `mountDemoSwitcher({current})` call) so each HTML file only needs one line instead of 8 lines of duplicated markup. Remove old `.nv-demo-switcher` blocks from `bu.html`, `northeastern.html`, `tufts.html`, `umass.html`.
+## 2. `handleFile` — real + simulated validation, in order
 
-## UMass logo color in modal
+Replace current logic so both real-file and filename-simulated errors are caught, with the exact messages from the spec:
 
-5. In `umass.html` `NavigateModal.mount({...})` add `logoFilter` that recolors the black SVG to UMass maroon `#881C1C`. Use a CSS filter chain that produces maroon from black, e.g.:
-   ```
-   logoFilter: 'brightness(0) saturate(100%) invert(15%) sepia(85%) saturate(2200%) hue-rotate(347deg) brightness(85%) contrast(95%)'
-   ```
-   - Verify the rendered hue matches `#881C1C` after build; iterate if needed.
+- Compute `scenario = detectScenario(f.name)`.
+- Check 1 (wrong format): if `scenario === 'wrong-format'` OR `f.type` not in `['application/pdf','image/jpeg','image/png']`, show:
+  `"That file format isn't supported. Navigate only accepts PDF, JPG, or PNG transcripts."`
+- Check 2 (too large): `MAX_MB = 10`, `simulatedMB = 14.2`. `displayMB = scenario === 'too-large' ? 14.2 : (f.size/1024/1024).toFixed(1)`. If simulated OR real `f.size > MAX_MB*1024*1024`, show:
+  `` `This file is too large (${displayMB} MB). The maximum is 10 MB. Try exporting a compressed PDF from your school portal, or take a clear photo instead.` ``
+- On error: show inline red banner, clear `st.file`, reset input value, keep Continue disabled. Never advance.
+- On success: store `st.file = f.name`, `st.scenario = scenario`, clear error, re-render upload slide so `syncUploadBtn()` enables Continue only when consent is also checked.
 
-## Northeastern header logo size
+## 3. Parsing screen — labels and timing
 
-6. In `northeastern.html`:
-   - Desktop: `.ne-top { height: 96px }`, `.ne-logo-wrap { height: 96px }`, `.ne-logo-wrap img { height: 64px }` (up from 56).
-   - Tablet (≤900): height 80 / img 52.
-   - Mobile (≤560): height 68 / img 44.
+Update step labels to spec wording:
+- step 0 "Uploading transcript"
+- step 1 "Detecting course records"
+- step 2 "Extracting grades & credits"
+- step 3 "Preparing your review"
 
-## Footer logos use real assets
+Rewrite `scheduleParsing` to the spec schedule (step indexes shift compared to current code):
 
-7. Replace the placeholder marks in each footer with the school's actual logo `<img>`:
-   - `tufts.html` footer → tufts logo asset (white/mono variant; apply `filter: brightness(0) invert(1)` if dark footer).
-   - `bu.html` footer → BU wordmark (current placeholder swap).
-   - `northeastern.html` footer → replace `.ne-foot-mark` "N" tile with `northeastern.webp`, sized ~32–40px tall, white via filter on dark bg.
-   - `umass.html` footer → replace `.um-foot-seal` "M" tile with `umass.svg`, white via `brightness(0) invert(1)` filter.
-   - Keep adjacent text labels intact.
+```text
+mount        → step 0 active
+@800ms       → step 0 ✓ done, step 1 active
+@1700ms      → step 1 ✓ done, step 2 active
+@2600ms      → step 2 ✓ done, step 3 active   [skipped on parse-error]
+@3400ms      → step 3 ✓ done, advance to Review
+```
 
-## Verification
+Parse-error branch:
+```text
+@800ms   → step 0 ✓, step 1 active
+@1700ms  → step 1 ✓, step 2 active
+@2600ms  → step 2 icon → ✗ red, label → "Unable to extract course data"
+@3500ms  → set st.parseFailed = true, render parse-failure screen
+```
 
-After changes, screenshot each admission page at desktop / tablet / mobile and the modal in each viewport to confirm:
-- close button visible
-- mobile modal fills viewport, no rounded corners
-- card radii match the pill button family
-- UMass logo renders maroon inside the modal
-- Northeastern header logo is noticeably larger
-- footers show real logos
-- floating demo switcher is reachable even with modal open
+Implementation: drive the sequence with explicit `setTimeout`s rather than the current generic loop so the parse-error path lines up with the spec timestamps exactly.
+
+## 4. Parse failure screen — copy + buttons
+
+Update `sParsing()` failure branch:
+
+- Body text: `"Our parser had trouble extracting your course information. This happens with low-resolution scans or certain formats."`
+- Tips box content stays as the three spec bullets.
+- Buttons (stacked, in order):
+  1. Primary: "Try a different file" → existing `data-act="retry"` (resets file, scenario, parseFailed, returns to upload).
+  2. Ghost (use `nv-btn-ghost` class — not secondary): "Enter my courses manually" → `data-act="manual"` sets `manualEntry=true` and jumps to review.
+  3. Text link: "Skip and proceed anyway" → new `data-act="skip-review"` jumps to Review (not Email as today) without `manualEntry`. Add a small `.nv-text-link` style in `modal.css` for the link appearance (underlined, brand color, transparent background).
+
+## 5. Review screen banners + school override
+
+`sReview()`:
+- When `st.scenario === 'school-not-found'`, display the parsed school name as the hardcoded `"Springfield Technical Community College"` everywhere the school name appears on this screen (subtitle "We found N courses from …" and the amber banner). The user's originally selected school in `st.school` is preserved for later screens.
+- Amber banner copy uses that hardcoded name and includes the "Request it be added →" button.
+- `manualEntry` blue banner unchanged in intent; copy matches spec.
+- `success` → no banner.
+
+`data-act="request-school"` handler: replace the banner contents inline with a confirmation message: `"Request submitted! We'll notify you when this school is added."` (keeps amber styling, no link).
+
+## 6. State reset on "Start a new evaluation"
+
+`restart()` already calls `resetState()`, which initializes every field. Extend `resetState()` to explicitly include all keys named in the spec (file, consent, scenario→'success', parseFailed, manualEntry, name, email, plus existing idx/school/emailTouched) so the reset contract is explicit. `idx:0` returns to school selection.
+
+## Technical notes
+
+- All edits to `public/navigate-modal/modal.js`; minor `.nv-text-link` rule added to `public/navigate-modal/modal.css`.
+- No framework code, routes, or React components are touched.
+- Branding system, progress bar, footer, and existing slide transitions remain untouched.
