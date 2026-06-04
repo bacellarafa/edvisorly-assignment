@@ -1,74 +1,59 @@
 
-## Goal
+## Modal (`public/navigate-modal/modal.css` + `modal.js`)
 
-Refresh the credit-transfer modal to match the attached reference: a soft, light, neumorphic-ish surface with rounded pill controls, generous whitespace, and a single bold dark/brand accent for primary actions. Scale up on tablet/desktop, swap every emoji for an icon-library glyph, and rename the footer to "EdVisorly".
+1. **Close button on all viewports**
+   - Already exists in markup. Audit CSS to confirm it's visible at every breakpoint; remove any rule that hides it on tablet/mobile (none found, but verify after fullscreen changes).
 
-## 1. Visual redesign of the modal (`public/navigate-modal/modal.css`)
+2. **Mobile = full-screen modal**
+   - Add `@media(max-width:560px)` rule: `.nv-modal-overlay { padding:0 }` and `.nv-modal { max-width:100%; width:100%; height:100vh; height:100dvh; border-radius:0; max-height:none }`.
+   - Keep close button anchored top-right; ensure brand column + footer remain in place.
 
-Move from the current bright-bordered card to a calmer aesthetic inspired by the reference:
+3. **Rounded corners — pill aesthetic from the reference button**
+   - The reference CTA uses a ~10–12px radius on a tall pill. Apply that family across modal surfaces:
+     - `.nv-school-list`, `.nv-dest-box`, `.nv-notice`, `.nv-upload-box`, `.nv-parsing-steps`, `.nv-parse-tips`, `.nv-school-notfound`, `.nv-summary-card`, `.nv-course-card`, `.nv-value-box`, `.nv-next-steps`, `.nv-add-course-btn`, `.nv-parse-failed-icon` (only the cards, not circular icons) → unify to `border-radius: 12px` (currently 14–20px).
+   - Keep `.nv-btn` and `.nv-inp` as full pills (99px) — matches the blue CTA in the reference.
+   - Logo tile `.nv-modal-logo` → `border-radius: 10px`.
 
-- Surface: off-white/cream background (`#f4f1ec` range), subtle inset + soft outer shadow, larger radius (~24px).
-- Cards inside (course cards, school items, value/dest boxes, file picker, summary cards): white with very soft shadow, rounded ~18px, no hard borders — same family as the reference's pill cards.
-- Stage pills + progress: pill chips with soft shadow, active pill filled with brand color; thinner progress track.
-- Primary button: full-width pill, solid `--nv-brand` (each university's primary), white text, soft shadow. Secondary/ghost: white pill with soft shadow, dark text.
-- Inputs: pill-shaped, no harsh border, inset shadow on focus using brand color.
-- Typography: slightly larger headings, tighter tracking, neutral gray body text.
+## Floating Demo Switcher (all 4 admission pages)
 
-## 2. Sizing per breakpoint
+4. Replace top-bar `.nv-demo-switcher` with a fixed bottom-right floating button:
+   - Collapsed: 48px circular pill with "Demo" label / chevron icon, `z-index: 1100` (above modal overlay which is 1000 — bump overlay or use 999 for switcher? Keep switcher above modal so it remains accessible per request → `z-index: 1100`).
+   - Expanded on click/tap: vertical stack of school links above the trigger, animated.
+   - Works inside modal-open state (no pointer-events blocking).
+   - Same component on desktop, tablet, mobile (bottom: 16px, right: 16px).
+   - Extract markup into a shared snippet — inject via `modal.js` (new `mountDemoSwitcher({current})` call) so each HTML file only needs one line instead of 8 lines of duplicated markup. Remove old `.nv-demo-switcher` blocks from `bu.html`, `northeastern.html`, `tufts.html`, `umass.html`.
 
-In `modal.css`:
+## UMass logo color in modal
 
-- Mobile (current): keep as-is — user is happy.
-- Tablet (`min-width: 700px`): modal width ~640px, padding bumped, font sizes +1–2px.
-- Desktop (`min-width: 1024px`): near full-screen feel — width `min(1100px, 92vw)`, height `min(880px, 92vh)`, two-column inner layout where it helps (e.g. School stage: search list left, "Evaluating transfer to" panel right; Review stage: summary cards as a sticky right rail beside the term list). Header becomes a taller brand bar with the university logo prominently on the left.
+5. In `umass.html` `NavigateModal.mount({...})` add `logoFilter` that recolors the black SVG to UMass maroon `#881C1C`. Use a CSS filter chain that produces maroon from black, e.g.:
+   ```
+   logoFilter: 'brightness(0) saturate(100%) invert(15%) sepia(85%) saturate(2200%) hue-rotate(347deg) brightness(85%) contrast(95%)'
+   ```
+   - Verify the rendered hue matches `#881C1C` after build; iterate if needed.
 
-The internal stage components stay single-source; the two-column treatment is a CSS grid that collapses back to one column under 1024px, so no JS branching is needed.
+## Northeastern header logo size
 
-## 3. Header / logo treatment
+6. In `northeastern.html`:
+   - Desktop: `.ne-top { height: 96px }`, `.ne-logo-wrap { height: 96px }`, `.ne-logo-wrap img { height: 64px }` (up from 56).
+   - Tablet (≤900): height 80 / img 52.
+   - Mobile (≤560): height 68 / img 44.
 
-- Taller brand bar on desktop (~72px), logo container `max-width: 160px`, with a thin divider under it.
-- White logo plate with soft shadow on all brand colors so wordmarks (Tufts, UMass SVG, BU, Northeastern) sit cleanly.
-- "Secure · Encrypted" line uses a lock icon (Lucide) instead of inline SVG string, smaller, muted.
+## Footer logos use real assets
 
-## 4. Remove all emojis, adopt an icon library
+7. Replace the placeholder marks in each footer with the school's actual logo `<img>`:
+   - `tufts.html` footer → tufts logo asset (white/mono variant; apply `filter: brightness(0) invert(1)` if dark footer).
+   - `bu.html` footer → BU wordmark (current placeholder swap).
+   - `northeastern.html` footer → replace `.ne-foot-mark` "N" tile with `northeastern.webp`, sized ~32–40px tall, white via filter on dark bg.
+   - `umass.html` footer → replace `.um-foot-seal` "M" tile with `umass.svg`, white via `brightness(0) invert(1)` filter.
+   - Keep adjacent text labels intact.
 
-Replace every emoji currently in `modal.js` and in the four school HTML files with **Lucide icons** (clean, thin-stroke, matches the soft aesthetic of the reference).
+## Verification
 
-Delivery: include Lucide via CDN once per page (`<script src="https://unpkg.com/lucide@latest"></script>` then `lucide.createIcons()` after render). Use `<i data-lucide="...">` placeholders.
-
-Mapping (modal):
-- 🔒 lock notice / secure → `lock`
-- 📄 upload icon → `file-text`
-- ✅ uploaded / confirm → `check-circle-2`
-- ⚠️ file error → `alert-triangle`
-- ℹ️ manual-entry banner → `info`
-- 🎯 "Evaluating transfer to" → `target`
-- 📊 evaluation ready → `bar-chart-3`
-- 📧 email chip → `mail`
-- 😕 parse failed → `frown` (or drop the face entirely, use `file-x`)
-- ✓ stepper check → `check`
-- × close button → `x`
-- ← back arrow → `arrow-left`
-- + add course → `plus`
-
-School pages: audit `tufts.html`, `bu.html`, `northeastern.html`, `umass.html` and swap any emoji in nav, CTAs, feature lists, footers for Lucide equivalents.
-
-## 5. Footer rebrand
-
-In `modal.js` (`ensureMarkup`): change `Powered by <strong>EdVisorly Navigate</strong>` → `Powered by <strong>EdVisorly</strong>`. Replace the inline lock SVG with a Lucide `shield-check` or `lock` icon for consistency.
-
-## 6. QA pass
-
-For each of the 4 schools, at mobile / tablet / desktop:
-- Open modal, confirm new sizing and that brand color drives only the primary button + active pill + focus accents (everything else stays neutral).
-- Walk school → upload → parsing → review → email → confirm; verify no emoji remains and Lucide icons render.
-- Confirm logos sit cleanly in the new header plate.
-- Confirm footer reads "Powered by EdVisorly".
-
-## Files touched
-
-- `public/navigate-modal/modal.css` — full restyle + responsive breakpoints + grid layout for desktop stages.
-- `public/navigate-modal/modal.js` — emoji → `<i data-lucide>` swaps, call `lucide.createIcons()` after each `render()`, footer text change.
-- `public/schools/tufts.html`, `bu.html`, `northeastern.html`, `umass.html` — add Lucide CDN script, remove emojis from page chrome, initial `lucide.createIcons()` call.
-
-No route, asset, or branding-token changes — the per-university `primary` / `secondary` / `logoUrl` passed to `NavigateModal.mount` keep working unchanged.
+After changes, screenshot each admission page at desktop / tablet / mobile and the modal in each viewport to confirm:
+- close button visible
+- mobile modal fills viewport, no rounded corners
+- card radii match the pill button family
+- UMass logo renders maroon inside the modal
+- Northeastern header logo is noticeably larger
+- footers show real logos
+- floating demo switcher is reachable even with modal open
