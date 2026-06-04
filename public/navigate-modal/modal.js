@@ -615,22 +615,28 @@
   document.addEventListener('input', (e) => {
     if (e.target.id === 'nv-school-inp') {
       const q = e.target.value;
-      st.school = '';
-      const list = document.getElementById('nv-school-list');
-      if (!list) return;
       const q2 = q.trim().toLowerCase();
-      const f = q2 ? SCHOOLS.filter(s => s.toLowerCase().includes(q2)) : SCHOOLS;
-      const hdr = q2 ? 'Results' : 'Popular schools';
-      if (!q2 || f.length) {
-        list.innerHTML = `<div class="nv-list-header">${hdr}</div>${f.map(s => `<div class="nv-school-item" data-pick="${esc(s)}">${s}</div>`).join('')}`;
-      } else {
-        list.innerHTML = `<div class="nv-school-notfound">
-          <div class="nv-notfound-title">We don't have "${q}" in our system yet</div>
-          <div class="nv-notfound-sub">Your school may not be in our transfer database.</div>
-          <button class="nv-btn nv-btn-primary" style="font-size:13px" data-continue-unknown="${esc(q)}">Continue anyway</button>
-        </div>`;
+      const exact = SCHOOLS.find(s => s.toLowerCase() === q2);
+      st.school = q.trim();
+      st.schoolKnown = !!exact;
+      st.forceSchoolNotFound = !!(st.school.length >= 2 && !exact);
+      const list = document.getElementById('nv-school-list');
+      if (list) {
+        const f = q2 ? SCHOOLS.filter(s => s.toLowerCase().includes(q2)) : SCHOOLS.slice(0, POPULAR_LIMIT);
+        const hdr = q2 ? 'Results' : 'Popular schools';
+        if (!q2 || f.length) {
+          const shown = f.slice(0, RESULTS_LIMIT);
+          const more = f.length > RESULTS_LIMIT ? `<div class="nv-list-more">+${f.length - RESULTS_LIMIT} more — keep typing to narrow down</div>` : '';
+          list.innerHTML = `<div class="nv-list-header">${hdr}</div>${shown.map(s => `<div class="nv-school-item${st.school===s?' sel':''}" data-pick="${esc(s)}">${s}</div>`).join('')}${more}`;
+        } else {
+          list.innerHTML = `<div class="nv-school-notfound">
+            <div class="nv-notfound-title">We don't have "${esc(q)}" in our database yet</div>
+            <div class="nv-notfound-sub">No problem — tap <strong>Continue</strong> below and we'll flag this on the next step.</div>
+          </div>`;
+        }
       }
-      const btn = document.querySelector('#nv-sc .nv-btn-primary'); if (btn) btn.disabled = true;
+      const btn = document.querySelector('#nv-sc .nv-btn-primary');
+      if (btn) btn.disabled = !(st.school.length >= 2);
     }
     if (e.target.id === 'nv-name-inp')  { st.name = e.target.value; syncEmailBtn(); }
     if (e.target.id === 'nv-email-inp') { st.email = e.target.value; syncEmailBtn(); }
