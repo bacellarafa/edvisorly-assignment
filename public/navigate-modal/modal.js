@@ -215,62 +215,62 @@
   function sParsing() {
     if (st.parseFailed) return `
       <div><p class="nv-h1">We couldn't read your transcript</p>
-      <p class="nv-sub">Our parser had trouble extracting your course information.</p></div>
+      <p class="nv-sub">Our parser had trouble extracting your course information. This happens with low-resolution scans or certain formats.</p></div>
       <div class="nv-parse-failed-icon">${ic('file-x-2')}</div>
       <div class="nv-parse-tips"><div class="nv-parse-tips-title">What usually helps</div>
       <div class="nv-tip-item"><div class="nv-tip-dot"></div><span>Use an official PDF from your school portal, not a scan</span></div>
       <div class="nv-tip-item"><div class="nv-tip-dot"></div><span>If scanning, ensure the page is flat and well-lit</span></div>
       <div class="nv-tip-item"><div class="nv-tip-dot"></div><span>JPG/PNG work best when text is sharp and unrotated</span></div></div>
       <button class="nv-btn nv-btn-primary" data-act="retry">Try a different file</button>
-      <button class="nv-btn nv-btn-secondary" data-act="manual">Enter my courses manually</button>
-      <button class="nv-btn nv-btn-ghost" data-act="skip">Skip for now</button>`;
+      <button class="nv-btn nv-btn-ghost" data-act="manual">Enter my courses manually</button>
+      <button class="nv-text-link" data-act="skip-review">Skip and proceed anyway</button>`;
     return `<div class="nv-parsing-wrap">
       <div class="nv-spinner"></div>
       <div><p style="font-size:15px;font-weight:600;color:#1a1a1a">Reading your transcript…</p>
       <p style="font-size:12px;color:#8a857d;line-height:1.5;max-width:260px;margin:6px auto 0">Finding your courses, credits, and grades.</p></div>
       <div class="nv-parsing-steps">
-        <div class="nv-ps active" id="nv-ps0"><div class="nv-ps-icon">1</div><span>Uploading</span></div>
-        <div class="nv-ps" id="nv-ps1"><div class="nv-ps-icon">2</div><span>Detecting courses</span></div>
-        <div class="nv-ps" id="nv-ps2"><div class="nv-ps-icon">3</div><span>Extracting grades</span></div>
-        <div class="nv-ps" id="nv-ps3"><div class="nv-ps-icon">4</div><span>Preparing review</span></div>
+        <div class="nv-ps active" id="nv-ps0"><div class="nv-ps-icon">1</div><span>Uploading transcript</span></div>
+        <div class="nv-ps" id="nv-ps1"><div class="nv-ps-icon">2</div><span>Detecting course records</span></div>
+        <div class="nv-ps" id="nv-ps2"><div class="nv-ps-icon">3</div><span>Extracting grades &amp; credits</span></div>
+        <div class="nv-ps" id="nv-ps3"><div class="nv-ps-icon">4</div><span>Preparing your review</span></div>
       </div></div>`;
+  }
+
+  function markDone(i) {
+    const el = document.getElementById('nv-ps' + i);
+    if (!el) return;
+    el.classList.remove('active');
+    el.classList.add('done');
+    const ico = el.querySelector('.nv-ps-icon');
+    if (ico) ico.innerHTML = ic('check');
+  }
+  function activate(i) {
+    const el = document.getElementById('nv-ps' + i);
+    if (el) el.classList.add('active');
+  }
+  function failStep(i, label) {
+    const el = document.getElementById('nv-ps' + i);
+    if (!el) return;
+    el.classList.remove('active');
+    el.classList.add('failed');
+    const ico = el.querySelector('.nv-ps-icon');
+    if (ico) ico.innerHTML = ic('x');
+    const lbl = el.querySelector('span');
+    if (lbl) lbl.textContent = label;
   }
 
   function scheduleParsing() {
     if (st.parseFailed) return;
-    const failAt = st.scenario === 'parse-error' ? 2 : -1;
-    [800,1700,2600,3400].forEach((d, i) => {
-      setTimeout(() => {
-        if (st.parseFailed) return;
-        const prev = document.getElementById('nv-ps' + (i - 1));
-        const cur  = document.getElementById('nv-ps' + i);
-        if (!cur) return;
-        if (prev) {
-          prev.classList.remove('active');
-          prev.classList.add('done');
-          prev.querySelector('.nv-ps-icon').innerHTML = ic('check');
-          renderIcons();
-        }
-        cur.classList.add('active');
-        if (i === failAt) {
-          setTimeout(() => {
-            cur.classList.remove('active');
-            cur.classList.add('failed');
-            const iconEl = cur.querySelector('.nv-ps-icon');
-            if (iconEl) iconEl.innerHTML = ic('x');
-            const labelEl = cur.querySelector('span');
-            if (labelEl) labelEl.textContent = 'Unable to extract course data';
-            renderIcons();
-            setTimeout(() => {
-              st.parseFailed = true;
-              render('fwd');
-            }, 900);
-          }, 600);
-          return;
-        }
-        if (i === 3) setTimeout(() => { if (!st.parseFailed) next(); }, 700);
-      }, d);
-    });
+    const isError = st.scenario === 'parse-error';
+    setTimeout(() => { if (st.parseFailed) return; markDone(0); activate(1); renderIcons(); }, 800);
+    setTimeout(() => { if (st.parseFailed) return; markDone(1); activate(2); renderIcons(); }, 1700);
+    if (isError) {
+      setTimeout(() => { if (st.parseFailed) return; failStep(2, 'Unable to extract course data'); renderIcons(); }, 2600);
+      setTimeout(() => { st.parseFailed = true; render('fwd'); }, 3500);
+    } else {
+      setTimeout(() => { if (st.parseFailed) return; markDone(2); activate(3); renderIcons(); }, 2600);
+      setTimeout(() => { if (st.parseFailed) return; markDone(3); renderIcons(); next(); }, 3400);
+    }
   }
 
   function sReview() {
