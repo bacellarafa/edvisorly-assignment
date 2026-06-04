@@ -458,3 +458,53 @@
 .nv-demo-help-arrow{color:#888;margin:0 2px}
 .nv-demo-help code{font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-size:11.5px;color:#fff;background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px}
 @media(max-width:899px){.nv-demo-help{display:none !important}}
+
+/* ── Manual course entry ──────────────────────────────────── */
+.nv-manual-summary{
+  font-size:11px;font-weight:600;color:#8a857d;text-transform:uppercase;letter-spacing:.08em;
+  padding:0 6px;
+}
+.nv-manual-row{
+  background:#fff;border-radius:12px;padding:14px;
+  box-shadow:0 1px 2px rgba(0,0,0,.04),0 3px 10px rgba(0,0,0,.04);
+}
+.nv-manual-row + .nv-manual-row{margin-top:-4px}
+.nv-manual-row-head{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:10px;min-height:24px;
+}
+.nv-manual-row-num{
+  font-size:10px;font-weight:700;color:#8a857d;
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.nv-manual-remove{
+  background:none;border:none;cursor:pointer;color:#8a857d;
+  padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  transition:all .12s;min-height:32px;min-width:32px;
+}
+.nv-manual-remove:hover{color:#b91c1c;background:#fef2f2}
+.nv-manual-remove i,.nv-manual-remove svg{width:16px;height:16px}
+
+.nv-manual-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nv-manual-grid .nv-mf-term,
+.nv-manual-grid .nv-mf-title{grid-column:1 / -1}
+.nv-manual-row .nv-inp{padding:11px 14px;font-size:13px}
+.nv-manual-row select.nv-inp{
+  appearance:none;-webkit-appearance:none;-moz-appearance:none;
+  background-color:#fff;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a857d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 12px center;background-size:12px 12px;
+  padding-right:32px;
+}
+
+@media(min-width:560px){
+  .nv-manual-grid{grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+  .nv-manual-grid .nv-mf-term {grid-column:span 2}
+  .nv-manual-grid .nv-mf-code {grid-column:span 2}
+  .nv-manual-grid .nv-mf-title{grid-column:1 / -1}
+  .nv-manual-grid .nv-mf-cr   {grid-column:span 1}
+  .nv-manual-grid .nv-mf-grade{grid-column:span 3}
+}
+@media(min-width:1024px){
+  .nv-manual-row{padding:16px 18px}
+}
