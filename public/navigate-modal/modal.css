@@ -443,8 +443,8 @@
 
 /* Desktop-only "Demo files" cheat-sheet */
 .nv-demo-help{
-  position:fixed;bottom:16px;right:120px;z-index:1100;
-  display:none;width:380px;max-width:calc(100vw - 152px);
+  position:absolute;bottom:calc(100% + 8px);right:180px;z-index:1100;
+  display:none;width:380px;max-width:calc(100vw - 220px);
   background:rgba(20,20,30,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   border-radius:12px;padding:14px 16px;
   box-shadow:0 12px 36px rgba(0,0,0,.4);
