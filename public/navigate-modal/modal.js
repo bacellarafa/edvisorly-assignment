@@ -101,7 +101,9 @@
     const logo = document.getElementById('nv-modal-logo');
     if (brand.logoUrl) {
       logo.innerHTML = `<img src="${brand.logoUrl}" alt="${esc(brand.name)} logo">`;
-      logo.style.background = '#fff';
+      logo.style.background = 'transparent';
+      logo.style.padding = '0';
+      logo.style.boxShadow = 'none';
     } else {
       logo.textContent = brand.abbr || (brand.short || brand.name || '').slice(0, 2).toUpperCase();
       logo.style.background = brand.secondary || brand.primary;
