@@ -118,6 +118,13 @@
 
 .nv-btn-ghost{background:transparent;color:#5a544c;border:none}
 .nv-btn-ghost:hover{background:rgba(0,0,0,.04)}
+.nv-text-link{
+  background:transparent;border:none;cursor:pointer;
+  font:inherit;font-size:13px;font-weight:500;
+  color:var(--nv-brand);text-decoration:underline;
+  padding:8px;margin:0 auto;display:block;
+}
+.nv-text-link:hover{opacity:.8}
 
 .nv-back-btn{
   display:inline-flex;align-items:center;gap:6px;font-size:12px;
