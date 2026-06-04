@@ -508,3 +508,9 @@
 @media(min-width:1024px){
   .nv-manual-row{padding:16px 18px}
 }
+
+/* Success toast */
+.nv-toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#0f172a;color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:10px;box-shadow:0 12px 32px rgba(15,23,42,.28);z-index:2147483647;opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s ease;max-width:calc(100vw - 32px)}
+.nv-toast-show{opacity:1;transform:translate(-50%,0)}
+.nv-toast-icon{display:inline-flex;color:#34d399}
+.nv-toast-icon svg{width:18px;height:18px}
