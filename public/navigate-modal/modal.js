@@ -166,12 +166,15 @@
 
     const logo = document.getElementById('nv-modal-logo');
     if (brand.logoUrl) {
-      const filter = brand.logoFilter ? ` style="filter:${brand.logoFilter}"` : '';
-      logo.innerHTML = `<img src="${brand.logoUrl}" alt="${esc(brand.name)} logo"${filter}>`;
+      const filter = brand.logoFilter ? `filter:${brand.logoFilter};` : '';
+      logo.classList.add('nv-img-skel');
+      logo.classList.remove('is-loaded');
+      logo.innerHTML = `<img src="${brand.logoUrl}" alt="${esc(brand.name)} logo" decoding="async" style="opacity:0;transition:opacity .25s ease;${filter}" onload="this.style.opacity=1;this.parentNode&&this.parentNode.classList.add('is-loaded')" onerror="this.parentNode&&this.parentNode.classList.add('is-loaded')">`;
       logo.style.background = 'transparent';
       logo.style.padding = '0';
       logo.style.boxShadow = 'none';
     } else {
+      logo.classList.remove('nv-img-skel','is-loaded');
       logo.textContent = brand.abbr || (brand.short || brand.name || '').slice(0, 2).toUpperCase();
       logo.style.background = brand.secondary || brand.primary;
     }
@@ -579,18 +582,26 @@
       const list = document.getElementById('nv-school-list');
       if (!list) return;
       const q2 = q.trim().toLowerCase();
-      const f = q2 ? SCHOOLS.filter(s => s.toLowerCase().includes(q2)) : SCHOOLS;
-      const hdr = q2 ? 'Results' : 'Popular schools';
-      if (!q2 || f.length) {
-        list.innerHTML = `<div class="nv-list-header">${hdr}</div>${f.map(s => `<div class="nv-school-item" data-pick="${esc(s)}">${s}</div>`).join('')}`;
-      } else {
-        list.innerHTML = `<div class="nv-school-notfound">
-          <div class="nv-notfound-title">We don't have "${q}" in our system yet</div>
-          <div class="nv-notfound-sub">Your school may not be in our transfer database.</div>
-          <button class="nv-btn nv-btn-primary" style="font-size:13px" data-continue-unknown="${esc(q)}">Continue anyway</button>
-        </div>`;
-      }
       const btn = document.querySelector('#nv-sc .nv-btn-primary'); if (btn) btn.disabled = true;
+      if (q2) {
+        const skel = Array.from({length: 4}).map(() =>
+          `<div class="nv-school-item nv-skel-row"><span class="nv-skel-bar"></span></div>`).join('');
+        list.innerHTML = `<div class="nv-list-header">Searching…</div>${skel}`;
+      }
+      clearTimeout(window.__nvSchoolSearch);
+      window.__nvSchoolSearch = setTimeout(() => {
+        const f = q2 ? SCHOOLS.filter(s => s.toLowerCase().includes(q2)) : SCHOOLS;
+        const hdr = q2 ? 'Results' : 'Popular schools';
+        if (!q2 || f.length) {
+          list.innerHTML = `<div class="nv-list-header">${hdr}</div>${f.map(s => `<div class="nv-school-item" data-pick="${esc(s)}">${s}</div>`).join('')}`;
+        } else {
+          list.innerHTML = `<div class="nv-school-notfound">
+            <div class="nv-notfound-title">We don't have "${q}" in our system yet</div>
+            <div class="nv-notfound-sub">Your school may not be in our transfer database.</div>
+            <button class="nv-btn nv-btn-primary" style="font-size:13px" data-continue-unknown="${esc(q)}">Continue anyway</button>
+          </div>`;
+        }
+      }, q2 ? 280 : 0);
     }
     if (e.target.id === 'nv-name-inp')  { st.name = e.target.value; syncEmailBtn(); }
     if (e.target.id === 'nv-email-inp') { st.email = e.target.value; syncEmailBtn(); }
