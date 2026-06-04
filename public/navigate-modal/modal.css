@@ -207,6 +207,10 @@
 .nv-ps.done .nv-ps-icon{background:#d1fae5;color:#0a6e4a}
 .nv-ps.done .nv-ps-icon i,.nv-ps.done .nv-ps-icon svg{width:12px;height:12px}
 .nv-ps.active .nv-ps-icon{color:#fff;background:var(--nv-brand)}
+.nv-ps.failed{color:#b91c1c;font-weight:600}
+.nv-ps.failed .nv-ps-icon{background:#fef2f2;color:#b91c1c}
+.nv-ps.failed .nv-ps-icon i,.nv-ps.failed .nv-ps-icon svg{width:12px;height:12px}
+.nv-banner-link{color:inherit;font-weight:600;text-decoration:underline;white-space:nowrap}
 
 /* ── Review ───────────────────────────────────────────────── */
 .nv-summary-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
