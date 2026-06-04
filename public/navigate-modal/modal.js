@@ -515,16 +515,18 @@
       e.stopPropagation();
       const open = wrap.classList.toggle('open');
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      updateDemoHelp();
     });
     document.addEventListener('click', (e) => {
       if (!wrap.contains(e.target)) {
         wrap.classList.remove('open');
         toggle.setAttribute('aria-expanded', 'false');
+        updateDemoHelp();
       }
     });
 
-    // Desktop-only "Demo files" cheat-sheet shown during the upload stage.
-    if (!document.querySelector('.nv-demo-help')) {
+    // Desktop-only "Demo files" cheat-sheet shown beside the open Demo dropdown during the upload stage.
+    if (!wrap.querySelector('.nv-demo-help')) {
       const help = document.createElement('aside');
       help.className = 'nv-demo-help';
       help.innerHTML = `
@@ -536,7 +538,7 @@
           <li><span class="nv-demo-help-emoji">🐞</span><code>transcript-jordan-PARSE-ERROR.pdf</code> <span class="nv-demo-help-arrow">→</span> Parsing failure</li>
           <li><span class="nv-demo-help-emoji">🔍</span><code>transcript-jordan-SCHOOL-NOT-FOUND.pdf</code> <span class="nv-demo-help-arrow">→</span> Unknown school</li>
         </ul>`;
-      document.body.appendChild(help);
+      wrap.appendChild(help);
     }
 
     renderIcons();
@@ -547,9 +549,11 @@
     const help = document.querySelector('.nv-demo-help');
     if (!help) return;
     const overlay = document.getElementById('nv-modal-overlay');
+    const fab = document.querySelector('.nv-demo-fab');
     const modalOpen = !!(overlay && overlay.classList.contains('open'));
     const onUpload = !!(st && STAGES[st.idx] === 'upload');
-    help.classList.toggle('visible', modalOpen && onUpload);
+    const fabOpen = !!(fab && fab.classList.contains('open'));
+    help.classList.toggle('visible', modalOpen && onUpload && fabOpen);
   }
 
   window.NavigateModal = {
