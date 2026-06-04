@@ -27,7 +27,7 @@
 /* ── Brand column (header + progress) ───────────────────────── */
 .nv-modal-brandcol{flex-shrink:0;display:flex;flex-direction:column;background:#f4f1ec}
 .nv-modal-topbar{
-  padding:16px 18px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:16px 64px 12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;
 }
 .nv-modal-brand{display:flex;align-items:center;gap:12px;min-width:0}
 .nv-modal-logo{
@@ -45,6 +45,7 @@
 .nv-modal-secure i,.nv-modal-secure svg{width:11px;height:11px}
 
 .nv-modal-close{
+  position:absolute;top:16px;right:18px;z-index:6;
   width:36px;height:36px;border-radius:50%;
   background:#fff;border:none;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
@@ -285,7 +286,8 @@
 /* ── Tablet ───────────────────────────────────────────────── */
 @media(min-width:700px){
   .nv-modal{max-width:560px;height:min(88vh,820px);border-radius:28px}
-  .nv-modal-topbar{padding:20px 24px 14px}
+  .nv-modal-topbar{padding:20px 72px 14px 24px}
+  .nv-modal-close{top:20px;right:24px;width:40px;height:40px}
   .nv-prog-wrap{padding:8px 24px 18px}
   .nv-slide{padding:10px 24px 36px;gap:18px}
   .nv-h1{font-size:22px}
@@ -313,7 +315,7 @@
   .nv-modal-school{font-size:17px;font-weight:700}
   .nv-modal-secure{font-size:12px}
   .nv-modal-close{
-    position:absolute;top:20px;right:20px;
+    top:20px;right:20px;
     width:40px;height:40px;
   }
   .nv-prog-wrap{padding:20px 24px;border-top:1px solid rgba(0,0,0,.05)}
