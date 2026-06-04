@@ -12,7 +12,41 @@
     'Bristol Community College',
     'Cape Cod Community College',
     'Northern Essex Community College',
+    'Quincy College',
+    'Roxbury Community College',
+    'Holyoke Community College',
+    'Springfield Technical Community College',
+    'Greenfield Community College',
+    'Berkshire Community College',
+    'North Shore Community College',
+    'Massasoit Community College',
+    'UMass Boston',
+    'UMass Lowell',
+    'UMass Dartmouth',
+    'Salem State University',
+    'Bridgewater State University',
+    'Framingham State University',
+    'Worcester State University',
+    'Fitchburg State University',
+    'Westfield State University',
+    'Boston College',
+    'Boston University',
+    'Northeastern University',
+    'Tufts University',
+    'Harvard University',
+    'Massachusetts Institute of Technology',
+    'Suffolk University',
+    'Emerson College',
+    'Wellesley College',
+    'Smith College',
+    'Amherst College',
+    'Williams College',
+    'Brandeis University',
+    'Wentworth Institute of Technology',
+    'Simmons University',
   ];
+  const POPULAR_LIMIT = 6;
+  const RESULTS_LIMIT = 8;
   const COURSES = [
     { term: 'Fall 2023',   code: 'ENG 101', title: 'English Composition I',  cr: 3, grade: 'A'  },
     { term: 'Fall 2023',   code: 'MAT 120', title: 'Calculus I',             cr: 4, grade: 'B+' },
@@ -34,6 +68,8 @@
     st = {
       idx: 0,
       school: '',
+      schoolKnown: false,
+      forceSchoolNotFound: false,
       file: null,
       consent: false,
       parseFailed: false,
@@ -236,18 +272,20 @@
 
   // ── Stage builders ──
   function sSchool() {
-    const items = SCHOOLS.map(s => `<div class="nv-school-item${st.school===s?' sel':''}" data-pick="${esc(s)}">${s}${st.school===s?`<span class="nv-chk">${ic('check')}</span>`:''}</div>`).join('');
+    const popular = SCHOOLS.slice(0, POPULAR_LIMIT);
+    const items = popular.map(s => `<div class="nv-school-item${st.school===s?' sel':''}" data-pick="${esc(s)}">${s}${st.school===s?`<span class="nv-chk">${ic('check')}</span>`:''}</div>`).join('');
+    const canContinue = !!(st.school && st.school.trim().length >= 2);
     return `
       <div><p class="nv-h1">Where are you transferring from?</p>
       <p class="nv-sub">Tell us your current school and we'll check how your credits transfer to ${brand.short}.</p></div>
       <div class="nv-input-wrap"><label class="nv-input-label">Search schools</label>
-      <input class="nv-inp" id="nv-school-inp" placeholder="Type your school name…" value="${st.school}" autocomplete="off"></div>
+      <input class="nv-inp" id="nv-school-inp" placeholder="Type your school name…" value="${esc(st.school)}" autocomplete="off"></div>
       <div class="nv-school-list" id="nv-school-list"><div class="nv-list-header">Popular schools</div>${items}</div>
       <div class="nv-dest-box">
         <div class="nv-dest-icon">${ic('target')}</div>
         <div><div class="nv-dest-label">Evaluating transfer to</div><div class="nv-dest-val">${brand.name}</div></div>
       </div>
-      <button class="nv-btn nv-btn-primary" data-act="next" ${st.school?'':'disabled'}>Continue ${ic('arrow-right')}</button>`;
+      <button class="nv-btn nv-btn-primary" data-act="next" ${canContinue?'':'disabled'}>Continue ${ic('arrow-right')}</button>`;
   }
 
   function sUpload() {
@@ -564,6 +602,8 @@
     const pick = e.target.closest('[data-pick]');
     if (pick) {
       st.school = pick.dataset.pick;
+      st.schoolKnown = true;
+      st.forceSchoolNotFound = false;
       const inp = document.getElementById('nv-school-inp'); if (inp) inp.value = st.school;
       const list = document.getElementById('nv-school-list');
       if (list) list.innerHTML = `<div class="nv-list-header">Selected</div><div class="nv-school-item sel">${st.school}<span class="nv-chk">${ic('check')}</span></div>`;
@@ -575,22 +615,28 @@
   document.addEventListener('input', (e) => {
     if (e.target.id === 'nv-school-inp') {
       const q = e.target.value;
-      st.school = '';
-      const list = document.getElementById('nv-school-list');
-      if (!list) return;
       const q2 = q.trim().toLowerCase();
-      const f = q2 ? SCHOOLS.filter(s => s.toLowerCase().includes(q2)) : SCHOOLS;
-      const hdr = q2 ? 'Results' : 'Popular schools';
-      if (!q2 || f.length) {
-        list.innerHTML = `<div class="nv-list-header">${hdr}</div>${f.map(s => `<div class="nv-school-item" data-pick="${esc(s)}">${s}</div>`).join('')}`;
-      } else {
-        list.innerHTML = `<div class="nv-school-notfound">
-          <div class="nv-notfound-title">We don't have "${q}" in our system yet</div>
-          <div class="nv-notfound-sub">Your school may not be in our transfer database.</div>
-          <button class="nv-btn nv-btn-primary" style="font-size:13px" data-continue-unknown="${esc(q)}">Continue anyway</button>
-        </div>`;
+      const exact = SCHOOLS.find(s => s.toLowerCase() === q2);
+      st.school = q.trim();
+      st.schoolKnown = !!exact;
+      st.forceSchoolNotFound = !!(st.school.length >= 2 && !exact);
+      const list = document.getElementById('nv-school-list');
+      if (list) {
+        const f = q2 ? SCHOOLS.filter(s => s.toLowerCase().includes(q2)) : SCHOOLS.slice(0, POPULAR_LIMIT);
+        const hdr = q2 ? 'Results' : 'Popular schools';
+        if (!q2 || f.length) {
+          const shown = f.slice(0, RESULTS_LIMIT);
+          const more = f.length > RESULTS_LIMIT ? `<div class="nv-list-more">+${f.length - RESULTS_LIMIT} more — keep typing to narrow down</div>` : '';
+          list.innerHTML = `<div class="nv-list-header">${hdr}</div>${shown.map(s => `<div class="nv-school-item${st.school===s?' sel':''}" data-pick="${esc(s)}">${s}</div>`).join('')}${more}`;
+        } else {
+          list.innerHTML = `<div class="nv-school-notfound">
+            <div class="nv-notfound-title">We don't have "${esc(q)}" in our database yet</div>
+            <div class="nv-notfound-sub">No problem — tap <strong>Continue</strong> below and we'll flag this on the next step.</div>
+          </div>`;
+        }
       }
-      const btn = document.querySelector('#nv-sc .nv-btn-primary'); if (btn) btn.disabled = true;
+      const btn = document.querySelector('#nv-sc .nv-btn-primary');
+      if (btn) btn.disabled = !(st.school.length >= 2);
     }
     if (e.target.id === 'nv-name-inp')  { st.name = e.target.value; syncEmailBtn(); }
     if (e.target.id === 'nv-email-inp') { st.email = e.target.value; syncEmailBtn(); }
@@ -625,16 +671,6 @@
       syncEmailBtn();
     }
   }, true);
-  document.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-continue-unknown]');
-    if (!t) return;
-    st.school = t.dataset.continueUnknown;
-    const inp = document.getElementById('nv-school-inp'); if (inp) inp.value = st.school;
-    const list = document.getElementById('nv-school-list');
-    if (list) list.innerHTML = `<div class="nv-list-header">Continuing with</div><div class="nv-school-item sel">${st.school}<span class="nv-chk">${ic('check')}</span></div>`;
-    const btn = document.querySelector('#nv-sc .nv-btn-primary'); if (btn) btn.disabled = false;
-    renderIcons();
-  });
 
   function syncUploadBtn() { const b = document.getElementById('nv-upload-btn'); if (b) b.disabled = !(st.file && st.consent); }
   function syncEmailBtn() {
@@ -679,7 +715,7 @@
     if (errEl) errEl.style.display = 'none';
     // 4) Valid — store scenario for later stages (parsing + review read st.scenario).
     st.file = f.name;
-    st.scenario = scenario;
+    st.scenario = (st.forceSchoolNotFound && scenario === 'success') ? 'school-not-found' : scenario;
     const slide = document.querySelector('#nv-sc .nv-slide');
     if (slide) { slide.innerHTML = sUpload(); renderIcons(); }
   }

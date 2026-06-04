@@ -1,83 +1,29 @@
-# Manual course entry
+Two small changes to `public/navigate-modal/modal.js`, scoped to the school‑search step. No other flows change.
 
-Build a single "Manual entry" screen used in three flows, all inside the existing modal:
+## 1. Bigger "simulated database" of suggestions
 
-1. **Parse-error → "Enter my courses manually"** — opens manual entry with an empty list, then advances to Review on save.
-2. **Review → "Add a missing course"** — opens manual entry in single-course mode (one blank row, "Add course" CTA), inserts into the review list on save.
-3. **Review → per-course "Edit"** — opens manual entry pre-filled with that one course, updates it on save.
+Today `SCHOOLS` has only 6 community colleges, which are shown as "Popular schools" and used to filter as the user types. Replace it with a broader list (~30–40) that mixes community colleges, state schools, and well‑known universities so the typeahead feels real (e.g. Bunker Hill CC, Mass Bay CC, Middlesex CC, Bristol CC, Cape Cod CC, Northern Essex CC, Quincy College, Roxbury CC, Holyoke CC, Springfield Technical CC, UMass Boston, UMass Lowell, UMass Dartmouth, Salem State, Bridgewater State, Framingham State, Boston College, Boston University, Northeastern, Tufts, Harvard, MIT, Suffolk, Emerson, Wellesley, Smith, Amherst College, Williams, etc.).
 
-## UX (single screen, reuses modal chrome)
+Keep the existing render: show the first ~6 under "Popular schools" by default, then "Results" when filtering. Cap visible results at ~8 with a small "+N more" hint when the filter still matches many.
 
-Header
-- Back arrow (returns to the previous screen — Parsing-failed or Review).
-- H1 swaps by mode: *"Enter your courses"* (bulk) / *"Add a course"* (single add) / *"Edit course"* (single edit).
-- Sub: short helper, e.g. *"Add each course as it appears on your transcript. You can edit anything later."*
+## 2. Fix the Continue button on step 1
 
-Form rows (per course)
-- Term (select: Fall/Spring/Summer/Winter + year picker, defaults to most recent term already in list).
-- Course code (text, e.g. ENG 101) — required.
-- Title (text) — required.
-- Credits (number, 0.5 step, 0–6) — required.
-- Grade (select: A, A-, B+, B, B-, C+, C, C-, D, F, P, IP) — required.
-- Row-level "Remove" (trash icon) in bulk mode only; hidden in single-add/edit.
+Current behavior:
+- Bottom primary `Continue` is disabled until the user clicks a row from the list.
+- A separate inline `Continue anyway` button only appears when the typed query matches zero rows.
+- Even if the user gets through with an unknown school, the not‑found scenario on Review is keyed off the upload filename, so typing a random school never actually drives the SCHOOL NOT FOUND experience.
 
-Bulk-mode extras
-- "+ Add another course" ghost button below the last row.
-- Running summary chip: *"X courses · Y credits"*.
-- Starts with one empty row.
+New behavior:
+- The bottom primary `Continue` becomes the single source of truth and is enabled whenever either (a) the user picked a row from the list, or (b) the input has a non‑empty trimmed value of at least 2 characters.
+- Track how the school was chosen via a new state flag `st.schoolKnown` (`true` when picked from the list, `false` when free‑typed and not matching any list entry; matching list entry by case‑insensitive equality also counts as known).
+- Clicking `Continue`:
+  - Known school → proceeds to Upload exactly as today (no scenario override).
+  - Unknown school → proceeds to Upload and sets a sticky flag `st.forceSchoolNotFound = true`.
+- In `handleFile`, after `detectScenario(f.name)` runs, if `st.forceSchoolNotFound` is true and the detected scenario is `success` (i.e. the filename didn't already pick a specific scenario), override to `school-not-found`. Filename‑driven scenarios (too‑large, parse‑error, the explicit school‑not‑found demo file) still win, so the four demo files keep behaving exactly as they do now.
+- Remove the inline "Continue anyway" button from the empty‑results state; instead show a friendly "We don't have '<x>' yet — you can still continue and we'll flag it on the next step." hint, since the main Continue now handles it.
+- Inline `Continue anyway` markup, the `data-continue-unknown` click handler, and the related notfound block can be deleted once the bottom button covers both paths.
 
-Validation
-- Inline field errors (red border + 12px message), shown on blur and on submit attempt.
-- Primary CTA disabled until every visible row is fully valid.
-- Duplicate course code within the same term → inline warning, not blocking.
-
-Footer CTA
-- Bulk: *"Save courses & continue →"* (advances to Review, replaces COURSES list, banner becomes the existing blue manual-entry notice).
-- Single add: *"Add course"* (appends to COURSES, returns to Review).
-- Single edit: *"Save changes"* (updates the row, returns to Review).
-- Secondary text link: *"Cancel"* (returns without saving; in bulk mode from parse-error, shows confirm if any data entered).
-
-Empty state polish (bulk)
-- Subtle illustration/icon at top of the first row group, fading out once a field gets focus.
-- Optional "Paste from clipboard" link → opens a textarea modal that tries to parse `CODE  Title  Credits  Grade` lines (nice-to-have; include only if it fits without bloating the screen).
-
-Mobile (≤560px)
-- Each course becomes a stacked card (label above field), full-width inputs, sticky footer CTA.
-- "Add another course" stays full-width.
-
-Accessibility
-- Each input has a real `<label for>`.
-- Errors use `aria-describedby` / `aria-invalid`.
-- Focus moves to the first invalid field on failed submit.
-- Focus moves to the new row's first field after "Add another course".
-- Esc on the screen does not close the modal (matches current behavior).
-
-## Implementation notes (technical)
-
-All changes in `public/navigate-modal/modal.js` + `public/navigate-modal/modal.css`. No new files, no framework — match existing vanilla JS/template-string style.
-
-State additions on `st`:
-- `manualMode`: `'bulk' | 'add' | 'edit' | null`
-- `editIndex`: number | null
-- `draft`: array of `{term, code, title, cr, grade}` used while the screen is open
-
-Routing
-- Add a virtual stage `'manual'` rendered by a new `sManual()` function. Don't add it to `STAGES`/`PROG`; instead render it as an overlay state when `st.manualMode` is set, similar to how `parseFailed` short-circuits `sParsing()`. The progress pill stays on "Review".
-- Wire `data-act` handlers:
-  - `manual` (existing, parse-error screen) → `st.manualMode='bulk'; st.draft=[blankRow()]; render('fwd')`.
-  - New `add-course` on Review's "Add a missing course" → `st.manualMode='add'; st.draft=[blankRow()]`.
-  - New `edit-course` on each `.nv-edit-btn` (carry `data-i="${index}"`) → `st.manualMode='edit'; st.editIndex=i; st.draft=[{...COURSES[i]}]`.
-  - `manual-save` → mutate the in-memory `COURSES` array (replace / append / update by index), clear `manualMode`, `render('back')` to Review.
-  - `manual-cancel` → clear `manualMode`, return to previous screen.
-  - `manual-add-row` → push blank row, re-render screen only.
-  - `manual-remove-row` (data-i) → splice, re-render.
-
-Rendering
-- Reuse existing classes (`nv-input-wrap`, `nv-inp`, `nv-btn`, `nv-notice`) and add a small set of new ones: `.nv-manual-row`, `.nv-manual-grid` (CSS grid: term/code/title/cr/grade/remove), `.nv-manual-add`, `.nv-manual-summary`.
-- Term options derived from existing COURSES terms + current/last two academic years.
-- Validation helpers (`isValidRow`, `firstInvalidField`) live alongside the existing `detectScenario`/`scheduleParsing` helpers — keep all current logic untouched, including wrong-format and scenario detection.
-
-Out of scope
-- No backend, no persistence beyond the modal session.
-- No changes to upload, parsing scheduling, school search, email, or confirm screens.
-- No changes to scenario detection or any of the four demo files' behavior.
+## Out of scope
+- No changes to upload, parsing, review, manual entry, email, confirm, or the disclaimer footer.
+- No changes to the four demo filenames or `detectScenario`.
+- No new files; all edits stay in `public/navigate-modal/modal.js` (plus any tiny CSS tweak in `modal.css` if the empty‑state hint needs styling).
