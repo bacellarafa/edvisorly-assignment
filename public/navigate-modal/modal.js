@@ -584,7 +584,7 @@
         st.manualMode = null; st.editIndex = null; st.draft = [];
         render('back');
       }
-      else if (a === 'skip-review') { st.parseFailed = false; st.idx = STAGES.indexOf('review'); render('fwd'); }
+      
       else if (a === 'skip') { st.parseFailed = false; st.idx = STAGES.indexOf('email'); render('fwd'); }
       else if (a === 'request-school') {
         e.preventDefault();
