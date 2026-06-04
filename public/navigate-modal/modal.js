@@ -272,18 +272,20 @@
 
   // ── Stage builders ──
   function sSchool() {
-    const items = SCHOOLS.map(s => `<div class="nv-school-item${st.school===s?' sel':''}" data-pick="${esc(s)}">${s}${st.school===s?`<span class="nv-chk">${ic('check')}</span>`:''}</div>`).join('');
+    const popular = SCHOOLS.slice(0, POPULAR_LIMIT);
+    const items = popular.map(s => `<div class="nv-school-item${st.school===s?' sel':''}" data-pick="${esc(s)}">${s}${st.school===s?`<span class="nv-chk">${ic('check')}</span>`:''}</div>`).join('');
+    const canContinue = !!(st.school && st.school.trim().length >= 2);
     return `
       <div><p class="nv-h1">Where are you transferring from?</p>
       <p class="nv-sub">Tell us your current school and we'll check how your credits transfer to ${brand.short}.</p></div>
       <div class="nv-input-wrap"><label class="nv-input-label">Search schools</label>
-      <input class="nv-inp" id="nv-school-inp" placeholder="Type your school name…" value="${st.school}" autocomplete="off"></div>
+      <input class="nv-inp" id="nv-school-inp" placeholder="Type your school name…" value="${esc(st.school)}" autocomplete="off"></div>
       <div class="nv-school-list" id="nv-school-list"><div class="nv-list-header">Popular schools</div>${items}</div>
       <div class="nv-dest-box">
         <div class="nv-dest-icon">${ic('target')}</div>
         <div><div class="nv-dest-label">Evaluating transfer to</div><div class="nv-dest-val">${brand.name}</div></div>
       </div>
-      <button class="nv-btn nv-btn-primary" data-act="next" ${st.school?'':'disabled'}>Continue ${ic('arrow-right')}</button>`;
+      <button class="nv-btn nv-btn-primary" data-act="next" ${canContinue?'':'disabled'}>Continue ${ic('arrow-right')}</button>`;
   }
 
   function sUpload() {
