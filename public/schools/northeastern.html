@@ -16,12 +16,27 @@ a{color:inherit;text-decoration:none}
 
 /* Top bar */
 .ne-top{display:flex;align-items:stretch;justify-content:space-between;background:#fff;height:84px;border-bottom:1px solid #eee}
-.ne-logo-wrap{display:flex;align-items:center;padding:0 32px;background:#fff;height:72px}
-.ne-logo-wrap img{height:48px;width:auto;display:block}
-.ne-top-right{display:flex;align-items:center;background:#000}
-.ne-gift{margin:0 16px;background:#fff;color:#111;border:none;padding:11px 22px;border-radius:30px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:8px;cursor:pointer}
-.ne-search,.ne-explore{padding:0 28px;color:#fff;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;cursor:pointer;height:100%;background:none;border:none;font-family:inherit}
+.ne-logo-wrap{display:flex;align-items:center;padding:0 32px;background:#fff;height:84px;min-width:0}
+.ne-logo-wrap img{height:56px;width:auto;display:block;max-width:100%;object-fit:contain}
+.ne-top-right{display:flex;align-items:center;background:#000;flex-shrink:0}
+.ne-gift{margin:0 16px;background:#fff;color:#111;border:none;padding:11px 22px;border-radius:30px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap}
+.ne-search,.ne-explore{padding:0 28px;color:#fff;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;cursor:pointer;height:100%;background:none;border:none;font-family:inherit;white-space:nowrap}
 .ne-explore{border-left:1px solid #333}
+@media(max-width:900px){
+  .ne-top{height:68px}
+  .ne-logo-wrap{padding:0 18px;height:68px}
+  .ne-logo-wrap img{height:44px}
+  .ne-gift .ne-label,.ne-search .ne-label,.ne-explore .ne-label{display:none}
+  .ne-gift{margin:0 8px;padding:10px;border-radius:50%;width:40px;height:40px;justify-content:center}
+  .ne-search,.ne-explore{padding:0 16px}
+}
+@media(max-width:560px){
+  .ne-top{height:60px}
+  .ne-logo-wrap{padding:0 14px;height:60px}
+  .ne-logo-wrap img{height:38px}
+  .ne-gift{display:none}
+  .ne-search,.ne-explore{padding:0 12px}
+}
 
 /* Hero */
 .ne-hero{position:relative;height:620px;overflow:hidden;background:#dadada}
@@ -86,9 +101,9 @@ a{color:inherit;text-decoration:none}
     <img src="/__l5e/assets-v1/71e24544-eda2-4160-a26d-0330a811a99e/northeastern.webp" alt="Northeastern University">
   </div>
   <div class="ne-top-right">
-    <button class="ne-gift"><i data-lucide="gift" style="width:16px;height:16px"></i> Make a gift</button>
-    <button class="ne-search"><i data-lucide="search" style="width:16px;height:16px"></i> Search</button>
-    <button class="ne-explore"><i data-lucide="menu" style="width:16px;height:16px"></i> Explore Northeastern</button>
+    <button class="ne-gift"><i data-lucide="gift" style="width:16px;height:16px"></i> <span class="ne-label">Make a gift</span></button>
+    <button class="ne-search"><i data-lucide="search" style="width:16px;height:16px"></i> <span class="ne-label">Search</span></button>
+    <button class="ne-explore"><i data-lucide="menu" style="width:16px;height:16px"></i> <span class="ne-label">Explore Northeastern</span></button>
   </div>
 </header>
 
