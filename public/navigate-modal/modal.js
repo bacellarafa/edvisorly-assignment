@@ -45,11 +45,13 @@
     };
   }
   function detectScenario(filename) {
-    const n = (filename || '').toLowerCase();
-    if (n.includes('wrong-format') || n.includes('wrong_format')) return 'wrong-format';
-    if (n.includes('too-large')    || n.includes('too_large'))    return 'too-large';
-    if (n.includes('parse-error')  || n.includes('parse_error'))  return 'parse-error';
-    if (n.includes('school-not-found') || n.includes('school_not_found')) return 'school-not-found';
+    const raw = (filename || '').toLowerCase();
+    // Normalize: strip separators so PARSEERROR, parse-error, parse_error, "parse error" all match.
+    const n = raw.replace(/[\s\-_.]+/g, '');
+    if (n.includes('wrongformat'))    return 'wrong-format';
+    if (n.includes('toolarge'))       return 'too-large';
+    if (n.includes('parseerror'))     return 'parse-error';
+    if (n.includes('schoolnotfound')) return 'school-not-found';
     return 'success';
   }
 
