@@ -448,16 +448,21 @@
     const f = input.files[0]; if (!f) return;
     const errEl = document.getElementById('nv-file-error');
     const errMsg = document.getElementById('nv-file-err-msg');
+
+    // 1) Detect scenario from filename FIRST — must happen before any validation.
     const scenario = detectScenario(f.name);
+    const simulated = scenario === 'too-large' || scenario === 'parse-error' || scenario === 'school-not-found' || scenario === 'success';
+
     const accepted = ['application/pdf', 'image/jpeg', 'image/png'];
     let err = null;
 
-    // Check 1 — wrong format (simulated OR real MIME mismatch)
-    if (scenario === 'wrong-format' || !accepted.includes(f.type)) {
+    // 2) Wrong-format check (simulated OR real MIME mismatch). Simulated non-wrong-format
+    // scenarios bypass the MIME check so demo PDFs with empty/odd MIME types still proceed.
+    if (scenario === 'wrong-format' || (!simulated && !accepted.includes(f.type))) {
       err = `That file format isn't supported. Navigate only accepts PDF, JPG, or PNG transcripts.`;
     } else {
-      // Check 2 — file too large (simulated OR real size)
-      const simulatedMB = 14.2;
+      // 3) Too-large check (simulated OR real size) — runs AFTER scenario detection.
+      const simulatedMB = '14.2';
       const displayMB = scenario === 'too-large' ? simulatedMB : (f.size / 1024 / 1024).toFixed(1);
       if (scenario === 'too-large' || f.size > MAX_MB * 1024 * 1024) {
         err = `This file is too large (${displayMB} MB). The maximum is ${MAX_MB} MB. Try exporting a compressed PDF from your school portal, or take a clear photo instead.`;
@@ -475,11 +480,13 @@
     }
 
     if (errEl) errEl.style.display = 'none';
+    // 4) Valid — store scenario for later stages (parsing + review read st.scenario).
     st.file = f.name;
     st.scenario = scenario;
     const slide = document.querySelector('#nv-sc .nv-slide');
     if (slide) { slide.innerHTML = sUpload(); renderIcons(); }
   }
+
 
   function mountDemoSwitcher() {
     if (document.querySelector('.nv-demo-fab')) return;
