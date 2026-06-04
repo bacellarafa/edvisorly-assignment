@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admissions — UMass Amherst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/navigate-modal/modal.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Open Sans',system-ui,sans-serif;color:#222;background:#fff}
+a{color:inherit;text-decoration:none}
+
+/* Black utility bar */
+.um-util{background:#0c0c0c;color:#fff;padding:14px 28px;display:flex;justify-content:flex-end;align-items:center;gap:22px;font-size:14px}
+.um-util .icon{font-size:18px;opacity:0.9;cursor:pointer}
+.um-util .icon:hover{opacity:1}
+
+/* Hero with image */
+.um-hero{position:relative;height:620px;overflow:hidden;background:#7a1c1c}
+.um-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.um-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.55) 100%)}
+
+/* Main nav overlaid on hero */
+.um-nav{position:absolute;top:0;left:0;right:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:24px 36px;background:rgba(255,255,255,0);color:#fff}
+.um-logo{display:flex;align-items:center;gap:14px}
+.um-seal{width:64px;height:64px;background:#fff;border:3px solid #881C1C;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-weight:700;color:#881C1C;font-size:32px}
+.um-logo-text{font-family:Georgia,serif;color:#fff;font-size:17px;line-height:1.2;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.3)}
+.um-logo-text .of{font-style:italic;font-weight:400;font-size:14px;opacity:0.9}
+.um-nav-links{display:flex;align-items:center;gap:28px;font-size:14px;font-weight:700;letter-spacing:0.03em;text-transform:uppercase}
+.um-nav-links a{color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.4)}
+.um-nav-links a:hover{color:#fdd}
+.um-nav-search{background:#881C1C;color:#fff;border:none;padding:14px 16px;cursor:pointer;font-size:16px}
+
+.um-hero-title{position:absolute;bottom:60px;left:36px;z-index:2}
+.um-hero-title h1{font-family:'Open Sans',sans-serif;font-size:96px;font-weight:800;color:#fff;letter-spacing:0.03em;text-transform:uppercase;line-height:1;text-shadow:0 4px 24px rgba(0,0,0,0.4)}
+.um-hero-cta{margin-top:24px}
+.um-hero-cta button{background:#881C1C;color:#fff;border:none;padding:18px 30px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:10px;text-transform:uppercase;letter-spacing:0.04em}
+.um-hero-cta button:hover{background:#a52525}
+
+@media(max-width:1000px){.um-nav-links{display:none}.um-hero-title h1{font-size:48px}.um-hero{height:480px}}
+
+/* Content area */
+.um-content{max-width:1200px;margin:0 auto;padding:64px 36px;display:grid;grid-template-columns:280px 1fr;gap:64px}
+.um-side h4{font-family:Georgia,serif;font-size:13px;font-weight:700;color:#881C1C;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid #881C1C}
+.um-side a{display:block;font-size:17px;color:#222;font-weight:600;padding:14px 0;border-bottom:1px solid #eee}
+.um-side a:hover{color:#881C1C}
+.um-side a.active{color:#881C1C}
+
+.um-main h2{font-family:Georgia,serif;font-size:42px;font-weight:700;color:#111;margin-bottom:24px;line-height:1.2}
+.um-main p{font-size:17px;line-height:1.7;color:#444;margin-bottom:20px}
+
+.um-create{margin-top:48px;background:linear-gradient(135deg,#881C1C,#5e0f0f);color:#fff;padding:48px;border-radius:4px;display:grid;grid-template-columns:1.5fr 1fr;gap:40px;align-items:center}
+.um-create h3{font-family:Georgia,serif;font-size:36px;font-weight:700;line-height:1.1;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:14px}
+.um-create p{font-size:15px;color:rgba(255,255,255,0.85);line-height:1.7;margin-bottom:20px}
+.um-create-btn{background:#fff;color:#881C1C;border:none;padding:16px 28px;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;font-family:inherit}
+.um-create-side{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);padding:28px;border-radius:4px;text-align:center}
+.um-create-side .icon{font-size:42px;margin-bottom:8px}
+.um-create-side .title{font-size:18px;font-weight:700;margin-bottom:10px}
+.um-create-side .meta{font-size:12px;color:rgba(255,255,255,0.6);margin-top:14px}
+.um-check-btn{background:#fff;color:#881C1C;border:none;padding:14px 24px;font-size:14px;font-weight:700;cursor:pointer;width:100%;text-transform:uppercase;letter-spacing:0.04em;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:14px}
+.um-check-btn:hover{background:#fff5f5}
+@media(max-width:1000px){.um-content{grid-template-columns:1fr;padding:36px 20px;gap:32px}.um-create{grid-template-columns:1fr;padding:32px}}
+
+/* Footer */
+.um-footer{background:#0c0c0c;color:#999;padding:56px 36px;margin-top:64px;font-size:14px}
+.um-footer-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:36px}
+.um-footer h4{color:#fff;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px}
+.um-footer a{display:block;color:#aaa;padding:5px 0}
+.um-footer-brand{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.um-foot-seal{width:44px;height:44px;background:#881C1C;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-weight:700;font-size:22px}
+.um-foot-name{font-family:Georgia,serif;color:#fff;font-size:16px;line-height:1.2}
+@media(max-width:900px){.um-footer-inner{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="um-util">
+  <span class="icon">f</span>
+  <span class="icon">📷</span>
+  <span class="icon">👻</span>
+  <span class="icon">☰</span>
+</div>
+
+<section class="um-hero">
+  <img src="/brands/umass/hero.jpg" alt="UMass students on field">
+  <nav class="um-nav">
+    <div class="um-logo">
+      <div class="um-seal">M</div>
+      <div class="um-logo-text">University <span class="of">of</span><br>Massachusetts<br>Amherst</div>
+    </div>
+    <div class="um-nav-links">
+      <a href="#">Academics</a>
+      <a href="#">Admissions &amp; Aid</a>
+      <a href="#">Campus Life</a>
+      <a href="#">Why UMass?</a>
+      <a href="#">Research</a>
+      <a href="#">News &amp; Events</a>
+      <button class="um-nav-search">🔍</button>
+    </div>
+  </nav>
+  <div class="um-hero-title">
+    <h1>Admissions</h1>
+    <div class="um-hero-cta"><button data-navigate-open>📑 Check my credit transfer →</button></div>
+  </div>
+</section>
+
+<div class="um-content">
+  <aside class="um-side">
+    <h4>In This Section</h4>
+    <a href="#" class="active">Undergraduate Admissions</a>
+    <a href="#">Graduate Admissions</a>
+    <a href="#">Undergraduate Online Admissions</a>
+    <a href="#">Pre-College Admissions</a>
+    <a href="#">Financial Aid</a>
+  </aside>
+  <article class="um-main">
+    <h2>Your Journey Starts Here</h2>
+    <p>At UMass Amherst, we are a community of fearless leaders, unconventional doers, and free-thinking problem solvers committed to the common good. We believe in the possibility of progress, in the power of community, and in the potential for each of our students to change the world.</p>
+    <p>Here, diverse perspectives meet in powerful ways, sparking innovation and fueling the kind of transformative learning that defines who we are. This is a place where ideas take root and become realities that can change the future. Start your journey at UMass Amherst.</p>
+
+    <div class="um-create">
+      <div>
+        <h3>Create Your<br>Experience</h3>
+        <p>Transferring to UMass? Check how your credits will count before you apply. Our evaluation tool gives you a clear preliminary view in just 2 minutes.</p>
+        <button class="um-create-btn" data-navigate-open>Check my credit transfer →</button>
+      </div>
+      <div class="um-create-side">
+        <div class="icon">📑</div>
+        <div class="title">Free transfer credit evaluation</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.6">3 quick steps. Upload transcript. Get results by email.</div>
+        <button class="um-check-btn" data-navigate-open>Start now →</button>
+        <div class="meta">Powered by EdVisorly Navigate</div>
+      </div>
+    </div>
+  </article>
+</div>
+
+<footer class="um-footer">
+  <div class="um-footer-inner">
+    <div>
+      <div class="um-footer-brand">
+        <div class="um-foot-seal">M</div>
+        <div class="um-foot-name">University of Massachusetts<br>Amherst</div>
+      </div>
+      <p>300 Massachusetts Avenue, Amherst, MA 01003</p>
+    </div>
+    <div><h4>Admissions</h4><a href="#">Undergraduate</a><a href="#">Graduate</a><a href="#">Transfer</a></div>
+    <div><h4>About</h4><a href="#">Leadership</a><a href="#">News</a><a href="#">Events</a></div>
+    <div><h4>Connect</h4><a href="#">Visit</a><a href="#">Give</a><a href="#">Contact</a></div>
+  </div>
+</footer>
+
+<div class="nv-demo-switcher">
+  <span class="nv-demo-label">Demo</span>
+  <a class="nv-demo-btn" href="/tufts">Tufts</a>
+  <a class="nv-demo-btn" href="/bu">BU</a>
+  <a class="nv-demo-btn" href="/northeastern">Northeastern</a>
+  <a class="nv-demo-btn active" href="/umass">UMass</a>
+</div>
+
+<script src="/navigate-modal/modal.js"></script>
+<script>
+  NavigateModal.mount({
+    name: 'UMass Amherst',
+    short: 'UMass',
+    abbr: 'M',
+    primary: '#881C1C',
+    secondary: '#5e0f0f',
+    accent: '#ffffff',
+    light: '#fdf2f2',
+  });
+</script>
+</body>
+</html>
