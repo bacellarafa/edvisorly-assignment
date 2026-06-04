@@ -360,7 +360,7 @@
   .nv-stage-pill[data-n="2"]::before{content:"3"}
   .nv-stage-pill[data-n="3"]::before{content:"4"}
   .nv-stage-pill[data-n="4"]::before{content:"5"}
-  .nv-stage-pill.done::before{content:""}
+  .nv-stage-pill.done::before{content:"✓"}
 }
 
 /* ── Unified corner radii (cards & surfaces) ───────────────── */
