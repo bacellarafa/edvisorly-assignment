@@ -715,7 +715,7 @@
     if (errEl) errEl.style.display = 'none';
     // 4) Valid — store scenario for later stages (parsing + review read st.scenario).
     st.file = f.name;
-    st.scenario = scenario;
+    st.scenario = (st.forceSchoolNotFound && scenario === 'success') ? 'school-not-found' : scenario;
     const slide = document.querySelector('#nv-sc .nv-slide');
     if (slide) { slide.innerHTML = sUpload(); renderIcons(); }
   }
