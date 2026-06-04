@@ -677,6 +677,16 @@
       if (hintEl) hintEl.style.display = show ? 'none' : '';
       syncEmailBtn();
     }
+    const tgt = e.target;
+    if (st.manualMode && tgt && tgt.dataset && tgt.dataset.row !== undefined && tgt.dataset.field) {
+      const i = Number(tgt.dataset.row);
+      const f = tgt.dataset.field;
+      if (st.draft[i] && st.draft[i]._t) {
+        st.draft[i]._t[f] = true;
+        updateFieldError(i, f);
+        updateManualState();
+      }
+    }
   }, true);
   document.addEventListener('click', (e) => {
     const t = e.target.closest('[data-continue-unknown]');
