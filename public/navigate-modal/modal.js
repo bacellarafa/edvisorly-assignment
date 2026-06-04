@@ -50,9 +50,14 @@
 
   // ── Manual-entry helpers ──
   const GRADES = ['A','A-','B+','B','B-','C+','C','C-','D','F','P','IP'];
+  const FIELDS = ['term','code','title','cr','grade'];
   function blankRow() {
     const existing = Array.from(new Set(COURSES.map(c => c.term)));
-    return { term: existing[existing.length - 1] || `Fall ${new Date().getFullYear()}`, code: '', title: '', cr: '', grade: '' };
+    return {
+      term: existing[existing.length - 1] || `Fall ${new Date().getFullYear()}`,
+      code: '', title: '', cr: '', grade: '',
+      _t: { term:false, code:false, title:false, cr:false, grade:false },
+    };
   }
   function termOptions() {
     const seasons = ['Fall','Spring','Summer','Winter'];
@@ -63,9 +68,35 @@
     Array.from(new Set(COURSES.map(c => c.term))).forEach(t => { if (!out.includes(t)) out.unshift(t); });
     return out;
   }
-  function isValidRow(r) {
-    return !!(r.term && r.code && String(r.code).trim() && r.title && String(r.title).trim() && Number(r.cr) > 0 && r.grade);
+  function validateField(r, f) {
+    const v = r[f];
+    if (f === 'term')  return v ? null : 'Pick a term';
+    if (f === 'grade') return v ? null : 'Pick a grade';
+    if (f === 'code') {
+      const s = String(v || '').trim();
+      if (!s) return 'Required';
+      if (s.length > 32) return 'Max 32 characters';
+      if (!/^[A-Za-z0-9 \-]+$/.test(s)) return 'Letters, digits, spaces, hyphens only';
+      return null;
+    }
+    if (f === 'title') {
+      const s = String(v || '').trim();
+      if (!s) return 'Required';
+      if (s.length > 120) return 'Max 120 characters';
+      return null;
+    }
+    if (f === 'cr') {
+      if (v === '' || v == null) return 'Required';
+      const n = Number(v);
+      if (!Number.isFinite(n) || n <= 0) return 'Must be greater than 0';
+      if (n > 6) return 'Max 6 credits';
+      if (Math.abs(n * 2 - Math.round(n * 2)) > 1e-9) return 'Use 0.5 steps';
+      return null;
+    }
+    return null;
   }
+  function isValidRow(r) { return FIELDS.every(f => !validateField(r, f)); }
+  function markRowTouched(r) { FIELDS.forEach(f => { r._t[f] = true; }); }
   function toCourse(r) {
     return { term: r.term, code: String(r.code).trim(), title: String(r.title).trim(), cr: Number(r.cr), grade: r.grade };
   }
