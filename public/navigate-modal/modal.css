@@ -360,10 +360,64 @@
   .nv-stage-pill.done::before{content:""}
 }
 
-/* ── Demo switcher ─────────────────────────────────────────── */
-.nv-demo-switcher{position:fixed;bottom:14px;right:14px;background:rgba(20,20,30,.92);backdrop-filter:blur(8px);padding:8px 10px;border-radius:30px;display:flex;gap:6px;align-items:center;z-index:500;box-shadow:0 8px 32px rgba(0,0,0,.3);font-family:'Inter',system-ui,sans-serif}
-.nv-demo-label{font-size:10px;color:#aaa;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:0 6px}
-.nv-demo-btn{padding:6px 12px;border-radius:20px;border:1px solid transparent;background:transparent;color:#ddd;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;text-decoration:none;white-space:nowrap}
-.nv-demo-btn:hover{background:rgba(255,255,255,.08);color:#fff}
-.nv-demo-btn.active{background:#fff;color:#111}
-@media(max-width:640px){.nv-demo-switcher{bottom:auto;top:8px;right:8px;left:8px;justify-content:center;flex-wrap:wrap;padding:6px}.nv-demo-label{display:none}}
+/* ── Unified corner radii (cards & surfaces) ───────────────── */
+.nv-school-list,
+.nv-dest-box,
+.nv-notice,
+.nv-upload-box,
+.nv-parsing-steps,
+.nv-parse-tips,
+.nv-school-notfound,
+.nv-summary-card,
+.nv-course-card,
+.nv-value-box,
+.nv-next-steps,
+.nv-add-course-btn{border-radius:12px}
+.nv-modal-logo{border-radius:10px}
+
+/* ── Mobile full-screen modal ──────────────────────────────── */
+@media(max-width:560px){
+  .nv-modal-overlay{padding:0}
+  .nv-modal{
+    max-width:100%;width:100%;
+    height:100vh;height:100dvh;max-height:none;
+    border-radius:0;
+  }
+  .nv-modal-footer{padding-bottom:max(12px,env(safe-area-inset-bottom))}
+}
+
+/* ── Floating demo switcher (always visible, even over modal) */
+.nv-demo-fab{
+  position:fixed;bottom:16px;right:16px;z-index:1100;
+  font-family:'Inter',system-ui,sans-serif;
+}
+.nv-demo-fab-toggle{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(20,20,30,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  color:#fff;border:none;cursor:pointer;
+  padding:10px 16px;border-radius:99px;
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  box-shadow:0 8px 28px rgba(0,0,0,.35);
+  transition:transform .15s;
+}
+.nv-demo-fab-toggle:hover{transform:translateY(-1px)}
+.nv-demo-fab-toggle i,.nv-demo-fab-toggle svg{width:14px;height:14px;transition:transform .2s}
+.nv-demo-fab.open .nv-demo-fab-toggle i,
+.nv-demo-fab.open .nv-demo-fab-toggle svg{transform:rotate(180deg)}
+.nv-demo-fab-menu{
+  position:absolute;bottom:calc(100% + 8px);right:0;
+  background:rgba(20,20,30,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-radius:12px;padding:6px;min-width:160px;
+  display:flex;flex-direction:column;gap:2px;
+  box-shadow:0 12px 36px rgba(0,0,0,.4);
+  opacity:0;transform:translateY(6px);pointer-events:none;
+  transition:opacity .18s,transform .18s;
+}
+.nv-demo-fab.open .nv-demo-fab-menu{opacity:1;transform:translateY(0);pointer-events:auto}
+.nv-demo-fab-item{
+  display:block;padding:10px 14px;border-radius:8px;
+  color:#ddd;font-size:13px;font-weight:500;
+  text-decoration:none;transition:background .12s,color .12s;
+}
+.nv-demo-fab-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nv-demo-fab-item.active{background:#fff;color:#111;font-weight:600}
