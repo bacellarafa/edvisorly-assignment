@@ -68,6 +68,8 @@
     st = {
       idx: 0,
       school: '',
+      schoolKnown: false,
+      forceSchoolNotFound: false,
       file: null,
       consent: false,
       parseFailed: false,
