@@ -1,5 +1,6 @@
 /* Navigate Modal — shared module.
- * Usage: <script src="/navigate-modal/modal.js"></script>
+ * Usage: <script src="https://unpkg.com/lucide@latest"></script>
+ *        <script src="/navigate-modal/modal.js"></script>
  *        NavigateModal.mount({ name, short, primary, secondary, accent, light, logoUrl, abbr })
  *        Buttons with [data-navigate-open] open the modal.
  */
@@ -24,6 +25,9 @@
   const PROG   = [0, 1, 2, 2, 3, 4];
   const MAX_MB = 10;
 
+  // Lucide icon shorthand
+  const ic = (n, extra = '') => `<i data-lucide="${n}"${extra ? ' ' + extra : ''}></i>`;
+
   let brand = null;
   let st;
   function resetState() {
@@ -36,39 +40,45 @@
   }
   function esc(s) { return (s || '').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
 
+  function renderIcons() {
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      try { window.lucide.createIcons(); } catch (_) { /* noop */ }
+    }
+  }
+
   function ensureMarkup() {
     if (document.getElementById('nv-modal-overlay')) return;
     const wrap = document.createElement('div');
     wrap.innerHTML = `
 <div class="nv-modal-overlay" id="nv-modal-overlay">
   <div class="nv-modal" id="nv-modal">
-    <div class="nv-modal-topbar">
-      <div class="nv-modal-brand">
-        <div class="nv-modal-logo" id="nv-modal-logo"></div>
-        <div>
-          <div class="nv-modal-school" id="nv-modal-school"></div>
-          <div class="nv-modal-secure">
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Secure · Encrypted
+    <div class="nv-modal-brandcol">
+      <div class="nv-modal-topbar">
+        <div class="nv-modal-brand">
+          <div class="nv-modal-logo" id="nv-modal-logo"></div>
+          <div>
+            <div class="nv-modal-school" id="nv-modal-school"></div>
+            <div class="nv-modal-secure">${ic('lock-keyhole')} Secure · Encrypted</div>
           </div>
         </div>
+        <button class="nv-modal-close" aria-label="Close" id="nv-modal-close">${ic('x')}</button>
       </div>
-      <button class="nv-modal-close" aria-label="Close" id="nv-modal-close">×</button>
-    </div>
-    <div class="nv-prog-wrap">
-      <div class="nv-prog-track"><div class="nv-prog-bar" id="nv-prog"></div></div>
-      <div class="nv-stage-names">
-        <div class="nv-stage-pill active" data-n="0">School</div>
-        <div class="nv-stage-pill" data-n="1">Upload</div>
-        <div class="nv-stage-pill" data-n="2">Review</div>
-        <div class="nv-stage-pill" data-n="3">Results</div>
-        <div class="nv-stage-pill" data-n="4">Done</div>
+      <div class="nv-prog-wrap">
+        <div class="nv-prog-track"><div class="nv-prog-bar" id="nv-prog"></div></div>
+        <div class="nv-stage-names">
+          <div class="nv-stage-pill active" data-n="0">School</div>
+          <div class="nv-stage-pill" data-n="1">Upload</div>
+          <div class="nv-stage-pill" data-n="2">Review</div>
+          <div class="nv-stage-pill" data-n="3">Results</div>
+          <div class="nv-stage-pill" data-n="4">Done</div>
+        </div>
       </div>
     </div>
-    <div class="nv-stages" id="nv-sc"></div>
-    <div class="nv-modal-footer">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      Powered by <strong>EdVisorly Navigate</strong>
+    <div class="nv-modal-main">
+      <div class="nv-stages" id="nv-sc"></div>
+      <div class="nv-modal-footer">
+        ${ic('shield-check')} Powered by <strong>EdVisorly</strong>
+      </div>
     </div>
   </div>
 </div>`;
@@ -77,6 +87,7 @@
       if (e.target.id === 'nv-modal-overlay') closeModal();
     });
     document.getElementById('nv-modal-close').addEventListener('click', closeModal);
+    renderIcons();
   }
 
   function applyBrand() {
@@ -85,7 +96,7 @@
     root.style.setProperty('--nv-brand-secondary', brand.secondary || brand.primary);
     root.style.setProperty('--nv-brand-accent', brand.accent || brand.primary);
     root.style.setProperty('--nv-brand-light', brand.light || hexToRgba(brand.primary, 0.08));
-    root.style.setProperty('--nv-brand-shadow', hexToRgba(brand.primary, 0.18));
+    root.style.setProperty('--nv-brand-shadow', hexToRgba(brand.primary, 0.22));
 
     const logo = document.getElementById('nv-modal-logo');
     if (brand.logoUrl) {
@@ -141,46 +152,49 @@
     div.innerHTML = html;
     sc.appendChild(div);
     if (s === 'parsing') scheduleParsing();
+    renderIcons();
   }
 
   // ── Stage builders ──
   function sSchool() {
-    const items = SCHOOLS.map(s => `<div class="nv-school-item${st.school===s?' sel':''}" data-pick="${esc(s)}">${s}${st.school===s?'<span class="nv-chk">✓</span>':''}</div>`).join('');
+    const items = SCHOOLS.map(s => `<div class="nv-school-item${st.school===s?' sel':''}" data-pick="${esc(s)}">${s}${st.school===s?`<span class="nv-chk">${ic('check')}</span>`:''}</div>`).join('');
     return `
       <div><p class="nv-h1">Where are you transferring from?</p>
       <p class="nv-sub">Tell us your current school and we'll check how your credits transfer to ${brand.short}.</p></div>
       <div class="nv-input-wrap"><label class="nv-input-label">Search schools</label>
       <input class="nv-inp" id="nv-school-inp" placeholder="Type your school name…" value="${st.school}" autocomplete="off"></div>
       <div class="nv-school-list" id="nv-school-list"><div class="nv-list-header">Popular schools</div>${items}</div>
-      <div class="nv-dest-box"><div style="font-size:18px">🎯</div>
-      <div><div class="nv-dest-label">Evaluating transfer to</div><div class="nv-dest-val">${brand.name}</div></div></div>
-      <button class="nv-btn nv-btn-primary" data-act="next" ${st.school?'':'disabled'}>Continue</button>`;
+      <div class="nv-dest-box">
+        <div class="nv-dest-icon">${ic('target')}</div>
+        <div><div class="nv-dest-label">Evaluating transfer to</div><div class="nv-dest-val">${brand.name}</div></div>
+      </div>
+      <button class="nv-btn nv-btn-primary" data-act="next" ${st.school?'':'disabled'}>Continue ${ic('arrow-right')}</button>`;
   }
 
   function sUpload() {
     const hasFile = !!st.file;
     return `
-      <div><button class="nv-back-btn" data-act="back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Back</button>
+      <div><button class="nv-back-btn" data-act="back">${ic('arrow-left')} Back</button>
       <p class="nv-h1">Upload your transcript</p>
       <p class="nv-sub">We'll check how your credits transfer — before you apply.</p></div>
-      <div class="nv-notice nv-notice-amber">🔒 &nbsp;Your transcript is encrypted and only used for this evaluation.</div>
+      <div class="nv-notice nv-notice-amber">${ic('lock-keyhole')} Your transcript is encrypted and only used for this evaluation.</div>
       <label class="nv-upload-box ${hasFile?'has-file':''}" for="nv-file-inp">
-        <div class="nv-upload-icon-wrap"><span class="nv-upload-icon">${hasFile?'✅':'📄'}</span></div>
-        <span class="nv-upload-title" style="${hasFile?'color:#0a6e4a':''}">${hasFile?st.file:'Tap to upload your transcript'}</span>
+        <div class="nv-upload-icon-wrap">${hasFile?ic('file-check-2'):ic('file-text')}</div>
+        <span class="nv-upload-title">${hasFile?st.file:'Tap to upload your transcript'}</span>
         <span class="nv-upload-hint">${hasFile?'Tap to change':'PDF, JPG, or PNG · Max 10 MB'}</span>
         <input type="file" id="nv-file-inp" accept=".pdf,.jpg,.jpeg,.png" style="display:none">
       </label>
-      <div id="nv-file-error" class="nv-notice nv-notice-red">⚠️ &nbsp;<span id="nv-file-err-msg"></span></div>
+      <div id="nv-file-error" class="nv-notice nv-notice-red">${ic('alert-triangle')} <span id="nv-file-err-msg"></span></div>
       <label class="nv-consent-row"><input type="checkbox" id="nv-consent-chk" ${st.consent?'checked':''}>
       I agree my transcript data may be processed to evaluate credit transfer eligibility.</label>
-      <button class="nv-btn nv-btn-primary" id="nv-upload-btn" data-act="next" ${hasFile&&st.consent?'':'disabled'}>Continue</button>`;
+      <button class="nv-btn nv-btn-primary" id="nv-upload-btn" data-act="next" ${hasFile&&st.consent?'':'disabled'}>Continue ${ic('arrow-right')}</button>`;
   }
 
   function sParsing() {
     if (st.parseFailed) return `
       <div><p class="nv-h1">We couldn't read your transcript</p>
       <p class="nv-sub">Our parser had trouble extracting your course information.</p></div>
-      <div style="text-align:center;padding:16px 0"><div style="font-size:40px">😕</div></div>
+      <div class="nv-parse-failed-icon">${ic('file-x-2')}</div>
       <div class="nv-parse-tips"><div class="nv-parse-tips-title">What usually helps</div>
       <div class="nv-tip-item"><div class="nv-tip-dot"></div><span>Use an official PDF from your school portal, not a scan</span></div>
       <div class="nv-tip-item"><div class="nv-tip-dot"></div><span>If scanning, ensure the page is flat and well-lit</span></div>
@@ -190,8 +204,8 @@
       <button class="nv-btn nv-btn-ghost" data-act="manual">Enter my courses manually</button>`;
     return `<div class="nv-parsing-wrap">
       <div class="nv-spinner"></div>
-      <div><p style="font-size:15px;font-weight:600;color:#333">Reading your transcript…</p>
-      <p style="font-size:12px;color:#888;line-height:1.5;max-width:240px;margin:6px auto 0">Finding your courses, credits, and grades.</p></div>
+      <div><p style="font-size:15px;font-weight:600;color:#1a1a1a">Reading your transcript…</p>
+      <p style="font-size:12px;color:#8a857d;line-height:1.5;max-width:260px;margin:6px auto 0">Finding your courses, credits, and grades.</p></div>
       <div class="nv-parsing-steps">
         <div class="nv-ps active" id="nv-ps0"><div class="nv-ps-icon">1</div><span>Uploading transcript</span></div>
         <div class="nv-ps" id="nv-ps1"><div class="nv-ps-icon">2</div><span>Detecting course records</span></div>
@@ -208,7 +222,12 @@
         const prev = document.getElementById('nv-ps' + (i - 1));
         const cur  = document.getElementById('nv-ps' + i);
         if (!cur) return;
-        if (prev) { prev.classList.remove('active'); prev.classList.add('done'); prev.querySelector('.nv-ps-icon').textContent = '✓'; }
+        if (prev) {
+          prev.classList.remove('active');
+          prev.classList.add('done');
+          prev.querySelector('.nv-ps-icon').innerHTML = ic('check');
+          renderIcons();
+        }
         cur.classList.add('active');
         if (i === 3) setTimeout(() => { if (!st.parseFailed) next(); }, 700);
       }, d);
@@ -219,9 +238,9 @@
     const terms = {};
     COURSES.forEach(c => { (terms[c.term] = terms[c.term] || []).push(c); });
     const total = COURSES.reduce((s, c) => s + c.cr, 0);
-    const banner = st.manualEntry ? `<div class="nv-notice nv-notice-blue">ℹ️ &nbsp;We couldn't parse your transcript automatically. Fill in your actual courses before continuing.</div>` : '';
+    const banner = st.manualEntry ? `<div class="nv-notice nv-notice-blue">${ic('info')} We couldn't parse your transcript automatically. Fill in your actual courses before continuing.</div>` : '';
     return `
-      <div><button class="nv-back-btn" data-act="back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Back</button>
+      <div><button class="nv-back-btn" data-act="back">${ic('arrow-left')} Back</button>
       <p class="nv-h1">Does this look right?</p>
       <p class="nv-sub">We found <strong>${COURSES.length} courses</strong> from <strong>${st.school||'your school'}</strong>.</p></div>
       ${banner}
@@ -236,19 +255,19 @@
           <div class="nv-course-meta"><span>${c.code}</span><span>·</span><span>${c.cr} cr</span><span>·</span><span class="${c.grade.startsWith('A')?'nv-grade-good':''}">${c.grade}</span></div>
         </div>`).join('')}
       </div>`).join('')}
-      <button class="nv-add-course-btn">+ Add a missing course</button>
-      <button class="nv-btn nv-btn-primary" data-act="next">Looks correct — continue</button>`;
+      <button class="nv-add-course-btn">${ic('plus')} Add a missing course</button>
+      <button class="nv-btn nv-btn-primary" data-act="next">Looks correct — continue ${ic('arrow-right')}</button>`;
   }
 
   function sEmail() {
     const emailOk = st.email.includes('@') && st.email.includes('.');
     const showErr = st.emailTouched && st.email && !emailOk;
     return `
-      <div><button class="nv-back-btn" data-act="back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> Back</button>
+      <div><button class="nv-back-btn" data-act="back">${ic('arrow-left')} Back</button>
       <p class="nv-h1">Where should we send your results?</p>
       <p class="nv-sub">Your evaluation is almost ready — we'll email you the full breakdown.</p></div>
       <div class="nv-value-box">
-        <span class="nv-value-icon">📊</span>
+        <div class="nv-value-icon">${ic('bar-chart-3')}</div>
         <div><div class="nv-value-title">Evaluation ready to run</div>
         <div class="nv-value-sub">${COURSES.length} courses from ${st.school||'your school'} → ${brand.name}</div></div>
       </div>
@@ -258,17 +277,17 @@
       <input class="nv-inp${showErr?' nv-inp-error':''}" id="nv-email-inp" type="email" placeholder="jordan@email.com" value="${st.email}" autocomplete="email">
       <div class="nv-field-err-msg" id="nv-email-err" style="${showErr?'display:block':''}">Please enter a valid email address.</div>
       <div class="nv-field-hint" id="nv-email-hint" style="${showErr?'display:none':''}">We'll only use this to send your evaluation.</div></div>
-      <button class="nv-btn nv-btn-primary" id="nv-email-btn" data-act="next" ${st.name&&emailOk?'':'disabled'}>Send my results</button>`;
+      <button class="nv-btn nv-btn-primary" id="nv-email-btn" data-act="next" ${st.name&&emailOk?'':'disabled'}>Send my results ${ic('arrow-right')}</button>`;
   }
 
   function sConfirm() {
     const first = (st.name || '').trim().split(' ')[0];
     return `
       <div style="text-align:center;padding-top:8px">
-        <div class="nv-confirm-icon-wrap">✅</div>
+        <div class="nv-confirm-icon-wrap">${ic('check-circle-2')}</div>
         <p class="nv-h1" style="margin-top:14px">Your evaluation is on its way${first?', '+first:''}!</p>
         <p class="nv-sub" style="margin-top:6px">We're analyzing your transcript. Expect your ${brand.short} credit evaluation within <strong>1–2 business days</strong>.</p>
-        ${st.email?`<div style="margin-top:10px;display:flex;justify-content:center"><div class="nv-email-chip">📧 <span>${st.email}</span></div></div>`:''}
+        ${st.email?`<div style="margin-top:12px;display:flex;justify-content:center"><div class="nv-email-chip">${ic('mail')} <span>${st.email}</span></div></div>`:''}
       </div>
       <div class="nv-next-steps">
         <div class="nv-next-title">What happens next</div>
@@ -302,8 +321,9 @@
       st.school = pick.dataset.pick;
       const inp = document.getElementById('nv-school-inp'); if (inp) inp.value = st.school;
       const list = document.getElementById('nv-school-list');
-      if (list) list.innerHTML = `<div class="nv-list-header">Selected</div><div class="nv-school-item sel">${st.school}<span class="nv-chk">✓</span></div>`;
+      if (list) list.innerHTML = `<div class="nv-list-header">Selected</div><div class="nv-school-item sel">${st.school}<span class="nv-chk">${ic('check')}</span></div>`;
       const btn = document.querySelector('#nv-sc .nv-btn-primary'); if (btn) btn.disabled = false;
+      renderIcons();
     }
   });
 
@@ -322,7 +342,7 @@
         list.innerHTML = `<div class="nv-school-notfound">
           <div class="nv-notfound-title">We don't have "${q}" in our system yet</div>
           <div class="nv-notfound-sub">Your school may not be in our transfer database.</div>
-          <button class="nv-btn nv-btn-primary" style="margin-bottom:8px;font-size:13px" data-continue-unknown="${esc(q)}">Continue anyway</button>
+          <button class="nv-btn nv-btn-primary" style="font-size:13px" data-continue-unknown="${esc(q)}">Continue anyway</button>
         </div>`;
       }
       const btn = document.querySelector('#nv-sc .nv-btn-primary'); if (btn) btn.disabled = true;
@@ -354,8 +374,9 @@
     st.school = t.dataset.continueUnknown;
     const inp = document.getElementById('nv-school-inp'); if (inp) inp.value = st.school;
     const list = document.getElementById('nv-school-list');
-    if (list) list.innerHTML = `<div class="nv-list-header">Continuing with</div><div class="nv-school-item sel">${st.school}<span class="nv-chk">✓</span></div>`;
+    if (list) list.innerHTML = `<div class="nv-list-header">Continuing with</div><div class="nv-school-item sel">${st.school}<span class="nv-chk">${ic('check')}</span></div>`;
     const btn = document.querySelector('#nv-sc .nv-btn-primary'); if (btn) btn.disabled = false;
+    renderIcons();
   });
 
   function syncUploadBtn() { const b = document.getElementById('nv-upload-btn'); if (b) b.disabled = !(st.file && st.consent); }
@@ -379,7 +400,7 @@
       if (errEl) errEl.style.display = 'none';
       st.file = f.name;
       const slide = document.querySelector('#nv-sc .nv-slide');
-      if (slide) slide.innerHTML = sUpload();
+      if (slide) { slide.innerHTML = sUpload(); renderIcons(); }
     }
   }
 
