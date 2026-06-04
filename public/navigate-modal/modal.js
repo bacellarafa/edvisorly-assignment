@@ -218,15 +218,16 @@
       <div><p style="font-size:15px;font-weight:600;color:#1a1a1a">Reading your transcript…</p>
       <p style="font-size:12px;color:#8a857d;line-height:1.5;max-width:260px;margin:6px auto 0">Finding your courses, credits, and grades.</p></div>
       <div class="nv-parsing-steps">
-        <div class="nv-ps active" id="nv-ps0"><div class="nv-ps-icon">1</div><span>Uploading transcript</span></div>
-        <div class="nv-ps" id="nv-ps1"><div class="nv-ps-icon">2</div><span>Detecting course records</span></div>
-        <div class="nv-ps" id="nv-ps2"><div class="nv-ps-icon">3</div><span>Extracting grades &amp; credits</span></div>
-        <div class="nv-ps" id="nv-ps3"><div class="nv-ps-icon">4</div><span>Preparing your review</span></div>
+        <div class="nv-ps active" id="nv-ps0"><div class="nv-ps-icon">1</div><span>Uploading</span></div>
+        <div class="nv-ps" id="nv-ps1"><div class="nv-ps-icon">2</div><span>Detecting courses</span></div>
+        <div class="nv-ps" id="nv-ps2"><div class="nv-ps-icon">3</div><span>Extracting grades</span></div>
+        <div class="nv-ps" id="nv-ps3"><div class="nv-ps-icon">4</div><span>Preparing review</span></div>
       </div></div>`;
   }
 
   function scheduleParsing() {
     if (st.parseFailed) return;
+    const failAt = st.scenario === 'parse-error' ? 2 : -1;
     [800,1700,2600,3400].forEach((d, i) => {
       setTimeout(() => {
         if (st.parseFailed) return;
@@ -240,6 +241,22 @@
           renderIcons();
         }
         cur.classList.add('active');
+        if (i === failAt) {
+          setTimeout(() => {
+            cur.classList.remove('active');
+            cur.classList.add('failed');
+            const iconEl = cur.querySelector('.nv-ps-icon');
+            if (iconEl) iconEl.innerHTML = ic('x');
+            const labelEl = cur.querySelector('span');
+            if (labelEl) labelEl.textContent = 'Unable to extract course data';
+            renderIcons();
+            setTimeout(() => {
+              st.parseFailed = true;
+              render('fwd');
+            }, 900);
+          }, 600);
+          return;
+        }
         if (i === 3) setTimeout(() => { if (!st.parseFailed) next(); }, 700);
       }, d);
     });
