@@ -190,6 +190,15 @@
     updateProg();
     const sc = document.getElementById('nv-sc');
     while (sc.firstChild) sc.removeChild(sc.firstChild);
+    const div = document.createElement('div');
+    div.className = 'nv-slide active' + (dir === 'back' ? ' back-anim' : '');
+    if (st.manualMode) {
+      div.innerHTML = sManual();
+      sc.appendChild(div);
+      renderIcons();
+      updateDemoHelp();
+      return;
+    }
     const s = STAGES[st.idx];
     const html =
       s === 'school'  ? sSchool()  :
@@ -198,8 +207,6 @@
       s === 'review'  ? sReview()  :
       s === 'email'   ? sEmail()   :
                         sConfirm();
-    const div = document.createElement('div');
-    div.className = 'nv-slide active' + (dir === 'back' ? ' back-anim' : '');
     div.innerHTML = html;
     sc.appendChild(div);
     if (s === 'parsing') scheduleParsing();
