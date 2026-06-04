@@ -31,7 +31,15 @@
   let brand = null;
   let st;
   function resetState() {
-    st = { idx: 0, school: '', file: null, consent: false, parseFailed: false, manualEntry: false, name: '', email: '', emailTouched: false };
+    st = { idx: 0, school: '', file: null, consent: false, parseFailed: false, manualEntry: false, name: '', email: '', emailTouched: false, scenario: 'success' };
+  }
+  function detectScenario(name) {
+    const n = (name || '').toLowerCase();
+    if (n.includes('wrong-format')) return 'wrong-format';
+    if (n.includes('too-large'))    return 'too-large';
+    if (n.includes('parse-error'))  return 'parse-error';
+    if (n.includes('school-not-found')) return 'school-not-found';
+    return 'success';
   }
 
   function hexToRgba(hex, a) {
@@ -185,7 +193,7 @@
         <div class="nv-upload-icon-wrap">${hasFile?ic('file-check-2'):ic('file-text')}</div>
         <span class="nv-upload-title">${hasFile?st.file:'Tap to upload your transcript'}</span>
         <span class="nv-upload-hint">${hasFile?'Tap to change':'PDF, JPG, or PNG · Max 10 MB'}</span>
-        <input type="file" id="nv-file-inp" accept=".pdf,.jpg,.jpeg,.png" style="display:none">
+        <input type="file" id="nv-file-inp" style="display:none">
       </label>
       <div id="nv-file-error" class="nv-notice nv-notice-red">${ic('alert-triangle')} <span id="nv-file-err-msg"></span></div>
       <label class="nv-consent-row"><input type="checkbox" id="nv-consent-chk" ${st.consent?'checked':''}>
@@ -203,22 +211,23 @@
       <div class="nv-tip-item"><div class="nv-tip-dot"></div><span>If scanning, ensure the page is flat and well-lit</span></div>
       <div class="nv-tip-item"><div class="nv-tip-dot"></div><span>JPG/PNG work best when text is sharp and unrotated</span></div></div>
       <button class="nv-btn nv-btn-primary" data-act="retry">Try a different file</button>
-      <div class="nv-divider">or</div>
-      <button class="nv-btn nv-btn-ghost" data-act="manual">Enter my courses manually</button>`;
+      <button class="nv-btn nv-btn-secondary" data-act="manual">Enter my courses manually</button>
+      <button class="nv-btn nv-btn-ghost" data-act="skip">Skip for now</button>`;
     return `<div class="nv-parsing-wrap">
       <div class="nv-spinner"></div>
       <div><p style="font-size:15px;font-weight:600;color:#1a1a1a">Reading your transcript…</p>
       <p style="font-size:12px;color:#8a857d;line-height:1.5;max-width:260px;margin:6px auto 0">Finding your courses, credits, and grades.</p></div>
       <div class="nv-parsing-steps">
-        <div class="nv-ps active" id="nv-ps0"><div class="nv-ps-icon">1</div><span>Uploading transcript</span></div>
-        <div class="nv-ps" id="nv-ps1"><div class="nv-ps-icon">2</div><span>Detecting course records</span></div>
-        <div class="nv-ps" id="nv-ps2"><div class="nv-ps-icon">3</div><span>Extracting grades &amp; credits</span></div>
-        <div class="nv-ps" id="nv-ps3"><div class="nv-ps-icon">4</div><span>Preparing your review</span></div>
+        <div class="nv-ps active" id="nv-ps0"><div class="nv-ps-icon">1</div><span>Uploading</span></div>
+        <div class="nv-ps" id="nv-ps1"><div class="nv-ps-icon">2</div><span>Detecting courses</span></div>
+        <div class="nv-ps" id="nv-ps2"><div class="nv-ps-icon">3</div><span>Extracting grades</span></div>
+        <div class="nv-ps" id="nv-ps3"><div class="nv-ps-icon">4</div><span>Preparing review</span></div>
       </div></div>`;
   }
 
   function scheduleParsing() {
     if (st.parseFailed) return;
+    const failAt = st.scenario === 'parse-error' ? 2 : -1;
     [800,1700,2600,3400].forEach((d, i) => {
       setTimeout(() => {
         if (st.parseFailed) return;
@@ -232,6 +241,22 @@
           renderIcons();
         }
         cur.classList.add('active');
+        if (i === failAt) {
+          setTimeout(() => {
+            cur.classList.remove('active');
+            cur.classList.add('failed');
+            const iconEl = cur.querySelector('.nv-ps-icon');
+            if (iconEl) iconEl.innerHTML = ic('x');
+            const labelEl = cur.querySelector('span');
+            if (labelEl) labelEl.textContent = 'Unable to extract course data';
+            renderIcons();
+            setTimeout(() => {
+              st.parseFailed = true;
+              render('fwd');
+            }, 900);
+          }, 600);
+          return;
+        }
         if (i === 3) setTimeout(() => { if (!st.parseFailed) next(); }, 700);
       }, d);
     });
@@ -241,7 +266,11 @@
     const terms = {};
     COURSES.forEach(c => { (terms[c.term] = terms[c.term] || []).push(c); });
     const total = COURSES.reduce((s, c) => s + c.cr, 0);
-    const banner = st.manualEntry ? `<div class="nv-notice nv-notice-blue">${ic('info')} We couldn't parse your transcript automatically. Fill in your actual courses before continuing.</div>` : '';
+    const banner = st.manualEntry
+      ? `<div class="nv-notice nv-notice-blue">${ic('info')} We couldn't parse your transcript automatically. Fill in your actual courses before continuing.</div>`
+      : (st.scenario === 'school-not-found'
+        ? `<div class="nv-notice nv-notice-amber"><span>${ic('alert-triangle')}</span><span><strong>${st.school || 'This school'}</strong> isn't in our transfer database yet. We've parsed your courses, but credit mapping may be estimated. <a href="#" class="nv-banner-link" data-act="request-school">Request it be added →</a></span></div>`
+        : '');
     return `
       <div><button class="nv-back-btn" data-act="back">${ic('arrow-left')} Back</button>
       <p class="nv-h1">Does this look right?</p>
@@ -315,8 +344,10 @@
       if (a === 'next') next();
       else if (a === 'back') back();
       else if (a === 'restart') restart();
-      else if (a === 'retry') { st.parseFailed = false; st.file = null; st.idx = STAGES.indexOf('upload'); render('back'); }
+      else if (a === 'retry') { st.parseFailed = false; st.file = null; st.scenario = 'success'; st.idx = STAGES.indexOf('upload'); render('back'); }
       else if (a === 'manual') { st.parseFailed = false; st.manualEntry = true; st.idx = STAGES.indexOf('review'); render('fwd'); }
+      else if (a === 'skip') { st.parseFailed = false; st.idx = STAGES.indexOf('email'); render('fwd'); }
+      else if (a === 'request-school') { e.preventDefault(); }
       return;
     }
     const pick = e.target.closest('[data-pick]');
@@ -389,22 +420,27 @@
   }
   function handleFile(input) {
     const f = input.files[0]; if (!f) return;
-    const ok = ['application/pdf', 'image/jpeg', 'image/png'];
     const errEl = document.getElementById('nv-file-error');
     const errMsg = document.getElementById('nv-file-err-msg');
+    const scenario = detectScenario(f.name);
     let err = null;
-    if (!ok.includes(f.type)) err = `Format not supported. Please upload a PDF, JPG, or PNG.`;
-    else if (f.size > MAX_MB * 1024 * 1024) err = `File too large (${(f.size/1024/1024).toFixed(1)} MB). Max is ${MAX_MB} MB.`;
+    if (scenario === 'wrong-format') {
+      err = `That file format isn't supported. Navigate only accepts PDF, JPG, or PNG transcripts.`;
+    } else if (scenario === 'too-large') {
+      err = `This file is too large (14.2 MB). The maximum is 10 MB. Try exporting a compressed PDF from your school portal, or take a clear photo instead.`;
+    }
     if (err) {
       if (errMsg) errMsg.textContent = err;
       if (errEl) errEl.style.display = 'flex';
-      st.file = null; syncUploadBtn();
-    } else {
-      if (errEl) errEl.style.display = 'none';
-      st.file = f.name;
-      const slide = document.querySelector('#nv-sc .nv-slide');
-      if (slide) { slide.innerHTML = sUpload(); renderIcons(); }
+      st.file = null; st.scenario = 'success'; syncUploadBtn();
+      input.value = '';
+      return;
     }
+    if (errEl) errEl.style.display = 'none';
+    st.file = f.name;
+    st.scenario = scenario;
+    const slide = document.querySelector('#nv-sc .nv-slide');
+    if (slide) { slide.innerHTML = sUpload(); renderIcons(); }
   }
 
   window.NavigateModal = {
