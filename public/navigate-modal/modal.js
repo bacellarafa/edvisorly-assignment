@@ -474,7 +474,53 @@
       else if (a === 'back') back();
       else if (a === 'restart') restart();
       else if (a === 'retry') { st.parseFailed = false; st.file = null; st.scenario = 'success'; st.idx = STAGES.indexOf('upload'); render('back'); }
-      else if (a === 'manual') { st.parseFailed = false; st.manualEntry = true; st.idx = STAGES.indexOf('review'); render('fwd'); }
+      else if (a === 'manual') { st.parseFailed = false; st.manualMode = 'bulk'; st.draft = [blankRow()]; st.editIndex = null; render('fwd'); }
+      else if (a === 'add-course') { st.manualMode = 'add'; st.draft = [blankRow()]; st.editIndex = null; render('fwd'); }
+      else if (a === 'edit-course') {
+        const i = Number(act.dataset.i);
+        if (!Number.isFinite(i) || !COURSES[i]) return;
+        st.manualMode = 'edit'; st.editIndex = i;
+        st.draft = [{ term: COURSES[i].term, code: COURSES[i].code, title: COURSES[i].title, cr: COURSES[i].cr, grade: COURSES[i].grade }];
+        render('fwd');
+      }
+      else if (a === 'manual-add-row') {
+        st.draft.push(blankRow());
+        render('fwd');
+        const last = st.draft.length - 1;
+        const focusEl = document.getElementById('nv-mf-code-' + last);
+        if (focusEl) focusEl.focus();
+      }
+      else if (a === 'manual-remove-row') {
+        const i = Number(act.dataset.i);
+        if (!Number.isFinite(i)) return;
+        st.draft.splice(i, 1);
+        if (!st.draft.length) st.draft.push(blankRow());
+        render('fwd');
+      }
+      else if (a === 'manual-save') {
+        if (!st.draft.every(isValidRow)) return;
+        if (st.manualMode === 'bulk') {
+          COURSES.length = 0;
+          st.draft.forEach(r => COURSES.push(toCourse(r)));
+          st.manualEntry = true;
+          st.manualMode = null;
+          st.draft = [];
+          st.idx = STAGES.indexOf('review');
+          render('fwd');
+        } else if (st.manualMode === 'add') {
+          COURSES.push(toCourse(st.draft[0]));
+          st.manualMode = null; st.draft = [];
+          render('back');
+        } else if (st.manualMode === 'edit') {
+          COURSES[st.editIndex] = toCourse(st.draft[0]);
+          st.manualMode = null; st.editIndex = null; st.draft = [];
+          render('back');
+        }
+      }
+      else if (a === 'manual-cancel') {
+        st.manualMode = null; st.editIndex = null; st.draft = [];
+        render('back');
+      }
       else if (a === 'skip-review') { st.parseFailed = false; st.idx = STAGES.indexOf('review'); render('fwd'); }
       else if (a === 'skip') { st.parseFailed = false; st.idx = STAGES.indexOf('email'); render('fwd'); }
       else if (a === 'request-school') {
