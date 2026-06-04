@@ -443,8 +443,44 @@
     if (slide) { slide.innerHTML = sUpload(); renderIcons(); }
   }
 
+  function mountDemoSwitcher() {
+    if (document.querySelector('.nv-demo-fab')) return;
+    const schools = [
+      { slug: 'tufts', name: 'Tufts' },
+      { slug: 'bu', name: 'BU' },
+      { slug: 'northeastern', name: 'Northeastern' },
+      { slug: 'umass', name: 'UMass' },
+    ];
+    const path = (location.pathname || '').toLowerCase();
+    const items = schools.map(s => {
+      const active = path.indexOf('/' + s.slug) === 0 || path.indexOf('/schools/' + s.slug) === 0;
+      return `<a class="nv-demo-fab-item${active?' active':''}" href="/${s.slug}">${s.name}</a>`;
+    }).join('');
+    const wrap = document.createElement('div');
+    wrap.className = 'nv-demo-fab';
+    wrap.innerHTML = `
+      <div class="nv-demo-fab-menu" role="menu">${items}</div>
+      <button class="nv-demo-fab-toggle" aria-label="Switch demo school" aria-expanded="false">
+        Demo ${ic('chevron-up')}
+      </button>`;
+    document.body.appendChild(wrap);
+    const toggle = wrap.querySelector('.nv-demo-fab-toggle');
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = wrap.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    document.addEventListener('click', (e) => {
+      if (!wrap.contains(e.target)) {
+        wrap.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+    renderIcons();
+  }
+
   window.NavigateModal = {
-    mount(b) { brand = b; ensureMarkup(); applyBrand(); },
+    mount(b) { brand = b; ensureMarkup(); applyBrand(); mountDemoSwitcher(); },
     open: openModal,
     close: closeModal,
   };
