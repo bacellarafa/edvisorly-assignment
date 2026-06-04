@@ -42,7 +42,32 @@
       email: '',
       emailTouched: false,
       scenario: 'success',
+      manualMode: null,   // 'bulk' | 'add' | 'edit' | null
+      editIndex: null,
+      draft: [],
     };
+  }
+
+  // ── Manual-entry helpers ──
+  const GRADES = ['A','A-','B+','B','B-','C+','C','C-','D','F','P','IP'];
+  function blankRow() {
+    const existing = Array.from(new Set(COURSES.map(c => c.term)));
+    return { term: existing[existing.length - 1] || `Fall ${new Date().getFullYear()}`, code: '', title: '', cr: '', grade: '' };
+  }
+  function termOptions() {
+    const seasons = ['Fall','Spring','Summer','Winter'];
+    const now = new Date().getFullYear();
+    const years = [now - 3, now - 2, now - 1, now, now + 1];
+    const out = [];
+    years.forEach(y => seasons.forEach(s => out.push(`${s} ${y}`)));
+    Array.from(new Set(COURSES.map(c => c.term))).forEach(t => { if (!out.includes(t)) out.unshift(t); });
+    return out;
+  }
+  function isValidRow(r) {
+    return !!(r.term && r.code && String(r.code).trim() && r.title && String(r.title).trim() && Number(r.cr) > 0 && r.grade);
+  }
+  function toCourse(r) {
+    return { term: r.term, code: String(r.code).trim(), title: String(r.title).trim(), cr: Number(r.cr), grade: r.grade };
   }
   function detectScenario(filename) {
     const raw = (filename || '').toLowerCase();
