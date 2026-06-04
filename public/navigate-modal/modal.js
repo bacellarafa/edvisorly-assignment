@@ -31,14 +31,25 @@
   let brand = null;
   let st;
   function resetState() {
-    st = { idx: 0, school: '', file: null, consent: false, parseFailed: false, manualEntry: false, name: '', email: '', emailTouched: false, scenario: 'success' };
+    st = {
+      idx: 0,
+      school: '',
+      file: null,
+      consent: false,
+      parseFailed: false,
+      manualEntry: false,
+      name: '',
+      email: '',
+      emailTouched: false,
+      scenario: 'success',
+    };
   }
-  function detectScenario(name) {
-    const n = (name || '').toLowerCase();
-    if (n.includes('wrong-format')) return 'wrong-format';
-    if (n.includes('too-large'))    return 'too-large';
-    if (n.includes('parse-error'))  return 'parse-error';
-    if (n.includes('school-not-found')) return 'school-not-found';
+  function detectScenario(filename) {
+    const n = (filename || '').toLowerCase();
+    if (n.includes('wrong-format') || n.includes('wrong_format')) return 'wrong-format';
+    if (n.includes('too-large')    || n.includes('too_large'))    return 'too-large';
+    if (n.includes('parse-error')  || n.includes('parse_error'))  return 'parse-error';
+    if (n.includes('school-not-found') || n.includes('school_not_found')) return 'school-not-found';
     return 'success';
   }
 
