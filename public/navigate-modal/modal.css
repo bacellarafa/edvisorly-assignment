@@ -14,6 +14,7 @@
 .nv-modal-overlay.open{opacity:1;pointer-events:all}
 
 .nv-modal{
+  position:relative;
   background:#f4f1ec;border-radius:24px;width:100%;
   max-width:420px;height:min(90vh,760px);
   display:flex;flex-direction:column;overflow:hidden;
