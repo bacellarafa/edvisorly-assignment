@@ -317,8 +317,7 @@
       <div class="nv-tip-item"><div class="nv-tip-dot"></div><span>If scanning, ensure the page is flat and well-lit</span></div>
       <div class="nv-tip-item"><div class="nv-tip-dot"></div><span>JPG/PNG work best when text is sharp and unrotated</span></div></div>
       <button class="nv-btn nv-btn-primary" data-act="retry">Try a different file</button>
-      <button class="nv-btn nv-btn-ghost" data-act="manual">Enter my courses manually</button>
-      <button class="nv-text-link" data-act="skip-review">Skip and proceed anyway</button>`;
+      <button class="nv-btn nv-btn-ghost" data-act="manual">Enter my courses manually</button>`;
     return `<div class="nv-parsing-wrap">
       <div class="nv-spinner"></div>
       <div><p style="font-size:15px;font-weight:600;color:#1a1a1a">Reading your transcript…</p>
