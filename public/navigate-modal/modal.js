@@ -602,6 +602,8 @@
     const pick = e.target.closest('[data-pick]');
     if (pick) {
       st.school = pick.dataset.pick;
+      st.schoolKnown = true;
+      st.forceSchoolNotFound = false;
       const inp = document.getElementById('nv-school-inp'); if (inp) inp.value = st.school;
       const list = document.getElementById('nv-school-list');
       if (list) list.innerHTML = `<div class="nv-list-header">Selected</div><div class="nv-school-item sel">${st.school}<span class="nv-chk">${ic('check')}</span></div>`;
