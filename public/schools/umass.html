@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/navigate-modal/modal.css">
+<script src="https://unpkg.com/lucide@latest"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{font-family:'Open Sans',system-ui,sans-serif;color:#222;background:#fff}
@@ -78,10 +79,10 @@ a{color:inherit;text-decoration:none}
 <body>
 
 <div class="um-util">
-  <span class="icon">f</span>
-  <span class="icon">📷</span>
-  <span class="icon">👻</span>
-  <span class="icon">☰</span>
+  <span class="icon" aria-label="Facebook"><i data-lucide="facebook" style="width:18px;height:18px"></i></span>
+  <span class="icon" aria-label="Instagram"><i data-lucide="instagram" style="width:18px;height:18px"></i></span>
+  <span class="icon" aria-label="Snapchat"><i data-lucide="ghost" style="width:18px;height:18px"></i></span>
+  <span class="icon" aria-label="Menu"><i data-lucide="menu" style="width:18px;height:18px"></i></span>
 </div>
 
 <section class="um-hero">
@@ -98,12 +99,12 @@ a{color:inherit;text-decoration:none}
       <a href="#">Why UMass?</a>
       <a href="#">Research</a>
       <a href="#">News &amp; Events</a>
-      <button class="um-nav-search">🔍</button>
+      <button class="um-nav-search" aria-label="Search"><i data-lucide="search" style="width:16px;height:16px"></i></button>
     </div>
   </nav>
   <div class="um-hero-title">
     <h1>Admissions</h1>
-    <div class="um-hero-cta"><button data-navigate-open>📑 Check my credit transfer →</button></div>
+    <div class="um-hero-cta"><button data-navigate-open><i data-lucide="file-text" style="width:16px;height:16px"></i> Check my credit transfer <i data-lucide="arrow-right" style="width:16px;height:16px"></i></button></div>
   </div>
 </section>
 
@@ -125,14 +126,14 @@ a{color:inherit;text-decoration:none}
       <div>
         <h3>Create Your<br>Experience</h3>
         <p>Transferring to UMass? Check how your credits will count before you apply. Our evaluation tool gives you a clear preliminary view in just 2 minutes.</p>
-        <button class="um-create-btn" data-navigate-open>Check my credit transfer →</button>
+        <button class="um-create-btn" data-navigate-open>Check my credit transfer <i data-lucide="arrow-right" style="width:14px;height:14px"></i></button>
       </div>
       <div class="um-create-side">
-        <div class="icon">📑</div>
+        <div class="icon"><i data-lucide="file-text" style="width:42px;height:42px"></i></div>
         <div class="title">Free transfer credit evaluation</div>
         <div style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.6">3 quick steps. Upload transcript. Get results by email.</div>
-        <button class="um-check-btn" data-navigate-open>Start now →</button>
-        <div class="meta">Powered by EdVisorly Navigate</div>
+        <button class="um-check-btn" data-navigate-open>Start now <i data-lucide="arrow-right" style="width:14px;height:14px"></i></button>
+        <div class="meta">Powered by EdVisorly</div>
       </div>
     </div>
   </article>
@@ -173,7 +174,7 @@ a{color:inherit;text-decoration:none}
     light: '#fdf2f2',
     logoUrl: '/__l5e/assets-v1/ce66cbb3-b3b6-4205-8c3c-5a329e69b498/umass.svg',
   });
-
+  if (window.lucide) window.lucide.createIcons();
 </script>
 </body>
 </html>

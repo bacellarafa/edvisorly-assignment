@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/navigate-modal/modal.css">
+<script src="https://unpkg.com/lucide@latest"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{font-family:Roboto,system-ui,sans-serif;color:#222;background:#f3f3f3}
@@ -92,7 +93,7 @@ a{color:inherit;text-decoration:none}
   <div class="bu-wordmark">Boston University</div>
   <div class="bu-right">
     <button class="bu-giving">GIVING</button>
-    <div class="bu-search">SEARCH BU…<span>🔍</span></div>
+    <div class="bu-search">SEARCH BU…<i data-lucide="search" style="width:14px;height:14px"></i></div>
   </div>
 </header>
 
@@ -101,7 +102,7 @@ a{color:inherit;text-decoration:none}
   <h1>Admissions Overview</h1>
   <p><a href="#" class="link">BU</a> has been educating students of all kinds for more than 150 years: <a href="#" class="link">undergraduates</a>, <a href="#" class="link">international scholars</a>, <a href="#" class="link">master's and doctoral degree candidates</a>, and busy professionals looking to <a href="#" class="link">extend their education</a>. For more on admissions and <a href="#" class="link">financial aid</a>, check out the links below.</p>
   <div class="bu-intro-cta">
-    <button class="bu-btn-red" data-navigate-open>📑 Check my credit transfer</button>
+    <button class="bu-btn-red" data-navigate-open><i data-lucide="file-text" style="width:16px;height:16px"></i> Check my credit transfer</button>
     <button class="bu-btn-ghost">Plan a visit</button>
   </div>
 </section>
@@ -139,7 +140,7 @@ a{color:inherit;text-decoration:none}
         <div><b>2.</b>Upload your transcript</div>
         <div><b>3.</b>Get your evaluation by email</div>
       </div>
-      <button class="bu-btn-red" style="width:100%" data-navigate-open>Check my credit transfer →</button>
+      <button class="bu-btn-red" style="width:100%" data-navigate-open>Check my credit transfer <i data-lucide="arrow-right" style="width:14px;height:14px"></i></button>
     </div>
   </div>
 </section>
@@ -176,7 +177,7 @@ a{color:inherit;text-decoration:none}
     light: '#fdf2f2',
     logoUrl: '/__l5e/assets-v1/265d7738-f747-4590-9c9a-8845d33fa648/bu.png',
   });
-
+  if (window.lucide) window.lucide.createIcons();
 </script>
 </body>
 </html>
