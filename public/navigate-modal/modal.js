@@ -511,7 +511,7 @@
         const i = Number(act.dataset.i);
         if (!Number.isFinite(i) || !COURSES[i]) return;
         st.manualMode = 'edit'; st.editIndex = i;
-        st.draft = [{ term: COURSES[i].term, code: COURSES[i].code, title: COURSES[i].title, cr: COURSES[i].cr, grade: COURSES[i].grade }];
+        st.draft = [{ term: COURSES[i].term, code: COURSES[i].code, title: COURSES[i].title, cr: COURSES[i].cr, grade: COURSES[i].grade, _t: { term:true, code:true, title:true, cr:true, grade:true } }];
         render('fwd');
       }
       else if (a === 'manual-add-row') {
