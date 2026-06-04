@@ -433,3 +433,28 @@
 }
 .nv-demo-fab-item:hover{background:rgba(255,255,255,.08);color:#fff}
 .nv-demo-fab-item.active{background:#fff;color:#111;font-weight:600}
+
+.nv-demo-fab-blurb{
+  padding:10px 12px 10px;margin-bottom:4px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  color:#aaa;font-size:11px;line-height:1.45;
+}
+.nv-demo-fab-blurb strong{display:block;color:#f5c451;font-weight:700;margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase;font-size:10px}
+
+/* Desktop-only "Demo files" cheat-sheet */
+.nv-demo-help{
+  position:fixed;bottom:16px;right:120px;z-index:1100;
+  display:none;width:380px;max-width:calc(100vw - 152px);
+  background:rgba(20,20,30,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-radius:12px;padding:14px 16px;
+  box-shadow:0 12px 36px rgba(0,0,0,.4);
+  font-family:'Inter',system-ui,sans-serif;color:#ddd;
+}
+.nv-demo-help.visible{display:block}
+.nv-demo-help-title{color:#f5c451;font-size:12px;font-weight:700;margin-bottom:10px;line-height:1.4}
+.nv-demo-help-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.nv-demo-help-list li{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.4;color:#cfd0d6}
+.nv-demo-help-emoji{flex-shrink:0;font-size:13px;line-height:1}
+.nv-demo-help-arrow{color:#888;margin:0 2px}
+.nv-demo-help code{font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-size:11.5px;color:#fff;background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px}
+@media(max-width:899px){.nv-demo-help{display:none !important}}
