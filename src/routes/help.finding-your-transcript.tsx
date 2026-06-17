@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import edvisorlyLogo from "@/assets/edvisorly-logo.png.asset.json";
+import { submitFeedback } from "@/lib/feedback.functions";
 
 const NAVY = "#001b3d";
 const SKY = "#4ab4e8";
@@ -53,10 +56,11 @@ function HelpFindingTranscript() {
         </a>
       </div>
 
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 24, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
         <Link to="/" style={{ fontSize: 13, color: SLATE, textDecoration: "none" }}>
           ← Back
         </Link>
+        <BackToUploadButton />
       </div>
 
       <p
@@ -176,6 +180,8 @@ function HelpFindingTranscript() {
         </p>
       </Section>
 
+      <FeedbackSection />
+
       <div
         style={{
           marginTop: 48,
@@ -197,6 +203,236 @@ function HelpFindingTranscript() {
         </a>
       </div>
     </main>
+  );
+}
+
+function BackToUploadButton() {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (window.opener) {
+      window.close();
+    } else {
+      window.location.href = "/";
+    }
+  };
+
+  return (
+    <a
+      href="/"
+      onClick={handleClick}
+      style={{
+        fontSize: 13,
+        color: NAVY,
+        textDecoration: "none",
+        fontWeight: 600,
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        padding: "6px 12px",
+        borderRadius: 6,
+        border: `1px solid ${NAVY}22`,
+        background: `${NAVY}08`,
+      }}
+    >
+      <span style={{ fontSize: 14 }}>↑</span> Back to Upload
+    </a>
+  );
+}
+
+function FeedbackSection() {
+  const sendFeedback = useServerFn(submitFeedback);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validate = () => {
+    const next: Record<string, string> = {};
+    if (!name.trim()) next.name = "Please enter your name.";
+    if (!email.trim()) {
+      next.email = "Please enter your email.";
+    } else if (!email.includes("@") || !email.includes(".")) {
+      next.email = "Please enter a valid email.";
+    }
+    if (!message.trim()) next.message = "Please enter a message.";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+    setStatus("sending");
+    try {
+      await sendFeedback({
+        data: {
+          name: name.trim(),
+          email: email.trim(),
+          message: message.trim(),
+          page: "help/finding-your-transcript",
+        },
+      });
+      setStatus("sent");
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  return (
+    <section style={{ marginTop: 48, paddingTop: 32, borderTop: `1px solid ${SKY}33` }}>
+      <h2
+        style={{
+          fontSize: 20,
+          fontWeight: 700,
+          letterSpacing: "-.01em",
+          margin: "0 0 8px",
+          color: NAVY,
+        }}
+      >
+        Was this helpful?
+      </h2>
+      <p style={{ fontSize: 15, color: SLATE, margin: "0 0 20px" }}>
+        Let us know if you're still confused or if something is missing. We read every message.
+      </p>
+
+      {status === "sent" ? (
+        <div
+          style={{
+            padding: "16px 20px",
+            borderRadius: 8,
+            background: "#f0f9ff",
+            border: `1px solid ${SKY}44`,
+            color: NAVY,
+            fontSize: 15,
+          }}
+        >
+          Thanks for your feedback — we'll use it to improve this guide.
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div>
+            <label
+              htmlFor="fb-name"
+              style={{ display: "block", fontSize: 13, fontWeight: 600, color: NAVY, marginBottom: 6 }}
+            >
+              Name
+            </label>
+            <input
+              id="fb-name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+              style={{
+                width: "100%",
+                padding: "10px 12px",
+                fontSize: 14,
+                borderRadius: 6,
+                border: `1px solid ${errors.name ? "#e11d48" : "#e2e8f0"}`,
+                outline: "none",
+                fontFamily: "inherit",
+              }}
+            />
+            {errors.name && (
+              <span style={{ fontSize: 12, color: "#e11d48", marginTop: 4, display: "block" }}>
+                {errors.name}
+              </span>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="fb-email"
+              style={{ display: "block", fontSize: 13, fontWeight: 600, color: NAVY, marginBottom: 6 }}
+            >
+              Email
+            </label>
+            <input
+              id="fb-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.edu"
+              style={{
+                width: "100%",
+                padding: "10px 12px",
+                fontSize: 14,
+                borderRadius: 6,
+                border: `1px solid ${errors.email ? "#e11d48" : "#e2e8f0"}`,
+                outline: "none",
+                fontFamily: "inherit",
+              }}
+            />
+            {errors.email && (
+              <span style={{ fontSize: 12, color: "#e11d48", marginTop: 4, display: "block" }}>
+                {errors.email}
+              </span>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="fb-message"
+              style={{ display: "block", fontSize: 13, fontWeight: 600, color: NAVY, marginBottom: 6 }}
+            >
+              Message
+            </label>
+            <textarea
+              id="fb-message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Tell us what was confusing or what you'd like to see here..."
+              rows={4}
+              style={{
+                width: "100%",
+                padding: "10px 12px",
+                fontSize: 14,
+                borderRadius: 6,
+                border: `1px solid ${errors.message ? "#e11d48" : "#e2e8f0"}`,
+                outline: "none",
+                fontFamily: "inherit",
+                resize: "vertical",
+              }}
+            />
+            {errors.message && (
+              <span style={{ fontSize: 12, color: "#e11d48", marginTop: 4, display: "block" }}>
+                {errors.message}
+              </span>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={status === "sending"}
+            style={{
+              alignSelf: "flex-start",
+              padding: "10px 20px",
+              fontSize: 14,
+              fontWeight: 600,
+              color: "#fff",
+              background: NAVY,
+              border: "none",
+              borderRadius: 6,
+              cursor: status === "sending" ? "not-allowed" : "pointer",
+              opacity: status === "sending" ? 0.7 : 1,
+              fontFamily: "inherit",
+            }}
+          >
+            {status === "sending" ? "Sending…" : "Send feedback"}
+          </button>
+
+          {status === "error" && (
+            <span style={{ fontSize: 13, color: "#e11d48" }}>
+              Something went wrong. Please try again.
+            </span>
+          )}
+        </form>
+      )}
+    </section>
   );
 }
 
