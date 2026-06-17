@@ -206,8 +206,7 @@
 .nv-upload-title{font-size:14px;font-weight:600;color:#1a1a1a;text-align:center}
 .nv-upload-hint{font-size:12px;color:#8a857d;text-align:center}
 
-.nv-consent-row{display:flex;gap:11px;align-items:flex-start;font-size:12px;color:#5a544c;line-height:1.55;padding:0 4px}
-.nv-consent-row input{margin-top:2px;flex-shrink:0;width:16px;height:16px;cursor:pointer;accent-color:var(--nv-brand)}
+.nv-upload-disclaimer{font-size:11px;color:#8a857d;text-align:center;line-height:1.45;padding:0 4px}
 
 /* ── Parsing ──────────────────────────────────────────────── */
 .nv-parsing-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;flex:1;padding:40px 20px;text-align:center;min-height:340px}
