@@ -29,6 +29,8 @@ export const Route = createFileRoute("/help/finding-your-transcript")({
 });
 
 function HelpFindingTranscript() {
+  const [bannerVisible, setBannerVisible] = useState(true);
+  const bannerId = useId();
   return (
     <main
       style={{
