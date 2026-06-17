@@ -177,6 +177,50 @@ function HelpFindingTranscript() {
         </p>
       </Section>
 
+      {bannerVisible && (
+        <div
+          id={bannerId}
+          role="status"
+          aria-live="polite"
+          style={{
+            padding: "12px 16px",
+            borderRadius: 8,
+            background: "#f0f9ff",
+            border: `1px solid ${SKY}44`,
+            fontSize: 14,
+            color: NAVY,
+            lineHeight: 1.5,
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 12,
+            justifyContent: "space-between",
+          }}
+        >
+          <span>
+            Done here? Close this tab or switch back to your original tab to continue with the
+            Upload step.
+          </span>
+          <button
+            type="button"
+            aria-label="Dismiss message"
+            onClick={() => setBannerVisible(false)}
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              margin: 0,
+              cursor: "pointer",
+              color: SLATE,
+              fontSize: 18,
+              lineHeight: 1,
+              flexShrink: 0,
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       <FeedbackSection />
 
       <div
