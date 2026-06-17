@@ -14,6 +14,7 @@ import { Route as TuftsRouteImport } from './routes/tufts'
 import { Route as NortheasternRouteImport } from './routes/northeastern'
 import { Route as BuRouteImport } from './routes/bu'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as HelpFindingYourTranscriptRouteImport } from './routes/help.finding-your-transcript'
 
 const UmassRoute = UmassRouteImport.update({
   id: '/umass',
@@ -40,6 +41,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HelpFindingYourTranscriptRoute =
+  HelpFindingYourTranscriptRouteImport.update({
+    id: '/help/finding-your-transcript',
+    path: '/help/finding-your-transcript',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +54,7 @@ export interface FileRoutesByFullPath {
   '/northeastern': typeof NortheasternRoute
   '/tufts': typeof TuftsRoute
   '/umass': typeof UmassRoute
+  '/help/finding-your-transcript': typeof HelpFindingYourTranscriptRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +62,7 @@ export interface FileRoutesByTo {
   '/northeastern': typeof NortheasternRoute
   '/tufts': typeof TuftsRoute
   '/umass': typeof UmassRoute
+  '/help/finding-your-transcript': typeof HelpFindingYourTranscriptRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +71,33 @@ export interface FileRoutesById {
   '/northeastern': typeof NortheasternRoute
   '/tufts': typeof TuftsRoute
   '/umass': typeof UmassRoute
+  '/help/finding-your-transcript': typeof HelpFindingYourTranscriptRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/bu' | '/northeastern' | '/tufts' | '/umass'
+  fullPaths:
+    | '/'
+    | '/bu'
+    | '/northeastern'
+    | '/tufts'
+    | '/umass'
+    | '/help/finding-your-transcript'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/bu' | '/northeastern' | '/tufts' | '/umass'
-  id: '__root__' | '/' | '/bu' | '/northeastern' | '/tufts' | '/umass'
+  to:
+    | '/'
+    | '/bu'
+    | '/northeastern'
+    | '/tufts'
+    | '/umass'
+    | '/help/finding-your-transcript'
+  id:
+    | '__root__'
+    | '/'
+    | '/bu'
+    | '/northeastern'
+    | '/tufts'
+    | '/umass'
+    | '/help/finding-your-transcript'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +106,7 @@ export interface RootRouteChildren {
   NortheasternRoute: typeof NortheasternRoute
   TuftsRoute: typeof TuftsRoute
   UmassRoute: typeof UmassRoute
+  HelpFindingYourTranscriptRoute: typeof HelpFindingYourTranscriptRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +146,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/help/finding-your-transcript': {
+      id: '/help/finding-your-transcript'
+      path: '/help/finding-your-transcript'
+      fullPath: '/help/finding-your-transcript'
+      preLoaderRoute: typeof HelpFindingYourTranscriptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +162,7 @@ const rootRouteChildren: RootRouteChildren = {
   NortheasternRoute: NortheasternRoute,
   TuftsRoute: TuftsRoute,
   UmassRoute: UmassRoute,
+  HelpFindingYourTranscriptRoute: HelpFindingYourTranscriptRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

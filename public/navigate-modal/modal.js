@@ -294,7 +294,7 @@
       <div><button class="nv-back-btn" data-act="back">${ic('arrow-left')} Back</button>
       <p class="nv-h1">Upload your transcript</p>
       <p class="nv-sub">We'll check how your credits transfer — before you apply.</p></div>
-      <div class="nv-notice nv-notice-amber">${ic('lock-keyhole')} Your transcript is encrypted and only used for this evaluation.</div>
+      <div class="nv-notice nv-notice-amber">${ic('lock-keyhole')} <span>Your transcript is encrypted and only used for this evaluation. <a href="/help/finding-your-transcript" target="_blank" rel="noopener noreferrer" class="nv-banner-link">Need help finding your transcript?</a></span></div>
       <label class="nv-upload-box ${hasFile?'has-file':''}" for="nv-file-inp">
         <div class="nv-upload-icon-wrap">${hasFile?ic('file-check-2'):ic('file-text')}</div>
         <span class="nv-upload-title">${hasFile?st.file:'Tap to upload your transcript'}</span>
