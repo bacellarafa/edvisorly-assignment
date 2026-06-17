@@ -301,9 +301,8 @@
         <input type="file" id="nv-file-inp" style="display:none">
       </label>
       <div id="nv-file-error" class="nv-notice nv-notice-red">${ic('alert-triangle')} <span id="nv-file-err-msg"></span></div>
-      <label class="nv-consent-row"><input type="checkbox" id="nv-consent-chk" ${st.consent?'checked':''}>
-      I agree my transcript data may be processed to evaluate credit transfer eligibility.</label>
-      <button class="nv-btn nv-btn-primary" id="nv-upload-btn" data-act="next" ${hasFile&&st.consent?'':'disabled'}>Continue ${ic('arrow-right')}</button>`;
+      <button class="nv-btn nv-btn-primary" id="nv-upload-btn" data-act="next" ${hasFile?'':'disabled'}>Continue ${ic('arrow-right')}</button>
+      <div class="nv-upload-disclaimer">By clicking "Continue", you agree to share your transcript for credit transfer review.</div>`;
   }
 
   function sParsing() {
