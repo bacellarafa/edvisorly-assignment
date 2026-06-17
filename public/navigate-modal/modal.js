@@ -71,7 +71,6 @@
       schoolKnown: false,
       forceSchoolNotFound: false,
       file: null,
-      consent: false,
       parseFailed: false,
       manualEntry: false,
       name: '',
