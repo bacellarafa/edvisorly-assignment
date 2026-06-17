@@ -1,0 +1,1 @@
+import{j as t}from"./index-DFQT4Za2.js";const s=()=>t.jsx("iframe",{src:"/schools/northeastern.html",title:"Northeastern Admissions",style:{border:"none",width:"100vw",height:"100vh",display:"block"}});export{s as component};

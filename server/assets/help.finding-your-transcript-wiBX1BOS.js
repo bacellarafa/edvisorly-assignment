@@ -1,8 +1,8 @@
 import { jsxs, jsx } from "react/jsx-runtime";
 import * as React from "react";
-import { useState } from "react";
+import { useState, useId } from "react";
 import { useRouter, isRedirect } from "@tanstack/react-router";
-import { T as TSS_SERVER_FUNCTION, g as getServerFnById, c as createServerFn } from "./server-TpGiz5c2.js";
+import { T as TSS_SERVER_FUNCTION, g as getServerFnById, c as createServerFn } from "./server-Cw4LyyWe.js";
 import { z } from "zod";
 import "node:async_hooks";
 import "h3-v2";
@@ -56,6 +56,8 @@ const NAVY = "#001b3d";
 const SKY = "#4ab4e8";
 const SLATE = "#4a5568";
 function HelpFindingTranscript() {
+  const [bannerVisible, setBannerVisible] = useState(true);
+  const bannerId = useId();
   return /* @__PURE__ */ jsxs("main", { style: {
     maxWidth: 720,
     margin: "0 auto",
@@ -94,16 +96,6 @@ function HelpFindingTranscript() {
       color: SLATE,
       marginBottom: 32
     }, children: "Most students can grab their transcript in under two minutes from their student portal. Here's exactly where to look and what to upload." }),
-    /* @__PURE__ */ jsx("div", { style: {
-      padding: "12px 16px",
-      borderRadius: 8,
-      background: "#f0f9ff",
-      border: `1px solid ${SKY}44`,
-      fontSize: 14,
-      color: NAVY,
-      marginBottom: 32,
-      lineHeight: 1.5
-    }, children: "Done here? Close this tab or switch back to your original tab to continue with the Upload step." }),
     /* @__PURE__ */ jsx(Section, { title: "What is a transcript?", children: /* @__PURE__ */ jsx("p", { children: "Your transcript is the official record of the courses you've taken, the credits you earned, and the grades you received. It is issued by your current or previous college." }) }),
     /* @__PURE__ */ jsx(Section, { title: "Unofficial is fine for transfer evaluations", children: /* @__PURE__ */ jsxs("p", { children: [
       "For a transfer credit evaluation here, an ",
@@ -198,6 +190,32 @@ function HelpFindingTranscript() {
       /* @__PURE__ */ jsx("strong", { children: "enter your courses manually" }),
       " on the next screen of the evaluation."
     ] }) }),
+    bannerVisible && /* @__PURE__ */ jsxs("div", { id: bannerId, role: "status", "aria-live": "polite", style: {
+      padding: "12px 16px",
+      borderRadius: 8,
+      background: "#f0f9ff",
+      border: `1px solid ${SKY}44`,
+      fontSize: 14,
+      color: NAVY,
+      lineHeight: 1.5,
+      display: "flex",
+      alignItems: "flex-start",
+      gap: 12,
+      justifyContent: "space-between"
+    }, children: [
+      /* @__PURE__ */ jsx("span", { children: "Done here? Close this tab or switch back to your original tab to continue with the Upload step." }),
+      /* @__PURE__ */ jsx("button", { type: "button", "aria-label": "Dismiss message", onClick: () => setBannerVisible(false), style: {
+        background: "none",
+        border: "none",
+        padding: 0,
+        margin: 0,
+        cursor: "pointer",
+        color: SLATE,
+        fontSize: 18,
+        lineHeight: 1,
+        flexShrink: 0
+      }, children: "×" })
+    ] }),
     /* @__PURE__ */ jsx(FeedbackSection, {}),
     /* @__PURE__ */ jsxs("div", { style: {
       marginTop: 48,

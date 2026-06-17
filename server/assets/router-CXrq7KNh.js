@@ -169,7 +169,7 @@ const Route$1 = createFileRoute("/")({
   }),
   component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
-const $$splitComponentImporter = () => import("./help.finding-your-transcript-oJ5K3wIT.js");
+const $$splitComponentImporter = () => import("./help.finding-your-transcript-wiBX1BOS.js");
 const Route = createFileRoute("/help/finding-your-transcript")({
   head: () => ({
     meta: [{
