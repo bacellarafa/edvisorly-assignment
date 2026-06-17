@@ -86,6 +86,22 @@ function HelpFindingTranscript() {
         portal. Here's exactly where to look and what to upload.
       </p>
 
+      <div
+        style={{
+          padding: "12px 16px",
+          borderRadius: 8,
+          background: "#f0f9ff",
+          border: `1px solid ${SKY}44`,
+          fontSize: 14,
+          color: NAVY,
+          marginBottom: 32,
+          lineHeight: 1.5,
+        }}
+      >
+        Done here? Close this tab or switch back to your original tab to continue with the
+        Upload step.
+      </div>
+
       <Section title="What is a transcript?">
         <p>
           Your transcript is the official record of the courses you've taken, the credits
