@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import edvisorlyLogo from "@/assets/edvisorly-logo.png.asset.json";
 import { submitFeedback } from "@/lib/feedback.functions";
@@ -56,12 +56,6 @@ function HelpFindingTranscript() {
         </a>
       </div>
 
-      <div style={{ marginBottom: 24, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-        <Link to="/" style={{ fontSize: 13, color: SLATE, textDecoration: "none" }}>
-          ← Back
-        </Link>
-        <BackToUploadButton />
-      </div>
 
       <p
         style={{
@@ -206,38 +200,6 @@ function HelpFindingTranscript() {
   );
 }
 
-function BackToUploadButton() {
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (window.opener) {
-      window.close();
-    } else {
-      window.location.href = "/";
-    }
-  };
-
-  return (
-    <a
-      href="/"
-      onClick={handleClick}
-      style={{
-        fontSize: 13,
-        color: NAVY,
-        textDecoration: "none",
-        fontWeight: 600,
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 6,
-        padding: "6px 12px",
-        borderRadius: 6,
-        border: `1px solid ${NAVY}22`,
-        background: `${NAVY}08`,
-      }}
-    >
-      <span style={{ fontSize: 14 }}>↑</span> Back to Upload
-    </a>
-  );
-}
 
 function FeedbackSection() {
   const sendFeedback = useServerFn(submitFeedback);
