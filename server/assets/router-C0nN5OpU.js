@@ -2,7 +2,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, useRouter, Link, Outlet, HeadContent, Scripts, createFileRoute, lazyRouteComponent, createRouter } from "@tanstack/react-router";
 import { jsx, jsxs } from "react/jsx-runtime";
 import { useEffect } from "react";
-const appCss = "/assets/styles-B0ZvDQU1.css";
+const appCss = "/assets/styles-YGQ8rgZ9.css";
 function reportLovableError(error, context = {}) {
   if (typeof window === "undefined") return;
   window.__lovableEvents?.captureException?.(
@@ -66,7 +66,7 @@ function ErrorComponent({ error, reset }) {
     ] })
   ] }) });
 }
-const Route$5 = createRootRouteWithContext()({
+const Route$6 = createRootRouteWithContext()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -106,11 +106,11 @@ function RootShell({ children }) {
   ] });
 }
 function RootComponent() {
-  const { queryClient } = Route$5.useRouteContext();
+  const { queryClient } = Route$6.useRouteContext();
   return /* @__PURE__ */ jsx(QueryClientProvider, { client: queryClient, children: /* @__PURE__ */ jsx(Outlet, {}) });
 }
-const $$splitComponentImporter$4 = () => import("./umass-ClB3bEUU.js");
-const Route$4 = createFileRoute("/umass")({
+const $$splitComponentImporter$5 = () => import("./umass-ClB3bEUU.js");
+const Route$5 = createFileRoute("/umass")({
   head: () => ({
     meta: [{
       title: "Admissions — UMass Amherst"
@@ -119,10 +119,10 @@ const Route$4 = createFileRoute("/umass")({
       content: "UMass Amherst Admissions demo with embedded EdVisorly Navigate credit-transfer modal."
     }]
   }),
-  component: lazyRouteComponent($$splitComponentImporter$4, "component")
+  component: lazyRouteComponent($$splitComponentImporter$5, "component")
 });
-const $$splitComponentImporter$3 = () => import("./tufts-D8X7kox8.js");
-const Route$3 = createFileRoute("/tufts")({
+const $$splitComponentImporter$4 = () => import("./tufts-D8X7kox8.js");
+const Route$4 = createFileRoute("/tufts")({
   head: () => ({
     meta: [{
       title: "Admissions and Aid — Tufts University"
@@ -131,10 +131,10 @@ const Route$3 = createFileRoute("/tufts")({
       content: "Tufts Admissions demo with embedded EdVisorly Navigate credit-transfer modal."
     }]
   }),
-  component: lazyRouteComponent($$splitComponentImporter$3, "component")
+  component: lazyRouteComponent($$splitComponentImporter$4, "component")
 });
-const $$splitComponentImporter$2 = () => import("./northeastern-BXJSP1_H.js");
-const Route$2 = createFileRoute("/northeastern")({
+const $$splitComponentImporter$3 = () => import("./northeastern-BXJSP1_H.js");
+const Route$3 = createFileRoute("/northeastern")({
   head: () => ({
     meta: [{
       title: "Admissions — Northeastern University"
@@ -143,10 +143,10 @@ const Route$2 = createFileRoute("/northeastern")({
       content: "Northeastern Admissions demo with embedded EdVisorly Navigate credit-transfer modal."
     }]
   }),
-  component: lazyRouteComponent($$splitComponentImporter$2, "component")
+  component: lazyRouteComponent($$splitComponentImporter$3, "component")
 });
-const $$splitComponentImporter$1 = () => import("./bu-CYTs8K_e.js");
-const Route$1 = createFileRoute("/bu")({
+const $$splitComponentImporter$2 = () => import("./bu-CYTs8K_e.js");
+const Route$2 = createFileRoute("/bu")({
   head: () => ({
     meta: [{
       title: "Admissions Overview — Boston University"
@@ -155,10 +155,10 @@ const Route$1 = createFileRoute("/bu")({
       content: "Boston University Admissions demo with embedded EdVisorly Navigate credit-transfer modal."
     }]
   }),
-  component: lazyRouteComponent($$splitComponentImporter$1, "component")
+  component: lazyRouteComponent($$splitComponentImporter$2, "component")
 });
-const $$splitComponentImporter = () => import("./index-C-hQWwFm.js");
-const Route = createFileRoute("/")({
+const $$splitComponentImporter$1 = () => import("./index-C-hQWwFm.js");
+const Route$1 = createFileRoute("/")({
   head: () => ({
     meta: [{
       title: "Admissions and Aid — Tufts University"
@@ -167,41 +167,65 @@ const Route = createFileRoute("/")({
       content: "Tufts Admissions demo with embedded EdVisorly Navigate credit-transfer modal."
     }]
   }),
+  component: lazyRouteComponent($$splitComponentImporter$1, "component")
+});
+const $$splitComponentImporter = () => import("./help.finding-your-transcript-DTCUnFRG.js");
+const Route = createFileRoute("/help/finding-your-transcript")({
+  head: () => ({
+    meta: [{
+      title: "How to find your college transcript — EdVisorly Help"
+    }, {
+      name: "description",
+      content: "Step-by-step guide to downloading an unofficial transcript from your student portal so you can upload it for a transfer credit evaluation."
+    }, {
+      property: "og:title",
+      content: "How to find your college transcript — EdVisorly Help"
+    }, {
+      property: "og:description",
+      content: "Step-by-step guide to downloading an unofficial transcript from your student portal."
+    }]
+  }),
   component: lazyRouteComponent($$splitComponentImporter, "component")
 });
-const UmassRoute = Route$4.update({
+const UmassRoute = Route$5.update({
   id: "/umass",
   path: "/umass",
-  getParentRoute: () => Route$5
+  getParentRoute: () => Route$6
 });
-const TuftsRoute = Route$3.update({
+const TuftsRoute = Route$4.update({
   id: "/tufts",
   path: "/tufts",
-  getParentRoute: () => Route$5
+  getParentRoute: () => Route$6
 });
-const NortheasternRoute = Route$2.update({
+const NortheasternRoute = Route$3.update({
   id: "/northeastern",
   path: "/northeastern",
-  getParentRoute: () => Route$5
+  getParentRoute: () => Route$6
 });
-const BuRoute = Route$1.update({
+const BuRoute = Route$2.update({
   id: "/bu",
   path: "/bu",
-  getParentRoute: () => Route$5
+  getParentRoute: () => Route$6
 });
-const IndexRoute = Route.update({
+const IndexRoute = Route$1.update({
   id: "/",
   path: "/",
-  getParentRoute: () => Route$5
+  getParentRoute: () => Route$6
+});
+const HelpFindingYourTranscriptRoute = Route.update({
+  id: "/help/finding-your-transcript",
+  path: "/help/finding-your-transcript",
+  getParentRoute: () => Route$6
 });
 const rootRouteChildren = {
   IndexRoute,
   BuRoute,
   NortheasternRoute,
   TuftsRoute,
-  UmassRoute
+  UmassRoute,
+  HelpFindingYourTranscriptRoute
 };
-const routeTree = Route$5._addFileChildren(rootRouteChildren)._addFileTypes();
+const routeTree = Route$6._addFileChildren(rootRouteChildren)._addFileTypes();
 const getRouter = () => {
   const queryClient = new QueryClient();
   const router = createRouter({
