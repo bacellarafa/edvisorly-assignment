@@ -1,19 +1,35 @@
 import { jsxs, jsx } from "react/jsx-runtime";
 import { Link } from "@tanstack/react-router";
+const url = "/__l5e/assets-v1/a26826d8-9a2f-46b2-b47b-c667f1d93004/edvisorly-logo.png";
+const edvisorlyLogo = {
+  url
+};
+const NAVY = "#001b3d";
+const SKY = "#4ab4e8";
+const SLATE = "#4a5568";
 function HelpFindingTranscript() {
   return /* @__PURE__ */ jsxs("main", { style: {
     maxWidth: 720,
     margin: "0 auto",
     padding: "48px 24px 80px",
     fontFamily: "'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
-    color: "#1a1a1a",
+    color: NAVY,
     lineHeight: 1.6
   }, children: [
+    /* @__PURE__ */ jsx("div", { style: {
+      marginBottom: 32
+    }, children: /* @__PURE__ */ jsx("a", { href: "https://www.edvisorly.com/", target: "_blank", rel: "noopener noreferrer", style: {
+      display: "inline-block"
+    }, children: /* @__PURE__ */ jsx("img", { src: edvisorlyLogo.url, alt: "EdVisorly", style: {
+      height: 36,
+      width: "auto",
+      display: "block"
+    } }) }) }),
     /* @__PURE__ */ jsx("div", { style: {
       marginBottom: 24
     }, children: /* @__PURE__ */ jsx(Link, { to: "/", style: {
       fontSize: 13,
-      color: "#6a655d",
+      color: SLATE,
       textDecoration: "none"
     }, children: "← Back" }) }),
     /* @__PURE__ */ jsx("p", { style: {
@@ -21,7 +37,7 @@ function HelpFindingTranscript() {
       fontWeight: 700,
       letterSpacing: ".12em",
       textTransform: "uppercase",
-      color: "#8a857d",
+      color: SKY,
       margin: 0
     }, children: "EdVisorly Help" }),
     /* @__PURE__ */ jsx("h1", { style: {
@@ -29,14 +45,15 @@ function HelpFindingTranscript() {
       fontWeight: 700,
       letterSpacing: "-.02em",
       lineHeight: 1.2,
-      margin: "8px 0 16px"
+      margin: "8px 0 16px",
+      color: NAVY
     }, children: "How to find your college transcript" }),
     /* @__PURE__ */ jsx("p", { style: {
       fontSize: 16,
-      color: "#4a4640",
+      color: SLATE,
       marginBottom: 32
     }, children: "Most students can grab their transcript in under two minutes from their student portal. Here's exactly where to look and what to upload." }),
-    /* @__PURE__ */ jsx(Section, { title: "What is a transcript?", children: /* @__PURE__ */ jsx("p", { children: "Your transcript is the official record of the courses you've taken, the credits you earned, and the grades you received. It's issued by your current or previous college." }) }),
+    /* @__PURE__ */ jsx(Section, { title: "What is a transcript?", children: /* @__PURE__ */ jsx("p", { children: "Your transcript is the official record of the courses you've taken, the credits you earned, and the grades you received. It is issued by your current or previous college." }) }),
     /* @__PURE__ */ jsx(Section, { title: "Unofficial is fine for transfer evaluations", children: /* @__PURE__ */ jsxs("p", { children: [
       "For a transfer credit evaluation here, an ",
       /* @__PURE__ */ jsx("strong", { children: "unofficial transcript" }),
@@ -133,15 +150,15 @@ function HelpFindingTranscript() {
     /* @__PURE__ */ jsxs("div", { style: {
       marginTop: 48,
       paddingTop: 20,
-      borderTop: "1px solid rgba(0,0,0,.08)",
+      borderTop: `1px solid ${SKY}33`,
       fontSize: 12,
-      color: "#8a857d",
+      color: SLATE,
       textAlign: "center"
     }, children: [
       "Powered by",
       " ",
       /* @__PURE__ */ jsx("a", { href: "https://www.edvisorly.com/", target: "_blank", rel: "noopener noreferrer", style: {
-        color: "#1a1a1a",
+        color: NAVY,
         fontWeight: 700,
         textDecoration: "none"
       }, children: "EdVisorly" })
@@ -159,11 +176,12 @@ function Section({
       fontSize: 18,
       fontWeight: 700,
       letterSpacing: "-.01em",
-      margin: "0 0 8px"
+      margin: "0 0 8px",
+      color: NAVY
     }, children: title }),
     /* @__PURE__ */ jsx("div", { style: {
       fontSize: 15,
-      color: "#3a3630"
+      color: SLATE
     }, children })
   ] });
 }

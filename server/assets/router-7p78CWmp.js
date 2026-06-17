@@ -2,7 +2,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, useRouter, Link, Outlet, HeadContent, Scripts, createFileRoute, lazyRouteComponent, createRouter } from "@tanstack/react-router";
 import { jsx, jsxs } from "react/jsx-runtime";
 import { useEffect } from "react";
-const appCss = "/assets/styles-YGQ8rgZ9.css";
+const appCss = "/assets/styles-CSsBfvam.css";
 function reportLovableError(error, context = {}) {
   if (typeof window === "undefined") return;
   window.__lovableEvents?.captureException?.(
@@ -169,7 +169,7 @@ const Route$1 = createFileRoute("/")({
   }),
   component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
-const $$splitComponentImporter = () => import("./help.finding-your-transcript-DTCUnFRG.js");
+const $$splitComponentImporter = () => import("./help.finding-your-transcript-ogduFXtf.js");
 const Route = createFileRoute("/help/finding-your-transcript")({
   head: () => ({
     meta: [{
