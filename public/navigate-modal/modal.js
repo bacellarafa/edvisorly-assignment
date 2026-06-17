@@ -667,7 +667,7 @@
     }
   }, true);
 
-  function syncUploadBtn() { const b = document.getElementById('nv-upload-btn'); if (b) b.disabled = !(st.file && st.consent); }
+  function syncUploadBtn() { const b = document.getElementById('nv-upload-btn'); if (b) b.disabled = !st.file; }
   function syncEmailBtn() {
     const ok = st.email.includes('@') && st.email.includes('.');
     const b = document.getElementById('nv-email-btn'); if (b) b.disabled = !(st.name && ok);
