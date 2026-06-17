@@ -1,4 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import edvisorlyLogo from "@/assets/edvisorly-logo.png.asset.json";
+
+const NAVY = "#001b3d";
+const SKY = "#4ab4e8";
+const SLATE = "#4a5568";
 
 export const Route = createFileRoute("/help/finding-your-transcript")({
   head: () => ({
@@ -29,12 +34,27 @@ function HelpFindingTranscript() {
         padding: "48px 24px 80px",
         fontFamily:
           "'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
-        color: "#1a1a1a",
+        color: NAVY,
         lineHeight: 1.6,
       }}
     >
+      <div style={{ marginBottom: 32 }}>
+        <a
+          href="https://www.edvisorly.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: "inline-block" }}
+        >
+          <img
+            src={edvisorlyLogo.url}
+            alt="EdVisorly"
+            style={{ height: 36, width: "auto", display: "block" }}
+          />
+        </a>
+      </div>
+
       <div style={{ marginBottom: 24 }}>
-        <Link to="/" style={{ fontSize: 13, color: "#6a655d", textDecoration: "none" }}>
+        <Link to="/" style={{ fontSize: 13, color: SLATE, textDecoration: "none" }}>
           ← Back
         </Link>
       </div>
@@ -45,7 +65,7 @@ function HelpFindingTranscript() {
           fontWeight: 700,
           letterSpacing: ".12em",
           textTransform: "uppercase",
-          color: "#8a857d",
+          color: SKY,
           margin: 0,
         }}
       >
@@ -58,11 +78,12 @@ function HelpFindingTranscript() {
           letterSpacing: "-.02em",
           lineHeight: 1.2,
           margin: "8px 0 16px",
+          color: NAVY,
         }}
       >
         How to find your college transcript
       </h1>
-      <p style={{ fontSize: 16, color: "#4a4640", marginBottom: 32 }}>
+      <p style={{ fontSize: 16, color: SLATE, marginBottom: 32 }}>
         Most students can grab their transcript in under two minutes from their student
         portal. Here's exactly where to look and what to upload.
       </p>
@@ -70,7 +91,7 @@ function HelpFindingTranscript() {
       <Section title="What is a transcript?">
         <p>
           Your transcript is the official record of the courses you've taken, the credits
-          you earned, and the grades you received. It's issued by your current or previous
+          you earned, and the grades you received. It is issued by your current or previous
           college.
         </p>
       </Section>
@@ -159,9 +180,9 @@ function HelpFindingTranscript() {
         style={{
           marginTop: 48,
           paddingTop: 20,
-          borderTop: "1px solid rgba(0,0,0,.08)",
+          borderTop: `1px solid ${SKY}33`,
           fontSize: 12,
-          color: "#8a857d",
+          color: SLATE,
           textAlign: "center",
         }}
       >
@@ -170,7 +191,7 @@ function HelpFindingTranscript() {
           href="https://www.edvisorly.com/"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "#1a1a1a", fontWeight: 700, textDecoration: "none" }}
+          style={{ color: NAVY, fontWeight: 700, textDecoration: "none" }}
         >
           EdVisorly
         </a>
@@ -188,11 +209,12 @@ function Section({ title, children }: { title: string; children: React.ReactNode
           fontWeight: 700,
           letterSpacing: "-.01em",
           margin: "0 0 8px",
+          color: NAVY,
         }}
       >
         {title}
       </h2>
-      <div style={{ fontSize: 15, color: "#3a3630" }}>{children}</div>
+      <div style={{ fontSize: 15, color: SLATE }}>{children}</div>
     </section>
   );
 }
