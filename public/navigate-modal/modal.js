@@ -643,7 +643,7 @@
     }
   });
   document.addEventListener('change', (e) => {
-    if (e.target.id === 'nv-consent-chk') { st.consent = e.target.checked; syncUploadBtn(); }
+    
     if (e.target.id === 'nv-file-inp') handleFile(e.target);
     const t = e.target;
     if (st.manualMode && t && t.dataset && t.dataset.row !== undefined && t.dataset.field) {
