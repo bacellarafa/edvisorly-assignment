@@ -2,7 +2,7 @@ import { jsxs, jsx } from "react/jsx-runtime";
 import * as React from "react";
 import { useState } from "react";
 import { useRouter, isRedirect } from "@tanstack/react-router";
-import { T as TSS_SERVER_FUNCTION, g as getServerFnById, c as createServerFn } from "./server-BGNphTuR.js";
+import { T as TSS_SERVER_FUNCTION, g as getServerFnById, c as createServerFn } from "./server-TpGiz5c2.js";
 import { z } from "zod";
 import "node:async_hooks";
 import "h3-v2";
@@ -94,6 +94,16 @@ function HelpFindingTranscript() {
       color: SLATE,
       marginBottom: 32
     }, children: "Most students can grab their transcript in under two minutes from their student portal. Here's exactly where to look and what to upload." }),
+    /* @__PURE__ */ jsx("div", { style: {
+      padding: "12px 16px",
+      borderRadius: 8,
+      background: "#f0f9ff",
+      border: `1px solid ${SKY}44`,
+      fontSize: 14,
+      color: NAVY,
+      marginBottom: 32,
+      lineHeight: 1.5
+    }, children: "Done here? Close this tab or switch back to your original tab to continue with the Upload step." }),
     /* @__PURE__ */ jsx(Section, { title: "What is a transcript?", children: /* @__PURE__ */ jsx("p", { children: "Your transcript is the official record of the courses you've taken, the credits you earned, and the grades you received. It is issued by your current or previous college." }) }),
     /* @__PURE__ */ jsx(Section, { title: "Unofficial is fine for transfer evaluations", children: /* @__PURE__ */ jsxs("p", { children: [
       "For a transfer credit evaluation here, an ",
