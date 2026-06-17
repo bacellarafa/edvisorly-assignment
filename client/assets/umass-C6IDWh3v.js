@@ -1,1 +1,0 @@
-import{j as s}from"./index-CCoVg3SM.js";const t=()=>s.jsx("iframe",{src:"/schools/umass.html",title:"UMass Admissions",style:{border:"none",width:"100vw",height:"100vh",display:"block"}});export{t as component};

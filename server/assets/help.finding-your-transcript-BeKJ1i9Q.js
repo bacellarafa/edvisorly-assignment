@@ -1,8 +1,8 @@
 import { jsxs, jsx } from "react/jsx-runtime";
 import * as React from "react";
 import { useState } from "react";
-import { useRouter, isRedirect, Link } from "@tanstack/react-router";
-import { T as TSS_SERVER_FUNCTION, g as getServerFnById, c as createServerFn } from "./server-DWYjb0kp.js";
+import { useRouter, isRedirect } from "@tanstack/react-router";
+import { T as TSS_SERVER_FUNCTION, g as getServerFnById, c as createServerFn } from "./server-BGNphTuR.js";
 import { z } from "zod";
 import "node:async_hooks";
 import "h3-v2";
@@ -73,20 +73,6 @@ function HelpFindingTranscript() {
       width: "auto",
       display: "block"
     } }) }) }),
-    /* @__PURE__ */ jsxs("div", { style: {
-      marginBottom: 24,
-      display: "flex",
-      gap: 16,
-      alignItems: "center",
-      flexWrap: "wrap"
-    }, children: [
-      /* @__PURE__ */ jsx(Link, { to: "/", style: {
-        fontSize: 13,
-        color: SLATE,
-        textDecoration: "none"
-      }, children: "← Back" }),
-      /* @__PURE__ */ jsx(BackToUploadButton, {})
-    ] }),
     /* @__PURE__ */ jsx("p", { style: {
       fontSize: 11,
       fontWeight: 700,
@@ -219,34 +205,6 @@ function HelpFindingTranscript() {
         textDecoration: "none"
       }, children: "EdVisorly" })
     ] })
-  ] });
-}
-function BackToUploadButton() {
-  const handleClick = (e) => {
-    e.preventDefault();
-    if (window.opener) {
-      window.close();
-    } else {
-      window.location.href = "/";
-    }
-  };
-  return /* @__PURE__ */ jsxs("a", { href: "/", onClick: handleClick, style: {
-    fontSize: 13,
-    color: NAVY,
-    textDecoration: "none",
-    fontWeight: 600,
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 6,
-    padding: "6px 12px",
-    borderRadius: 6,
-    border: `1px solid ${NAVY}22`,
-    background: `${NAVY}08`
-  }, children: [
-    /* @__PURE__ */ jsx("span", { style: {
-      fontSize: 14
-    }, children: "↑" }),
-    " Back to Upload"
   ] });
 }
 function FeedbackSection() {
