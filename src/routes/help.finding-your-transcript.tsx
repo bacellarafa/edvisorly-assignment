@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import edvisorlyLogo from "@/assets/edvisorly-logo.png.asset.json";
@@ -29,6 +29,8 @@ export const Route = createFileRoute("/help/finding-your-transcript")({
 });
 
 function HelpFindingTranscript() {
+  const [bannerVisible, setBannerVisible] = useState(true);
+  const bannerId = useId();
   return (
     <main
       style={{
@@ -86,21 +88,6 @@ function HelpFindingTranscript() {
         portal. Here's exactly where to look and what to upload.
       </p>
 
-      <div
-        style={{
-          padding: "12px 16px",
-          borderRadius: 8,
-          background: "#f0f9ff",
-          border: `1px solid ${SKY}44`,
-          fontSize: 14,
-          color: NAVY,
-          marginBottom: 32,
-          lineHeight: 1.5,
-        }}
-      >
-        Done here? Close this tab or switch back to your original tab to continue with the
-        Upload step.
-      </div>
 
       <Section title="What is a transcript?">
         <p>
@@ -189,6 +176,50 @@ function HelpFindingTranscript() {
           evaluation.
         </p>
       </Section>
+
+      {bannerVisible && (
+        <div
+          id={bannerId}
+          role="status"
+          aria-live="polite"
+          style={{
+            padding: "12px 16px",
+            borderRadius: 8,
+            background: "#f0f9ff",
+            border: `1px solid ${SKY}44`,
+            fontSize: 14,
+            color: NAVY,
+            lineHeight: 1.5,
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 12,
+            justifyContent: "space-between",
+          }}
+        >
+          <span>
+            Done here? Close this tab or switch back to your original tab to continue with the
+            Upload step.
+          </span>
+          <button
+            type="button"
+            aria-label="Dismiss message"
+            onClick={() => setBannerVisible(false)}
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              margin: 0,
+              cursor: "pointer",
+              color: SLATE,
+              fontSize: 18,
+              lineHeight: 1,
+              flexShrink: 0,
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       <FeedbackSection />
 
