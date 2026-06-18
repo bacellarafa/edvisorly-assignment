@@ -295,9 +295,16 @@
       <p class="nv-sub">We'll check how your credits transfer — before you apply.</p></div>
       <div class="nv-notice nv-notice-amber">${ic('lock-keyhole')} <span>Your transcript is encrypted and only used for this evaluation. <a href="/help/finding-your-transcript" target="_blank" rel="noopener noreferrer" class="nv-banner-link">Need help finding your transcript?</a></span></div>
       <label class="nv-upload-box ${hasFile?'has-file':''}" for="nv-file-inp">
-        <div class="nv-upload-icon-wrap">${hasFile?ic('file-check-2'):ic('file-text')}</div>
-        <span class="nv-upload-title">${hasFile?st.file:'<span class="nv-pd-mobile">Tap</span><span class="nv-pd-desktop">Click</span> to upload your transcript'}</span>
-        <span class="nv-upload-hint">${hasFile?'<span class="nv-pd-mobile">Tap</span><span class="nv-pd-desktop">Click</span> to change':'PDF, JPG, or PNG · Max 10 MB'}</span>
+        <div class="nv-upload-default">
+          <div class="nv-upload-icon-wrap">${hasFile?ic('file-check-2'):ic('file-text')}</div>
+          <span class="nv-upload-title">${hasFile?st.file:'<span class="nv-pd-mobile">Tap</span><span class="nv-pd-desktop">Click</span> to upload your transcript'}</span>
+          <span class="nv-upload-hint">${hasFile?'<span class="nv-pd-mobile">Tap</span><span class="nv-pd-desktop">Click</span> to change':'PDF, JPG, or PNG · Max 10 MB'}</span>
+        </div>
+        <div class="nv-upload-unsupported" style="display:none">
+          <div class="nv-upload-icon-wrap">${ic('file-x-2')}</div>
+          <span class="nv-upload-title">Unsupported file type</span>
+          <span class="nv-upload-hint">Only PDF, JPG, and PNG files are accepted</span>
+        </div>
         <input type="file" id="nv-file-inp" style="display:none">
       </label>
       <div id="nv-file-error" class="nv-notice nv-notice-red">${ic('alert-triangle')} <span id="nv-file-err-msg"></span></div>
@@ -718,24 +725,47 @@
   // Drag-and-drop on the upload dropzone (desktop + any device that supports DnD).
   (function setupDnD(){
     let depth = 0;
+    const ACCEPTED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
     const isUploadBox = (el) => el && el.closest && el.closest('.nv-upload-box');
     const hasFiles = (e) => e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files');
+    function dragStatus(e) {
+      const items = e.dataTransfer && e.dataTransfer.items;
+      if (!items || !items.length) return 'unknown';
+      let hasFile = false, hasSupported = false;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].kind === 'file') {
+          hasFile = true;
+          if (ACCEPTED_TYPES.includes(items[i].type)) hasSupported = true;
+        }
+      }
+      if (!hasFile) return 'unknown';
+      return hasSupported ? 'supported' : 'unsupported';
+    }
     document.addEventListener('dragenter', (e) => {
       const box = isUploadBox(e.target); if (!box || !hasFiles(e)) return;
-      e.preventDefault(); depth++; box.classList.add('is-dragover');
+      e.preventDefault(); depth++;
+      const status = dragStatus(e);
+      if (status === 'unsupported') {
+        box.classList.remove('is-dragover');
+        box.classList.add('is-unsupported');
+      } else {
+        box.classList.remove('is-unsupported');
+        box.classList.add('is-dragover');
+      }
     });
     document.addEventListener('dragover', (e) => {
       const box = isUploadBox(e.target); if (!box || !hasFiles(e)) return;
-      e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+      e.preventDefault();
+      if (e.dataTransfer) e.dataTransfer.dropEffect = dragStatus(e) === 'unsupported' ? 'none' : 'copy';
     });
     document.addEventListener('dragleave', (e) => {
       const box = isUploadBox(e.target); if (!box) return;
       depth = Math.max(0, depth - 1);
-      if (depth === 0) box.classList.remove('is-dragover');
+      if (depth === 0) box.classList.remove('is-dragover', 'is-unsupported');
     });
     document.addEventListener('drop', (e) => {
       const box = isUploadBox(e.target); if (!box || !hasFiles(e)) return;
-      e.preventDefault(); depth = 0; box.classList.remove('is-dragover');
+      e.preventDefault(); depth = 0; box.classList.remove('is-dragover', 'is-unsupported');
       const f = e.dataTransfer.files && e.dataTransfer.files[0];
       if (f) processFile(f);
     });
