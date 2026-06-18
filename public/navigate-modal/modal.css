@@ -516,3 +516,5 @@
 .nv-toast-show{opacity:1;transform:translate(-50%,0)}
 .nv-toast-icon{display:inline-flex;color:#34d399}
 .nv-toast-icon svg{width:18px;height:18px}
+.nv-pd-desktop{display:none}
+@media(min-width:768px){.nv-pd-mobile{display:none}.nv-pd-desktop{display:inline}}
