@@ -72,15 +72,15 @@ const Route$6 = createRootRouteWithContext()({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Edvisorly Navigate" },
-      { name: "description", content: "This prototype follows Jordan — a community college student checking whether her credits transfer to Tufts before she applies. Tap DEMO to explore each scenario" },
+      { name: "description", content: "This prototype follows Jordan — a community college student checking whether her credits transfer to Tufts before she applies. Click DEMO to explore each scenario" },
       { name: "author", content: "Lovable" },
       { property: "og:title", content: "Edvisorly Navigate" },
-      { property: "og:description", content: "This prototype follows Jordan — a community college student checking whether her credits transfer to Tufts before she applies. Tap DEMO to explore each scenario" },
+      { property: "og:description", content: "This prototype follows Jordan — a community college student checking whether her credits transfer to Tufts before she applies. Click DEMO to explore each scenario" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Edvisorly Navigate" },
-      { name: "twitter:description", content: "This prototype follows Jordan — a community college student checking whether her credits transfer to Tufts before she applies. Tap DEMO to explore each scenario" },
+      { name: "twitter:description", content: "This prototype follows Jordan — a community college student checking whether her credits transfer to Tufts before she applies. Click DEMO to explore each scenario" },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/247fda48-6979-48b8-8ed2-7a8e8444d5da/id-preview-add6219d--821d546f-6104-4880-a0b0-68da72a5e9f2.lovable.app-1780603856601.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/247fda48-6979-48b8-8ed2-7a8e8444d5da/id-preview-add6219d--821d546f-6104-4880-a0b0-68da72a5e9f2.lovable.app-1780603856601.png" }
     ],
@@ -169,7 +169,7 @@ const Route$1 = createFileRoute("/")({
   }),
   component: lazyRouteComponent($$splitComponentImporter$1, "component")
 });
-const $$splitComponentImporter = () => import("./help.finding-your-transcript-wiBX1BOS.js");
+const $$splitComponentImporter = () => import("./help.finding-your-transcript-BffF4Q5s.js");
 const Route = createFileRoute("/help/finding-your-transcript")({
   head: () => ({
     meta: [{

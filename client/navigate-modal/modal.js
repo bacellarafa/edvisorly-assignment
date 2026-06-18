@@ -296,8 +296,8 @@
       <div class="nv-notice nv-notice-amber">${ic('lock-keyhole')} <span>Your transcript is encrypted and only used for this evaluation. <a href="/help/finding-your-transcript" target="_blank" rel="noopener noreferrer" class="nv-banner-link">Need help finding your transcript?</a></span></div>
       <label class="nv-upload-box ${hasFile?'has-file':''}" for="nv-file-inp">
         <div class="nv-upload-icon-wrap">${hasFile?ic('file-check-2'):ic('file-text')}</div>
-        <span class="nv-upload-title">${hasFile?st.file:'Tap to upload your transcript'}</span>
-        <span class="nv-upload-hint">${hasFile?'Tap to change':'PDF, JPG, or PNG · Max 10 MB'}</span>
+        <span class="nv-upload-title">${hasFile?st.file:'<span class="nv-pd-mobile">Tap</span><span class="nv-pd-desktop">Click</span> to upload your transcript'}</span>
+        <span class="nv-upload-hint">${hasFile?'<span class="nv-pd-mobile">Tap</span><span class="nv-pd-desktop">Click</span> to change':'PDF, JPG, or PNG · Max 10 MB'}</span>
         <input type="file" id="nv-file-inp" style="display:none">
       </label>
       <div id="nv-file-error" class="nv-notice nv-notice-red">${ic('alert-triangle')} <span id="nv-file-err-msg"></span></div>
@@ -626,7 +626,7 @@
         } else {
           list.innerHTML = `<div class="nv-school-notfound">
             <div class="nv-notfound-title">We don't have "${esc(q)}" in our database yet</div>
-            <div class="nv-notfound-sub">No problem — tap <strong>Continue</strong> below and we'll flag this on the next step.</div>
+            <div class="nv-notfound-sub">No problem — <span class="nv-pd-mobile">tap</span><span class="nv-pd-desktop">click</span> <strong>Continue</strong> below and we'll flag this on the next step.</div>
           </div>`;
         }
       }

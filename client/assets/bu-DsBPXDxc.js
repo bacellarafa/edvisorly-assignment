@@ -1,1 +1,0 @@
-import{j as o}from"./index-DFQT4Za2.js";const t=()=>o.jsx("iframe",{src:"/schools/bu.html",title:"Boston University Admissions",style:{border:"none",width:"100vw",height:"100vh",display:"block"}});export{t as component};

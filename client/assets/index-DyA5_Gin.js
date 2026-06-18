@@ -1,1 +1,0 @@
-import{j as t}from"./index-DFQT4Za2.js";function e({src:o,title:s}){return t.jsx("iframe",{src:o,title:s,style:{border:"none",width:"100vw",height:"100vh",display:"block"}})}const i=()=>t.jsx(e,{src:"/schools/tufts.html",title:"Tufts Admissions"});export{i as component};
