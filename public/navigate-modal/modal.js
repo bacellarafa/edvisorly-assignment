@@ -295,9 +295,16 @@
       <p class="nv-sub">We'll check how your credits transfer — before you apply.</p></div>
       <div class="nv-notice nv-notice-amber">${ic('lock-keyhole')} <span>Your transcript is encrypted and only used for this evaluation. <a href="/help/finding-your-transcript" target="_blank" rel="noopener noreferrer" class="nv-banner-link">Need help finding your transcript?</a></span></div>
       <label class="nv-upload-box ${hasFile?'has-file':''}" for="nv-file-inp">
-        <div class="nv-upload-icon-wrap">${hasFile?ic('file-check-2'):ic('file-text')}</div>
-        <span class="nv-upload-title">${hasFile?st.file:'<span class="nv-pd-mobile">Tap</span><span class="nv-pd-desktop">Click</span> to upload your transcript'}</span>
-        <span class="nv-upload-hint">${hasFile?'<span class="nv-pd-mobile">Tap</span><span class="nv-pd-desktop">Click</span> to change':'PDF, JPG, or PNG · Max 10 MB'}</span>
+        <div class="nv-upload-default">
+          <div class="nv-upload-icon-wrap">${hasFile?ic('file-check-2'):ic('file-text')}</div>
+          <span class="nv-upload-title">${hasFile?st.file:'<span class="nv-pd-mobile">Tap</span><span class="nv-pd-desktop">Click</span> to upload your transcript'}</span>
+          <span class="nv-upload-hint">${hasFile?'<span class="nv-pd-mobile">Tap</span><span class="nv-pd-desktop">Click</span> to change':'PDF, JPG, or PNG · Max 10 MB'}</span>
+        </div>
+        <div class="nv-upload-unsupported" style="display:none">
+          <div class="nv-upload-icon-wrap">${ic('file-x-2')}</div>
+          <span class="nv-upload-title">Unsupported file type</span>
+          <span class="nv-upload-hint">Only PDF, JPG, and PNG files are accepted</span>
+        </div>
         <input type="file" id="nv-file-inp" style="display:none">
       </label>
       <div id="nv-file-error" class="nv-notice nv-notice-red">${ic('alert-triangle')} <span id="nv-file-err-msg"></span></div>
