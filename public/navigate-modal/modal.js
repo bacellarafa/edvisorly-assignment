@@ -674,6 +674,10 @@
   }
   function handleFile(input) {
     const f = input.files[0]; if (!f) return;
+    if (!processFile(f)) input.value = '';
+  }
+  function processFile(f) {
+    if (!f) return false;
     const errEl = document.getElementById('nv-file-error');
     const errMsg = document.getElementById('nv-file-err-msg');
 
@@ -684,12 +688,9 @@
     const accepted = ['application/pdf', 'image/jpeg', 'image/png'];
     let err = null;
 
-    // 2) Wrong-format check (simulated OR real MIME mismatch). Simulated non-wrong-format
-    // scenarios bypass the MIME check so demo PDFs with empty/odd MIME types still proceed.
     if (scenario === 'wrong-format' || (!simulated && !accepted.includes(f.type))) {
       err = `That file format isn't supported. Navigate only accepts PDF, JPG, or PNG transcripts.`;
     } else {
-      // 3) Too-large check (simulated OR real size) — runs AFTER scenario detection.
       const simulatedMB = '14.2';
       const displayMB = scenario === 'too-large' ? simulatedMB : (f.size / 1024 / 1024).toFixed(1);
       if (scenario === 'too-large' || f.size > MAX_MB * 1024 * 1024) {
@@ -703,17 +704,42 @@
       st.file = null;
       st.scenario = 'success';
       syncUploadBtn();
-      input.value = '';
-      return;
+      return false;
     }
 
     if (errEl) errEl.style.display = 'none';
-    // 4) Valid — store scenario for later stages (parsing + review read st.scenario).
     st.file = f.name;
     st.scenario = (st.forceSchoolNotFound && scenario === 'success') ? 'school-not-found' : scenario;
     const slide = document.querySelector('#nv-sc .nv-slide');
     if (slide) { slide.innerHTML = sUpload(); renderIcons(); }
+    return true;
   }
+
+  // Drag-and-drop on the upload dropzone (desktop + any device that supports DnD).
+  (function setupDnD(){
+    let depth = 0;
+    const isUploadBox = (el) => el && el.closest && el.closest('.nv-upload-box');
+    const hasFiles = (e) => e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files');
+    document.addEventListener('dragenter', (e) => {
+      const box = isUploadBox(e.target); if (!box || !hasFiles(e)) return;
+      e.preventDefault(); depth++; box.classList.add('is-dragover');
+    });
+    document.addEventListener('dragover', (e) => {
+      const box = isUploadBox(e.target); if (!box || !hasFiles(e)) return;
+      e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+    });
+    document.addEventListener('dragleave', (e) => {
+      const box = isUploadBox(e.target); if (!box) return;
+      depth = Math.max(0, depth - 1);
+      if (depth === 0) box.classList.remove('is-dragover');
+    });
+    document.addEventListener('drop', (e) => {
+      const box = isUploadBox(e.target); if (!box || !hasFiles(e)) return;
+      e.preventDefault(); depth = 0; box.classList.remove('is-dragover');
+      const f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) processFile(f);
+    });
+  })();
 
 
   function mountDemoSwitcher() {

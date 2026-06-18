@@ -196,6 +196,8 @@
   box-shadow:0 1px 2px rgba(0,0,0,.03),0 4px 14px rgba(0,0,0,.04);
 }
 .nv-upload-box:hover{border-color:var(--nv-brand);background:#fffefb}
+.nv-upload-box.is-dragover{border-color:var(--nv-brand);background:var(--nv-brand-light,#fffefb);transform:scale(1.01)}
+.nv-upload-box.is-dragover *{pointer-events:none}
 .nv-upload-box.has-file{border-style:solid;border-color:transparent;background:#fff}
 .nv-upload-icon-wrap{
   width:56px;height:56px;border-radius:50%;
