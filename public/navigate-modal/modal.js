@@ -725,24 +725,47 @@
   // Drag-and-drop on the upload dropzone (desktop + any device that supports DnD).
   (function setupDnD(){
     let depth = 0;
+    const ACCEPTED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
     const isUploadBox = (el) => el && el.closest && el.closest('.nv-upload-box');
     const hasFiles = (e) => e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files');
+    function dragStatus(e) {
+      const items = e.dataTransfer && e.dataTransfer.items;
+      if (!items || !items.length) return 'unknown';
+      let hasFile = false, hasSupported = false;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].kind === 'file') {
+          hasFile = true;
+          if (ACCEPTED_TYPES.includes(items[i].type)) hasSupported = true;
+        }
+      }
+      if (!hasFile) return 'unknown';
+      return hasSupported ? 'supported' : 'unsupported';
+    }
     document.addEventListener('dragenter', (e) => {
       const box = isUploadBox(e.target); if (!box || !hasFiles(e)) return;
-      e.preventDefault(); depth++; box.classList.add('is-dragover');
+      e.preventDefault(); depth++;
+      const status = dragStatus(e);
+      if (status === 'unsupported') {
+        box.classList.remove('is-dragover');
+        box.classList.add('is-unsupported');
+      } else {
+        box.classList.remove('is-unsupported');
+        box.classList.add('is-dragover');
+      }
     });
     document.addEventListener('dragover', (e) => {
       const box = isUploadBox(e.target); if (!box || !hasFiles(e)) return;
-      e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+      e.preventDefault();
+      if (e.dataTransfer) e.dataTransfer.dropEffect = dragStatus(e) === 'unsupported' ? 'none' : 'copy';
     });
     document.addEventListener('dragleave', (e) => {
       const box = isUploadBox(e.target); if (!box) return;
       depth = Math.max(0, depth - 1);
-      if (depth === 0) box.classList.remove('is-dragover');
+      if (depth === 0) box.classList.remove('is-dragover', 'is-unsupported');
     });
     document.addEventListener('drop', (e) => {
       const box = isUploadBox(e.target); if (!box || !hasFiles(e)) return;
-      e.preventDefault(); depth = 0; box.classList.remove('is-dragover');
+      e.preventDefault(); depth = 0; box.classList.remove('is-dragover', 'is-unsupported');
       const f = e.dataTransfer.files && e.dataTransfer.files[0];
       if (f) processFile(f);
     });
