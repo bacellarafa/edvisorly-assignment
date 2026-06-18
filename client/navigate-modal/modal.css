@@ -208,6 +208,14 @@
 .nv-upload-title{font-size:14px;font-weight:600;color:#1a1a1a;text-align:center}
 .nv-upload-hint{font-size:12px;color:#8a857d;text-align:center}
 
+.nv-upload-default{display:flex;flex-direction:column;align-items:center;gap:10px}
+.nv-upload-unsupported{display:none;flex-direction:column;align-items:center;gap:10px}
+.nv-upload-box.is-unsupported{border-color:#fca5a5;background:#fef2f2;transform:scale(1.01)}
+.nv-upload-box.is-unsupported .nv-upload-default{display:none}
+.nv-upload-box.is-unsupported .nv-upload-unsupported{display:flex}
+.nv-upload-box.is-unsupported .nv-upload-icon-wrap{background:#fef2f2;color:#dc2626}
+.nv-upload-box.is-unsupported *{pointer-events:none}
+
 .nv-upload-disclaimer{font-size:11px;color:#8a857d;text-align:center;line-height:1.45;padding:0 4px}
 
 /* ── Parsing ──────────────────────────────────────────────── */
